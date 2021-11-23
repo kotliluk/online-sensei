@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+@import 'src/variables.scss';
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: $fontFamily;
+  font-size: $text-middle;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  padding: 0;
+  margin: 0;
+  border: none;
+  font-family: $fontFamily;
+  font-size: inherit;
+  cursor: pointer;
+  border-radius: 4px;
+
+  &:disabled {
+    cursor: auto;
+    background-color: $grey-dark;
+  }
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.bold {
+  font-weight: bold;
+}
