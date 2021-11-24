@@ -4,11 +4,15 @@ import { Route, Switch, Redirect } from 'react-router-dom'
 import { MainPage } from './pages/mainPage/MainPage'
 import { PageHeader } from './components/common/pageHeader/PageHeader'
 import { ReactionsPage } from './pages/reactionsPage/ReactionsPage'
+import { useSelector } from './redux/useSelector'
+import { selectTheme } from './redux/page/selector'
 
 
 const App = (): JSX.Element => {
+  const theme = useSelector(selectTheme)
+
   return (
-    <div className='app'>
+    <div className={`app theme theme--${theme}`}>
       <PageHeader />
       <Switch>
         <Route path='/reactions'>
