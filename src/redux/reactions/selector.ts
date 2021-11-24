@@ -1,8 +1,8 @@
 import { RootState } from '../state'
 
 
-export const selectReactionsActual = (state: RootState): boolean => {
-  return state.reactions.actual
+export const selectReactionsIsActual = (state: RootState): boolean => {
+  return state.reactions.isActual
 }
 
 export const selectReactionsCount = (state: RootState): number => {

@@ -1,28 +1,33 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import './PlayReactionsScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import {
-  selectReactionsActual,
+  selectReactionsIsActual,
   selectReactionsCount,
-  selectReactionsMaxInterval, selectReactionsMaxSignalDuration,
-  selectReactionsMinInterval, selectReactionsMinSignalDuration,
+  selectReactionsMaxInterval,
+  selectReactionsMinInterval,
+  selectReactionsMaxSignalDuration,
+  selectReactionsMinSignalDuration,
 } from '../../../redux/reactions/selector'
 import { useDispatch } from '../../../redux/useDispatch'
 import { resetReactions } from '../../../redux/reactions/actions'
 import { getRandomInt } from '../../../utils/random'
+import { PausableTimeout } from '../../../logic/pausableTimeout'
+import { emptyFunc } from '../../../utils/function'
 
 
 type PlayPhase = 'signal' | 'waiting' | 'finished'
+type TimeoutState = 'running' | 'paused'
 
 export const PlayReactionsScreen = (): JSX.Element | null => {
   const [round, setRound] = useState(0)
   const [phase, setPhase] = useState<PlayPhase>('waiting')
-  // TODO - pause wrapper
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null)
+  const [timeoutState, setTimeoutState] = useState<TimeoutState>('running')
+  const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
 
-  const actual = useSelector(selectReactionsActual)
+  const isActual = useSelector(selectReactionsIsActual)
   const count = useSelector(selectReactionsCount)
   const minSignalDuration = useSelector(selectReactionsMinSignalDuration)
   const maxSignalDuration = useSelector(selectReactionsMaxSignalDuration)
@@ -34,35 +39,47 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   const dispatch = useDispatch()
   const history = useHistory()
 
+  const handleTimeoutStateChange = useCallback(() => {
+    if (timeoutState === 'running') {
+      setTimeoutState('paused')
+      timeoutObj.pause()
+    } else {
+      setTimeoutState('running')
+      timeoutObj.resume()
+    }
+  }, [timeoutState, setTimeoutState, timeoutObj])
+
   useEffect(() => {
-    return () => dispatch(resetReactions()) as unknown as void
+    return () => {
+      dispatch(resetReactions())
+      timeoutObj.pause()
+    }
   }, [])
 
   useEffect(() => {
     if (phase === 'waiting') {
       // WAITING phase has started
-      timeoutId && clearTimeout(timeoutId)
-
       if (round === count) {
         setPhase('finished')
       } else {
-        setTimeoutId(setTimeout(() => {
+        timeoutObj.restart(() => {
           setRound(prev => prev + 1)
           setPhase('signal')
-        }, getRandomInt(minInterval, maxInterval)))
+        }, getRandomInt(minInterval, maxInterval))
       }
     } else if (phase === 'signal') {
       // SIGNAL phase has started
-      timeoutId && clearTimeout(timeoutId)
-
-      setTimeoutId(setTimeout(() => {
+      timeoutObj.restart(() => {
         setPhase('waiting')
-      }, getRandomInt(minSignalDuration, maxSignalDuration)))
+      }, getRandomInt(minSignalDuration, maxSignalDuration))
     }
   }, [phase])
 
-  if (!actual) {
-    history.push('/reactions/set-up')
+  useEffect(() => {
+    !isActual && history.push('/reactions/set-up')
+  }, [isActual])
+
+  if (!isActual) {
     return null
   }
 
@@ -70,8 +87,8 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
     <main className='play-reactions'>
       <h1>Reactions</h1>
       <p>Round: {round + 1}/{count}</p>
-      <p>Phase: {phase}</p>
       <div className={`signal-box ${phase}`} />
+      <button onClick={handleTimeoutStateChange}>{timeoutState === 'running' ? 'Pause' : 'Resume'}</button>
     </main>
   )
 }

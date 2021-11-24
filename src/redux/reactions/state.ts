@@ -1,5 +1,5 @@
 export interface State {
-  actual: boolean
+  isActual: boolean
   count: number
   minSignalDuration: number
   maxSignalDuration: number
@@ -8,7 +8,7 @@ export interface State {
 }
 
 export const initialState: State = {
-  actual: false,
+  isActual: false,
   count: 1,
   minSignalDuration: 200,
   maxSignalDuration: 200,

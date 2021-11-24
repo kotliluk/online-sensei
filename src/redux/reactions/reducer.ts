@@ -12,7 +12,7 @@ export function reducer (state = initialState, action: Actions): State {
     case SET_REACTIONS:
       return {
         ...state,
-        actual: true,
+        isActual: true,
         count: action.payload.count,
         minSignalDuration: action.payload.minSignalDuration,
         maxSignalDuration: action.payload.maxSignalDuration,
@@ -23,7 +23,7 @@ export function reducer (state = initialState, action: Actions): State {
     case RESET_REACTIONS:
       return {
         ...state,
-        actual: false,
+        isActual: false,
       }
 
     default:
