@@ -13,11 +13,12 @@ export function reducer (state = initialState, action: Actions): State {
       return {
         ...state,
         isActual: true,
-        count: action.payload.count,
+        rounds: action.payload.rounds,
         minSignalDuration: action.payload.minSignalDuration,
         maxSignalDuration: action.payload.maxSignalDuration,
         minInterval: action.payload.minInterval,
         maxInterval: action.payload.maxInterval,
+        signalColor: action.payload.signalColor,
       }
 
     case RESET_REACTIONS:

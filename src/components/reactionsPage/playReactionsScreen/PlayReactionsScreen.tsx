@@ -5,11 +5,12 @@ import './PlayReactionsScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import {
   selectReactionsIsActual,
-  selectReactionsCount,
+  selectReactionsRounds,
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
   selectReactionsMaxSignalDuration,
   selectReactionsMinSignalDuration,
+  selectReactionsSignalColor,
 } from '../../../redux/reactions/selector'
 import { useDispatch } from '../../../redux/useDispatch'
 import { resetReactions } from '../../../redux/reactions/actions'
@@ -28,13 +29,13 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
 
   const isActual = useSelector(selectReactionsIsActual)
-  const count = useSelector(selectReactionsCount)
+  const rounds = useSelector(selectReactionsRounds)
   const minSignalDuration = useSelector(selectReactionsMinSignalDuration)
   const maxSignalDuration = useSelector(selectReactionsMaxSignalDuration)
   const minInterval = useSelector(selectReactionsMinInterval)
   const maxInterval = useSelector(selectReactionsMaxInterval)
+  const signalColor = useSelector(selectReactionsSignalColor)
   // TODO - audio settings
-  // TODO - color settings
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -59,7 +60,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   useEffect(() => {
     if (phase === 'waiting') {
       // WAITING phase has started
-      if (round === count) {
+      if (round === rounds) {
         setPhase('finished')
       } else {
         timeoutObj.restart(() => {
@@ -86,8 +87,8 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   return (
     <main className='play-reactions'>
       <h1>Reactions</h1>
-      <p>Round: {round + 1}/{count}</p>
-      <div className={`signal-box ${phase}`} />
+      <p>Round: {round + 1}/{rounds}</p>
+      <div className='signal-box' style={phase === 'signal' ? { backgroundColor: signalColor } : {}} />
       <button onClick={handleTimeoutStateChange}>{timeoutState === 'running' ? 'Pause' : 'Resume'}</button>
     </main>
   )

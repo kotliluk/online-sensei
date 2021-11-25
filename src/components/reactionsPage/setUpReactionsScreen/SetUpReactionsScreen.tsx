@@ -8,52 +8,79 @@ import { useHistory } from 'react-router-dom'
 
 
 export const SetUpReactionsScreen = (): JSX.Element => {
-  const [count, setCount] = useState(10)
+  const [rounds, setRounds] = useState(10)
   const [minSignalDuration, setMinSignalDuration] = useState(200)
   const [maxSignalDuration, setMaxSignalDuration] = useState(200)
   const [minInterval, setMinInterval] = useState(2000)
   const [maxInterval, setMaxInterval] = useState(4000)
+  const [color, setColor] = useState('#ff0000')
 
   const dispatch = useDispatch()
   const history = useHistory()
 
+  const handleMinSignalDurationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseIntOrDefault(e.target.value, minSignalDuration)
+    newValue <= maxSignalDuration && setMinSignalDuration(newValue)
+  }, [minSignalDuration, maxSignalDuration, setMinSignalDuration])
+
+  const handleMaxSignalDurationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseIntOrDefault(e.target.value, maxSignalDuration)
+    newValue >= minSignalDuration && setMaxSignalDuration(newValue)
+  }, [minSignalDuration, maxSignalDuration, setMaxSignalDuration])
+
+  const handleMinIntervalChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseIntOrDefault(e.target.value, minInterval)
+    newValue <= maxInterval && setMinInterval(newValue)
+  }, [minInterval, maxInterval, setMinInterval])
+
+  const handleMaxIntervalChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseIntOrDefault(e.target.value, maxInterval)
+    newValue >= minInterval && setMaxInterval(newValue)
+  }, [minInterval, maxInterval, setMaxInterval])
+
   const handleStart = useCallback(() => {
-    dispatch(setReactions(count, minSignalDuration, maxSignalDuration, minInterval, maxInterval))
+    dispatch(setReactions(rounds, minSignalDuration, maxSignalDuration, minInterval, maxInterval, color))
     history.push('/reactions')
-  }, [dispatch, count, minSignalDuration, maxSignalDuration, minInterval, maxInterval])
+  }, [dispatch, rounds, minSignalDuration, maxSignalDuration, minInterval, maxInterval, color])
 
   return (
     <main className='set-up-reactions'>
       <h1>Reactions</h1>
 
-      <label>Count:</label>
+      <label>Rounds:</label>
       <input
-        type='number' value={count} min='1'
-        onChange={e => setCount(parseIntOrDefault(e.target.value, count))}
+        type='number' value={rounds} min='1'
+        onChange={e => setRounds(parseIntOrDefault(e.target.value, rounds))}
       />
 
       <label>Minimal signal duration (milliseconds):</label>
       <input
         type='number' value={minSignalDuration} min='10'
-        onChange={e => setMinSignalDuration(parseIntOrDefault(e.target.value, count))}
+        onChange={handleMinSignalDurationChange}
       />
 
       <label>Maximal signal duration (milliseconds):</label>
       <input
         type='number' value={maxSignalDuration} min='10'
-        onChange={e => setMaxSignalDuration(parseIntOrDefault(e.target.value, count))}
+        onChange={handleMaxSignalDurationChange}
       />
 
       <label>Minimal interval (milliseconds):</label>
       <input
         type='number' value={minInterval} min='10'
-        onChange={e => setMinInterval(parseIntOrDefault(e.target.value, count))}
+        onChange={handleMinIntervalChange}
       />
 
       <label>Maximal interval (milliseconds):</label>
       <input
         type='number' value={maxInterval} min='10'
-        onChange={e => setMaxInterval(parseIntOrDefault(e.target.value, count))}
+        onChange={handleMaxIntervalChange}
+      />
+
+      <label>Signal color:</label>
+      <input
+        type='color' value={color} min='10'
+        onChange={e => setColor(e.target.value)}
       />
 
       <button onClick={handleStart}>Start</button>

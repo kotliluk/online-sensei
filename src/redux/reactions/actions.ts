@@ -9,29 +9,32 @@ export const SET_REACTIONS = 'reactions/SET_REACTIONS'
 
 interface SetReactions extends Action<typeof SET_REACTIONS> {
   payload: {
-    count: number,
+    rounds: number,
     minSignalDuration: number,
     maxSignalDuration: number,
     minInterval: number,
     maxInterval: number,
+    signalColor: string,
   }
 }
 
 export const setReactions = (
-  count: number,
+  rounds: number,
   minSignalDuration: number,
   maxSignalDuration: number,
   minInterval: number,
   maxInterval: number,
+  signalColor: string,
 ): SetReactions => {
   return {
     type: SET_REACTIONS,
     payload: {
-      count,
+      rounds,
       minSignalDuration,
       maxSignalDuration,
       minInterval,
       maxInterval,
+      signalColor,
     },
   }
 }

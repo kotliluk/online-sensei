@@ -5,8 +5,8 @@ export const selectReactionsIsActual = (state: RootState): boolean => {
   return state.reactions.isActual
 }
 
-export const selectReactionsCount = (state: RootState): number => {
-  return state.reactions.count
+export const selectReactionsRounds = (state: RootState): number => {
+  return state.reactions.rounds
 }
 
 export const selectReactionsMinSignalDuration = (state: RootState): number => {
@@ -23,4 +23,8 @@ export const selectReactionsMinInterval = (state: RootState): number => {
 
 export const selectReactionsMaxInterval = (state: RootState): number => {
   return state.reactions.maxInterval
+}
+
+export const selectReactionsSignalColor = (state: RootState): string => {
+  return state.reactions.signalColor
 }
