@@ -7,16 +7,15 @@
   justify-content: space-between;
   align-items: center;
 
-  padding: 20px 40px;
+  padding: 0 40px;
+  height: $page-header-height;
 
   @include themed() {
-    background-color: t($primary-color);
-    color: t($text-color);
+    background-color: t($secondary-color);
+    color: t($secondary-text);
   }
 
   .home-link {
-    flex-grow: 1;
-
     font-size: $text-large;
     font-weight: bold;
     text-decoration: none;

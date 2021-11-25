@@ -1,0 +1,16 @@
+@import "./variables";
+@import "./theme";
+
+@mixin app-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  height: calc(100% - #{$page-header-height});
+
+  @include themed() {
+    background-color: t($primary-color);
+    color: t($primary-text);
+  }
+}

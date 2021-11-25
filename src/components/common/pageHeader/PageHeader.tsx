@@ -21,8 +21,10 @@ export const PageHeader = (): JSX.Element => {
   return (
     <header className='page-header'>
       <Link to='/' className='home-link'>OnlineSensei</Link>
-      <span>Dark theme:</span>
-      <CheckBox checked={theme === 'dark'} onChange={handleThemeChange} />
+      <div>
+        <span>Dark theme:</span>
+        <CheckBox checked={theme === 'dark'} onChange={handleThemeChange} />
+      </div>
     </header>
   )
 }

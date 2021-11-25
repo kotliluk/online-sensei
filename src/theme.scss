@@ -3,16 +3,22 @@
 // Source: https://medium.com/@katiemctigue/how-to-create-a-dark-mode-in-sass-609f131a3995
 
 $primary-color: 'primary-color';
-$text-color: 'text-color';
+$secondary-color: 'secondary-color';
+$primary-text: 'primary-text';
+$secondary-text: 'secondary-text';
 
 $themes: (
-  default: (
-    primary-color: $white,
-    text-color: $black
+  light: (
+          primary-color: $white,
+          secondary-color: $grey-light,
+          primary-text: $black,
+          secondary-text: $black
   ),
   dark: (
-    primary-color: $grey-light,
-    text-color: $white
+          primary-color: $grey,
+          secondary-color: $grey-dark,
+          primary-text: $black,
+          secondary-text: $white
   ),
 );
 

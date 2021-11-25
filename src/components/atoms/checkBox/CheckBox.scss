@@ -1,23 +1,2 @@
 @import 'src/variables';
 @import 'src/theme';
-
-.page-header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 20px 40px;
-
-  @include themed() {
-    background-color: t($primary-color);
-    color: t($text-color);
-  }
-
-  .home-link {
-    font-size: $text-large;
-    font-weight: bold;
-    text-decoration: none;
-    color: inherit;
-  }
-}

@@ -1,11 +1,18 @@
 @import "src/variables";
+@import "src/mixins";
 
 .play-reactions {
+  @include app-screen();
+
   .signal-box {
-    height: 200px;
-    width: 200px;
+    $diameter: 40vw;
+
+    height: $diameter;
+    width: $diameter;
+    margin-bottom: 30px;
 
     border: 2px solid $black;
+    border-radius: calc(#{$diameter} / 2);
     background-color: transparent;
 
     &.signal {

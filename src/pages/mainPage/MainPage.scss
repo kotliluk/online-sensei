@@ -1,5 +1,27 @@
 @import "../../variables";
+@import "../../theme";
+@import "../../mixins";
 
 .main-page {
-  height: 100%;
+  @include app-screen();
+
+  .feature-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 25px;
+  }
+
+  .feature-text {
+    margin: 5px 0;
+  }
+
+  .feature-link {
+    font-size: $text-middle;
+    font-weight: bold;
+    text-decoration: underline;
+    color: inherit;
+  }
 }

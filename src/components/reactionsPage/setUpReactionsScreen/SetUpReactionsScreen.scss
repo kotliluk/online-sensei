@@ -1,5 +1,6 @@
 @import "src/variables";
+@import "src/mixins";
 
 .set-up-reactions {
-
+  @include app-screen();
 }

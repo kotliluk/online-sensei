@@ -25,36 +25,37 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   return (
     <main className='set-up-reactions'>
       <h1>Reactions</h1>
+
       <label>Count:</label>
       <input
         type='number' value={count} min='1'
         onChange={e => setCount(parseIntOrDefault(e.target.value, count))}
       />
-      <hr />
+
       <label>Minimal signal duration (milliseconds):</label>
       <input
         type='number' value={minSignalDuration} min='10'
         onChange={e => setMinSignalDuration(parseIntOrDefault(e.target.value, count))}
       />
-      <hr />
+
       <label>Maximal signal duration (milliseconds):</label>
       <input
         type='number' value={maxSignalDuration} min='10'
         onChange={e => setMaxSignalDuration(parseIntOrDefault(e.target.value, count))}
       />
-      <hr />
+
       <label>Minimal interval (milliseconds):</label>
       <input
         type='number' value={minInterval} min='10'
         onChange={e => setMinInterval(parseIntOrDefault(e.target.value, count))}
       />
-      <hr />
+
       <label>Maximal interval (milliseconds):</label>
       <input
         type='number' value={maxInterval} min='10'
         onChange={e => setMaxInterval(parseIntOrDefault(e.target.value, count))}
       />
-      <hr />
+
       <button onClick={handleStart}>Start</button>
     </main>
   )
