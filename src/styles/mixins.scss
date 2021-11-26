@@ -1,0 +1,28 @@
+@import "variables";
+@import "theme";
+@import "media";
+
+
+@mixin app-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  min-height: calc(100% - #{$page-header-height});
+
+  padding: 2rem $screen-side-padding-small-device;
+
+  @include medium-device {
+    padding: 2rem $screen-side-padding-medium-device;
+  }
+
+  @include large-device {
+    padding: 2rem $screen-side-padding-large-device;
+  }
+
+  @include themed() {
+    background-color: t($primary-color);
+    color: t($primary-text);
+  }
+}

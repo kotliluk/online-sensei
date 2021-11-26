@@ -1,0 +1,15 @@
+$medium-device-width: 768px;
+$large-device-width: 1024px;
+
+
+@mixin medium-device {
+  @media (min-width: #{$medium-device-width}) {
+    @content;
+  }
+}
+
+@mixin large-device {
+  @media (min-width: #{$large-device-width}) {
+    @content;
+  }
+}

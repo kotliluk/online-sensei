@@ -11,7 +11,6 @@ interface SetReactions extends Action<typeof SET_REACTIONS> {
   payload: {
     rounds: number,
     minSignalDuration: number,
-    maxSignalDuration: number,
     minInterval: number,
     maxInterval: number,
     signalColor: string,
@@ -21,7 +20,6 @@ interface SetReactions extends Action<typeof SET_REACTIONS> {
 export const setReactions = (
   rounds: number,
   minSignalDuration: number,
-  maxSignalDuration: number,
   minInterval: number,
   maxInterval: number,
   signalColor: string,
@@ -31,7 +29,6 @@ export const setReactions = (
     payload: {
       rounds,
       minSignalDuration,
-      maxSignalDuration,
       minInterval,
       maxInterval,
       signalColor,

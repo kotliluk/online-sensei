@@ -10,6 +10,7 @@ export const MainPage = (): JSX.Element => {
     <main className='main-page'>
       <h1>OnlineSensei</h1>
       <p>Train alone or with friends with OnlineSensei!</p>
+
       <h2>Available features:</h2>
 
       <div className='feature-card'>

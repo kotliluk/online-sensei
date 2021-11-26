@@ -9,12 +9,8 @@ export const selectReactionsRounds = (state: RootState): number => {
   return state.reactions.rounds
 }
 
-export const selectReactionsMinSignalDuration = (state: RootState): number => {
-  return state.reactions.minSignalDuration
-}
-
-export const selectReactionsMaxSignalDuration = (state: RootState): number => {
-  return state.reactions.maxSignalDuration
+export const selectReactionsSignalDuration = (state: RootState): number => {
+  return state.reactions.signalDuration
 }
 
 export const selectReactionsMinInterval = (state: RootState): number => {

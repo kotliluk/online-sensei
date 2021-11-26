@@ -5,7 +5,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import './global.scss'
+import './styles/global.scss'
 
 
 ReactDOM.render(

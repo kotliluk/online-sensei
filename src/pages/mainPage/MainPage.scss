@@ -1,9 +1,14 @@
-@import "../../variables";
-@import "../../theme";
-@import "../../mixins";
+@import "src/styles/variables";
+@import "src/styles/theme";
+@import "src/styles/mixins";
+
 
 .main-page {
   @include app-screen();
+
+  p, h1, h2 {
+    text-align: center;
+  }
 
   .feature-card {
     display: flex;
@@ -11,11 +16,12 @@
     justify-content: space-between;
     align-items: center;
 
-    margin-bottom: 25px;
+    margin-bottom: 2rem;
   }
 
   .feature-text {
-    margin: 5px 0;
+    margin: 0.5rem 0;
+    text-align: center;
   }
 
   .feature-link {

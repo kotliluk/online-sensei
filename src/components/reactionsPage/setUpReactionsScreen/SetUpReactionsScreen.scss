@@ -1,6 +1,62 @@
-@import "src/variables";
-@import "src/mixins";
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
 
 .set-up-reactions {
   @include app-screen();
+
+  h1 {
+    text-align: center;
+  }
+
+  .set-up-items {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .set-up-item {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 1rem;
+
+    &:not(:first-of-type) {
+      @include themed {
+        border-top: 1px solid t($secondary-color);
+      }
+    }
+
+    @include medium-device {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    label {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+
+      @include medium-device {
+        margin-bottom: 0;
+      }
+    }
+
+    input {
+      width: 16ch;
+    }
+  }
+
+  .set-up-confirm {
+    background-color: $green;
+    color: $white;
+
+    &:hover {
+      background-color: $green-dark;
+    }
+  }
 }

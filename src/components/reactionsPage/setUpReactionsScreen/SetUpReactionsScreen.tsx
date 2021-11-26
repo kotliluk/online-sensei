@@ -1,16 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback, useState } from 'react'
 import './SetUpReactionsScreen.scss'
-import { parseIntOrDefault } from '../../../utils/number'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setReactions } from '../../../redux/reactions/actions'
 import { useHistory } from 'react-router-dom'
+import { Input } from '../../atoms/input/Input'
+import { NumberInput } from '../../atoms/input/NumberInput'
+import { Button } from '../../atoms/button/Button'
 
 
 export const SetUpReactionsScreen = (): JSX.Element => {
   const [rounds, setRounds] = useState(10)
   const [minSignalDuration, setMinSignalDuration] = useState(200)
-  const [maxSignalDuration, setMaxSignalDuration] = useState(200)
   const [minInterval, setMinInterval] = useState(2000)
   const [maxInterval, setMaxInterval] = useState(4000)
   const [color, setColor] = useState('#ff0000')
@@ -18,72 +19,51 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const dispatch = useDispatch()
   const history = useHistory()
 
-  const handleMinSignalDurationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseIntOrDefault(e.target.value, minSignalDuration)
-    newValue <= maxSignalDuration && setMinSignalDuration(newValue)
-  }, [minSignalDuration, maxSignalDuration, setMinSignalDuration])
-
-  const handleMaxSignalDurationChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseIntOrDefault(e.target.value, maxSignalDuration)
-    newValue >= minSignalDuration && setMaxSignalDuration(newValue)
-  }, [minSignalDuration, maxSignalDuration, setMaxSignalDuration])
-
-  const handleMinIntervalChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseIntOrDefault(e.target.value, minInterval)
+  const handleMinIntervalChange = useCallback((newValue: number) => {
     newValue <= maxInterval && setMinInterval(newValue)
-  }, [minInterval, maxInterval, setMinInterval])
+  }, [maxInterval, setMinInterval])
 
-  const handleMaxIntervalChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseIntOrDefault(e.target.value, maxInterval)
+  const handleMaxIntervalChange = useCallback((newValue: number) => {
     newValue >= minInterval && setMaxInterval(newValue)
-  }, [minInterval, maxInterval, setMaxInterval])
+  }, [minInterval, setMaxInterval])
 
   const handleStart = useCallback(() => {
-    dispatch(setReactions(rounds, minSignalDuration, maxSignalDuration, minInterval, maxInterval, color))
+    dispatch(setReactions(rounds, minSignalDuration, minInterval, maxInterval, color))
     history.push('/reactions')
-  }, [dispatch, rounds, minSignalDuration, maxSignalDuration, minInterval, maxInterval, color])
+  }, [dispatch, rounds, minSignalDuration, minInterval, maxInterval, color])
 
   return (
     <main className='set-up-reactions'>
       <h1>Reactions</h1>
 
-      <label>Rounds:</label>
-      <input
-        type='number' value={rounds} min='1'
-        onChange={e => setRounds(parseIntOrDefault(e.target.value, rounds))}
-      />
+      <div className='set-up-items'>
+        <div className='set-up-item'>
+          <label>Rounds:</label>
+          <NumberInput value={rounds} onChange={setRounds} min={1} />
+        </div>
 
-      <label>Minimal signal duration (milliseconds):</label>
-      <input
-        type='number' value={minSignalDuration} min='10'
-        onChange={handleMinSignalDurationChange}
-      />
+        <div className='set-up-item'>
+          <label>Signal duration (ms):</label>
+          <NumberInput value={minSignalDuration} onChange={setMinSignalDuration} min={10} />
+        </div>
 
-      <label>Maximal signal duration (milliseconds):</label>
-      <input
-        type='number' value={maxSignalDuration} min='10'
-        onChange={handleMaxSignalDurationChange}
-      />
+        <div className='set-up-item'>
+          <label>Minimal interval (ms):</label>
+          <NumberInput value={minInterval} onChange={handleMinIntervalChange} min={10} />
+        </div>
 
-      <label>Minimal interval (milliseconds):</label>
-      <input
-        type='number' value={minInterval} min='10'
-        onChange={handleMinIntervalChange}
-      />
+        <div className='set-up-item'>
+          <label>Maximal interval (ms):</label>
+          <NumberInput value={maxInterval} onChange={handleMaxIntervalChange} min={10} />
+        </div>
 
-      <label>Maximal interval (milliseconds):</label>
-      <input
-        type='number' value={maxInterval} min='10'
-        onChange={handleMaxIntervalChange}
-      />
+        <div className='set-up-item'>
+          <label>Signal color:</label>
+          <Input type='color' value={color} onChange={setColor} />
+        </div>
+      </div>
 
-      <label>Signal color:</label>
-      <input
-        type='color' value={color} min='10'
-        onChange={e => setColor(e.target.value)}
-      />
-
-      <button onClick={handleStart}>Start</button>
+      <Button className='set-up-confirm' onClick={handleStart}>Start</Button>
     </main>
   )
 }

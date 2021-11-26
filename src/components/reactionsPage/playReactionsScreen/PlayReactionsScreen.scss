@@ -1,18 +1,29 @@
-@import "src/variables";
-@import "src/mixins";
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
 
 .play-reactions {
   @include app-screen();
 
   .signal-box {
-    $diameter: 40vw;
+    width: $screen-content-width-small-device;
+    height: $screen-content-width-small-device;
 
-    height: $diameter;
-    width: $diameter;
-    margin-bottom: 30px;
+    @include medium-device {
+      width: $screen-content-width-medium-device;
+      height: $screen-content-width-medium-device;
+    }
+
+    @include large-device {
+      width: $screen-content-width-large-device;
+      height: $screen-content-width-large-device;
+    }
+
+    margin-bottom: 2rem;
 
     border: 2px solid $black;
-    border-radius: calc(#{$diameter} / 2);
+    border-radius: 50%;
     background-color: transparent;
   }
 }

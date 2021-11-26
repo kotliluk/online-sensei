@@ -1,0 +1,23 @@
+@import 'src/styles/variables';
+@import 'src/styles/theme';
+
+
+.__input {
+  padding: 0.5rem;
+  font-size: $text-middle;
+
+  outline: none;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+
+  &[type="color"] {
+    padding: 0;
+  }
+
+  @include themed {
+    color: t($primary-text);
+    background-color: t($primary-color);
+    border-color: t($secondary-text);
+  }
+}

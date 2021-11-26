@@ -8,8 +8,7 @@ import {
   selectReactionsRounds,
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
-  selectReactionsMaxSignalDuration,
-  selectReactionsMinSignalDuration,
+  selectReactionsSignalDuration,
   selectReactionsSignalColor,
 } from '../../../redux/reactions/selector'
 import { useDispatch } from '../../../redux/useDispatch'
@@ -17,6 +16,7 @@ import { resetReactions } from '../../../redux/reactions/actions'
 import { getRandomInt } from '../../../utils/random'
 import { PausableTimeout } from '../../../logic/pausableTimeout'
 import { emptyFunc } from '../../../utils/function'
+import { Button } from '../../atoms/button/Button'
 
 
 type PlayPhase = 'signal' | 'waiting' | 'finished'
@@ -30,8 +30,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
 
   const isActual = useSelector(selectReactionsIsActual)
   const rounds = useSelector(selectReactionsRounds)
-  const minSignalDuration = useSelector(selectReactionsMinSignalDuration)
-  const maxSignalDuration = useSelector(selectReactionsMaxSignalDuration)
+  const signalDuration = useSelector(selectReactionsSignalDuration)
   const minInterval = useSelector(selectReactionsMinInterval)
   const maxInterval = useSelector(selectReactionsMaxInterval)
   const signalColor = useSelector(selectReactionsSignalColor)
@@ -72,7 +71,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
       // SIGNAL phase has started
       timeoutObj.restart(() => {
         setPhase('waiting')
-      }, getRandomInt(minSignalDuration, maxSignalDuration))
+      }, signalDuration)
     }
   }, [phase])
 
@@ -89,7 +88,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
       <h1>Reactions</h1>
       <p>Round: {round + 1}/{rounds}</p>
       <div className='signal-box' style={phase === 'signal' ? { backgroundColor: signalColor } : {}} />
-      <button onClick={handleTimeoutStateChange}>{timeoutState === 'running' ? 'Pause' : 'Resume'}</button>
+      <Button onClick={handleTimeoutStateChange}>{timeoutState === 'running' ? 'Pause' : 'Resume'}</Button>
     </main>
   )
 }

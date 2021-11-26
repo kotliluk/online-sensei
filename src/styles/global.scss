@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
-@import 'src/variables.scss';
+@import 'variables';
 
 html, body, #root, .app {
   height: 100%;
@@ -9,26 +9,16 @@ html, body, #root {
   margin: 0;
   padding: 0;
   font-family: $fontFamily;
-  font-size: $text-middle;
+  font-size: 1rem;
 }
 
 * {
   box-sizing: border-box;
 }
 
-button {
-  padding: 0;
-  margin: 0;
-  border: none;
-  font-family: $fontFamily;
-  font-size: inherit;
-  cursor: pointer;
-  border-radius: 4px;
-
-  &:disabled {
-    cursor: auto;
-    background-color: $grey-dark;
-  }
+hr {
+  margin: 1rem 0;
+  width: 100%;
 }
 
 .hidden {
@@ -37,4 +27,8 @@ button {
 
 .bold {
   font-weight: bold;
+}
+
+.centered-text {
+  text-align: center;
 }

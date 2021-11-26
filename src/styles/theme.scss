@@ -1,4 +1,4 @@
-@import './variables';
+@import 'variables';
 
 // Source: https://medium.com/@katiemctigue/how-to-create-a-dark-mode-in-sass-609f131a3995
 
@@ -17,8 +17,8 @@ $themes: (
   dark: (
           primary-color: $grey,
           secondary-color: $grey-dark,
-          primary-text: $black,
-          secondary-text: $white
+          primary-text: $white,
+          secondary-text: $grey-light
   ),
 );
 
