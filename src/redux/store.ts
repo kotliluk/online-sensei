@@ -5,6 +5,7 @@ import { Dispatch, Store } from '@reduxjs/toolkit'
 import { RootState } from './state'
 import { Actions } from './actions'
 import { initReactions } from './reactions/actions'
+import { initPage } from './page/actions'
 
 
 export const store: Store<RootState, Actions> = configureStore({
@@ -19,5 +20,6 @@ export const store: Store<RootState, Actions> = configureStore({
 })
 
 store.dispatch(initReactions())
+store.dispatch(initPage())
 
 export type AppDispatch = Dispatch<Actions>

@@ -40,6 +40,10 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   const history = useHistory()
 
   const handleTimeoutStateChange = useCallback(() => {
+    if (phase === 'finished') {
+      return
+    }
+
     if (timeoutState === 'running') {
       setTimeoutState('paused')
       timeoutObj.pause()
@@ -47,7 +51,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
       setTimeoutState('running')
       timeoutObj.resume()
     }
-  }, [timeoutState, setTimeoutState, timeoutObj])
+  }, [phase, timeoutState, setTimeoutState, timeoutObj])
 
   const handleTimeoutReset = useCallback(() => {
     setPhase('init')
@@ -106,7 +110,11 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
       </div>
 
       <div className='buttons'>
-        <Button className={timeoutState === 'running' ? 'orange' : 'green'} onClick={handleTimeoutStateChange}>
+        <Button
+          className={timeoutState === 'running' ? 'orange' : 'green'}
+          onClick={handleTimeoutStateChange}
+          disabled={phase === 'finished'}
+        >
           {timeoutState === 'running' ? 'Pause' : 'Resume'}
         </Button>
         <Button className='orange' onClick={handleTimeoutReset}>Reset</Button>

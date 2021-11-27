@@ -1,9 +1,7 @@
 import { Action } from 'redux'
-import {
-  getNumberFromLSOrDefault,
-  getStringFromLSOrDefault, saveToLS,
-} from '../../logic/localStorage'
-import { initialState } from './state'
+import { getValidatedNumberFromLS, getValidatedStringFromLS, saveToLS } from '../../logic/localStorage'
+import { initialState, VALIDATORS } from './state'
+import { isHexColor } from '../../utils/color'
 
 
 export type Actions = InitReactions | SetReactions | SetNotActualReactions
@@ -22,6 +20,7 @@ export const INIT_REACTIONS = 'reactions/INIT_REACTIONS'
 
 interface InitReactions extends Action<typeof INIT_REACTIONS> {
   payload: {
+    isActual: boolean,
     rounds: number,
     signalDuration: number,
     minInterval: number,
@@ -31,17 +30,18 @@ interface InitReactions extends Action<typeof INIT_REACTIONS> {
 }
 
 export const initReactions = (): InitReactions => {
-  const rounds = getNumberFromLSOrDefault(LS_KEYS.ROUNDS, initialState.rounds)
-  const signalDuration = getNumberFromLSOrDefault(LS_KEYS.SIGNAL_DURATION, initialState.signalDuration)
-  const minInterval = getNumberFromLSOrDefault(LS_KEYS.MIN_INTERVAL, initialState.minInterval)
-  const maxInterval = getNumberFromLSOrDefault(LS_KEYS.MAX_INTERVAL, initialState.maxInterval)
-  const signalColor = getStringFromLSOrDefault(LS_KEYS.SIGNAL_COLOR, initialState.signalColor)
+  const rounds = getValidatedNumberFromLS(LS_KEYS.ROUNDS, VALIDATORS.ROUNDS, initialState.rounds)
+  const signal = getValidatedNumberFromLS(LS_KEYS.SIGNAL_DURATION, VALIDATORS.SIGNAL, initialState.signalDuration)
+  const minInterval = getValidatedNumberFromLS(LS_KEYS.MIN_INTERVAL, VALIDATORS.INTERVAL, initialState.minInterval)
+  const maxInterval = getValidatedNumberFromLS(LS_KEYS.MAX_INTERVAL, VALIDATORS.INTERVAL, initialState.maxInterval)
+  const signalColor = getValidatedStringFromLS(LS_KEYS.SIGNAL_COLOR, isHexColor, initialState.signalColor)
 
   return {
     type: INIT_REACTIONS,
     payload: {
+      isActual: false,
       rounds,
-      signalDuration,
+      signalDuration: signal,
       minInterval,
       maxInterval,
       signalColor,

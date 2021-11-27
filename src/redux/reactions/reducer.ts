@@ -6,10 +6,14 @@ import { Actions, INIT_REACTIONS, SET_NOT_ACTUAL_REACTIONS, SET_REACTIONS } from
 export function reducer (state = initialState, action: Actions): State {
   switch (action.type) {
     case INIT_REACTIONS:
+      return {
+        ...action.payload,
+      }
+
     case SET_REACTIONS:
       return {
         ...state,
-        isActual: action.type === SET_REACTIONS,
+        isActual: true,
         rounds: action.payload.rounds,
         signalDuration: action.payload.signalDuration,
         minInterval: action.payload.minInterval,
