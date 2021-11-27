@@ -51,12 +51,8 @@
     }
   }
 
-  .set-up-confirm {
-    background-color: $green;
-    color: $white;
-
-    &:hover {
-      background-color: $green-dark;
-    }
+  .set-up-confirm-btn {
+    width: $button-middle-width;
+    @include button-color($orange);
   }
 }

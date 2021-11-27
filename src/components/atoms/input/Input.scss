@@ -1,23 +1,53 @@
 @import 'src/styles/variables';
 @import 'src/styles/theme';
 
+.__input-wrapper {
+  position: relative;
+  .__input {
+    padding: 0.5rem;
+    font-size: $text-middle;
 
-.__input {
-  padding: 0.5rem;
-  font-size: $text-middle;
+    outline: none;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: $border-radius;
 
-  outline: none;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 4px;
+    &[type="color"] {
+      padding: 0;
+    }
 
-  &[type="color"] {
-    padding: 0;
+    @include themed {
+      color: t($primary-text);
+      background-color: t($primary-color);
+      border-color: t($secondary-text);
+    }
   }
 
-  @include themed {
-    color: t($primary-text);
-    background-color: t($primary-color);
-    border-color: t($secondary-text);
+  .__input-msg {
+    display: none;
+    position: absolute;
+    width: 16rem;
+    left: calc(50% - 8rem);
+    top: calc(100% + 0.25rem);
+    z-index: 1;
+    white-space: pre-wrap;
+
+    padding: 0.25rem 0.5rem;
+    border-radius: $border-radius;
+
+    color: $black;
+    background-color: $red-light;
+  }
+
+  &.invalid {
+    .__input {
+      border-color: $red;
+    }
+  }
+
+  &.invalid:hover {
+    .__input-msg {
+      display: unset;
+    }
   }
 }

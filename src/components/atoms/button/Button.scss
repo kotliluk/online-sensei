@@ -8,10 +8,9 @@
   font-family: $fontFamily;
   font-size: $text-middle;
   cursor: pointer;
-  border-radius: 0.25rem;
+  border-radius: $border-radius;
 
   &:disabled {
     cursor: auto;
-    background-color: $grey-dark;
   }
 }

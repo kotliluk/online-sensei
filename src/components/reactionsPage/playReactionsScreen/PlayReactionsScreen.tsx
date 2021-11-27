@@ -12,19 +12,19 @@ import {
   selectReactionsSignalColor,
 } from '../../../redux/reactions/selector'
 import { useDispatch } from '../../../redux/useDispatch'
-import { resetReactions } from '../../../redux/reactions/actions'
+import { setNotActualReactions } from '../../../redux/reactions/actions'
 import { getRandomInt } from '../../../utils/random'
 import { PausableTimeout } from '../../../logic/pausableTimeout'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 
 
-type PlayPhase = 'signal' | 'waiting' | 'finished'
+type PlayPhase = 'init' | 'signal' | 'waiting' | 'finished'
 type TimeoutState = 'running' | 'paused'
 
 export const PlayReactionsScreen = (): JSX.Element | null => {
   const [round, setRound] = useState(0)
-  const [phase, setPhase] = useState<PlayPhase>('waiting')
+  const [phase, setPhase] = useState<PlayPhase>('init')
   const [timeoutState, setTimeoutState] = useState<TimeoutState>('running')
   const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
 
@@ -49,27 +49,37 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
     }
   }, [timeoutState, setTimeoutState, timeoutObj])
 
+  const handleTimeoutReset = useCallback(() => {
+    setPhase('init')
+    setTimeoutState('running')
+    setRound(0)
+  }, [timeoutState, setTimeoutState, setRound])
+
+  const handleGoBack = useCallback(() => {
+    dispatch(setNotActualReactions())
+  }, [dispatch])
+
   useEffect(() => {
     return () => {
-      dispatch(resetReactions())
+      dispatch(setNotActualReactions())
       timeoutObj.pause()
     }
   }, [])
 
   useEffect(() => {
-    if (phase === 'waiting') {
+    if (phase === 'init' || phase === 'waiting') {
       // WAITING phase has started
       if (round === rounds) {
         setPhase('finished')
       } else {
         timeoutObj.restart(() => {
-          setRound(prev => prev + 1)
           setPhase('signal')
         }, getRandomInt(minInterval, maxInterval))
       }
     } else if (phase === 'signal') {
       // SIGNAL phase has started
       timeoutObj.restart(() => {
+        setRound(prev => prev + 1)
         setPhase('waiting')
       }, signalDuration)
     }
@@ -86,9 +96,22 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   return (
     <main className='play-reactions'>
       <h1>Reactions</h1>
-      <p>Round: {round + 1}/{rounds}</p>
-      <div className='signal-box' style={phase === 'signal' ? { backgroundColor: signalColor } : {}} />
-      <Button onClick={handleTimeoutStateChange}>{timeoutState === 'running' ? 'Pause' : 'Resume'}</Button>
+      <p>
+        {round < rounds && `Round: ${round + 1}/${rounds}`}
+        {round === rounds && 'Finished!'}
+      </p>
+
+      <div className='signal-box' style={phase === 'signal' ? { backgroundColor: signalColor } : {}}>
+        {timeoutState === 'paused' && 'PAUSED'}
+      </div>
+
+      <div className='buttons'>
+        <Button className={timeoutState === 'running' ? 'orange' : 'green'} onClick={handleTimeoutStateChange}>
+          {timeoutState === 'running' ? 'Pause' : 'Resume'}
+        </Button>
+        <Button className='orange' onClick={handleTimeoutReset}>Reset</Button>
+        <Button className='orange' onClick={handleGoBack}>Back</Button>
+      </div>
     </main>
   )
 }

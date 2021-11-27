@@ -9,7 +9,7 @@ export interface State {
 
 export const initialState: State = {
   isActual: false,
-  rounds: 1,
+  rounds: 10,
   signalDuration: 200,
   minInterval: 2000,
   maxInterval: 4000,

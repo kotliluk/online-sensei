@@ -4,6 +4,7 @@ import { reducer as reactionsReducer } from './reactions/reducer'
 import { Dispatch, Store } from '@reduxjs/toolkit'
 import { RootState } from './state'
 import { Actions } from './actions'
+import { initReactions } from './reactions/actions'
 
 
 export const store: Store<RootState, Actions> = configureStore({
@@ -11,10 +12,12 @@ export const store: Store<RootState, Actions> = configureStore({
     page: pageReducer,
     reactions: reactionsReducer,
   }),
-  // to ignore non-serializable Date field in Transportation object
+  // to ignore non-serializable Date field
   middleware: getDefaultMiddleware({
     serializableCheck: false,
   }),
 })
+
+store.dispatch(initReactions())
 
 export type AppDispatch = Dispatch<Actions>

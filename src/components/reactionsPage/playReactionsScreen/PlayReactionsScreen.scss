@@ -6,6 +6,10 @@
 .play-reactions {
   @include app-screen();
 
+  & > p {
+    font-weight: bold;
+  }
+
   .signal-box {
     width: $screen-content-width-small-device;
     height: $screen-content-width-small-device;
@@ -20,10 +24,35 @@
       height: $screen-content-width-large-device;
     }
 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: $text-huge;
+    font-weight: bold;
+
     margin-bottom: 2rem;
 
     border: 2px solid $black;
     border-radius: 50%;
     background-color: transparent;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+
+    button {
+      width: $button-long-width;
+      margin: 0 0.25rem;
+
+      &.green {
+        @include button-color($green);
+      }
+
+      &.orange {
+        @include button-color($orange);
+      }
+    }
   }
 }

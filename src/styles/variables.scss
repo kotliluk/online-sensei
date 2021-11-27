@@ -9,6 +9,13 @@ $screen-content-width-small-device: calc(100vw - 2 * #{$screen-side-padding-smal
 $screen-content-width-medium-device: calc(100vw - 2 * #{$screen-side-padding-medium-device});
 $screen-content-width-large-device: calc(100vw - 2 * #{$screen-side-padding-large-device});
 
+// element sizes
+$button-short-width: 4rem;
+$button-middle-width: 6rem;
+$button-long-width: 8rem;
+
+$border-radius: 0.25rem;
+
 // colors
 $white: #ffffff;
 $grey-light: #a5a6a9;
@@ -16,10 +23,19 @@ $grey: #525256;
 $grey-dark: #36393f;
 $black: #000000;
 
-$green: #17b317;
-$green-dark: #159115;
+$green-light: #17b317;
+$green: #159115;
+$green-dark: #107510;
+
+$orange-light: #f99c3c;
+$orange: #f57c00;
+$orange-dark: #bc6200;
+
+$red-light: #f89a9a;
+$red: #cf0e0e;
 
 // text sizes
 $text-small: 0.75rem;
 $text-middle: 1rem;
 $text-large: 1.5rem;
+$text-huge: 2rem;

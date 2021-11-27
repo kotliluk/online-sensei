@@ -26,3 +26,45 @@
     color: t($primary-text);
   }
 }
+
+@mixin button-color($color) {
+  .theme--light & {
+    background: lighten($color, 15%);
+    color: $black;
+
+    &:disabled {
+      background-color: $grey;
+    }
+
+    &:hover:not(:disabled) {
+      background: $color;
+      color: $white;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    &:active:not(:disabled) {
+      background: darken($color, 10%);
+    }
+  }
+
+  .theme--dark & {
+    background: $color;
+    color: $black;
+
+    &:disabled {
+      background-color: $grey-dark;
+    }
+
+    &:hover:not(:disabled) {
+      background: darken($color, 15%);
+      color: $white;
+      transition: all 0.3s ease;
+      font-weight: bold;
+    }
+
+    &:active:not(:disabled) {
+      background: darken($color, 25%);
+    }
+  }
+}

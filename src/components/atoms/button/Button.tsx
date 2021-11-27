@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { ReactNode, useCallback } from 'react'
+import React, { ReactNode } from 'react'
 import './Button.scss'
 
 

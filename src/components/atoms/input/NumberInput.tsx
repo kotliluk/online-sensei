@@ -11,16 +11,25 @@ interface InputProps {
   className?: string
   min?: number
   max?: number
+  invalid?: boolean
+  errorMessage?: string
 }
 
 export const NumberInput = (props: InputProps): JSX.Element => {
-  const { value, onChange, ...other } = props
+  const { value, onChange, min, max, ...other } = props
 
   const handleChange = useCallback((newValue: string) => {
-    onChange(parseIntOrDefault(newValue, value))
+    let num = (newValue === '') ? 0 : parseIntOrDefault(newValue, value)
+    if (min !== undefined && num < min) {
+      num = min
+    }
+    if (max !== undefined && num > max) {
+      num = max
+    }
+    onChange(num)
   }, [value, onChange])
 
   return (
-    <Input type='number' value={value} onChange={handleChange} {...other} />
+    <Input type='text' value={value} onChange={handleChange} {...other} />
   )
 }

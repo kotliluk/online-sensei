@@ -16,6 +16,21 @@ html, body, #root {
   box-sizing: border-box;
 }
 
+h1 {
+  font-size: $text-huge;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: $text-large;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: $text-middle;
+  font-weight: bold;
+}
+
 hr {
   margin: 1rem 0;
   width: 100%;
