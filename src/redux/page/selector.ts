@@ -1,5 +1,5 @@
 import { RootState } from '../state'
-import { Theme } from './state'
+import { Theme } from '../../types/theme'
 
 
 export const selectTheme = (state: RootState): Theme => {

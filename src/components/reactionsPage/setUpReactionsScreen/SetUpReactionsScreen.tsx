@@ -17,7 +17,9 @@ import {
 } from '../../../redux/reactions/selector'
 import useValidatedState from '../../../hooks/useValidatedState'
 import { joinErrorMessages } from '../../../utils/error'
-import { LIMITS, VALIDATORS } from '../../../redux/reactions/state'
+import { Select } from '../../atoms/select/Select'
+import { BEEP_A, BeepType, NO_BEEP } from '../../../types/beepType'
+import { LIMITS, VALIDATOR } from '../../../redux/reactions/utils'
 
 
 export const SetUpReactionsScreen = (): JSX.Element => {
@@ -27,12 +29,13 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const initMaxInterval = useSelector(selectReactionsMaxInterval)
   const initColor = useSelector(selectReactionsSignalColor)
 
-  const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATORS.ROUNDS)
-  const [signal, setSignal, isValidSignal] = useValidatedState(initSignalDuration, VALIDATORS.SIGNAL)
-  const [minInterval, setMinInterval, isValidMinInterval] = useValidatedState(initMinInterval, VALIDATORS.INTERVAL)
-  const [maxInterval, setMaxInterval, isValidMaxInterval] = useValidatedState(initMaxInterval, VALIDATORS.INTERVAL)
+  const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATOR.rounds)
+  const [signal, setSignal, isValidSignal] = useValidatedState(initSignalDuration, VALIDATOR.signalDuration)
+  const [minInterval, setMinInterval, isValidMinInterval] = useValidatedState(initMinInterval, VALIDATOR.minInterval)
+  const [maxInterval, setMaxInterval, isValidMaxInterval] = useValidatedState(initMaxInterval, VALIDATOR.maxInterval)
   const [isValidIntervalRange, setIsValidIntervalRange] = useState(initMinInterval <= initMaxInterval)
   const [color, setColor] = useState(initColor)
+  const [audio, setAudio] = useState<[BeepType, string]>([NO_BEEP, 'No audio'])
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -40,6 +43,12 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const handleMinIntervalChange = useCallback((newValue: number) => {
     setMinInterval(newValue)
     setIsValidIntervalRange(newValue <= maxInterval)
+    const needNum = (n: number): void => {
+      console.log(n)
+      console.log(n % 1)
+      console.log(typeof n)
+    }
+    needNum('1' as unknown as number)
   }, [maxInterval, setMinInterval, setIsValidIntervalRange])
 
   const handleMaxIntervalChange = useCallback((newValue: number) => {
@@ -48,7 +57,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   }, [minInterval, setMaxInterval, setIsValidIntervalRange])
 
   const handleStart = useCallback(() => {
-    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color))
+    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audio[0]))
     history.push('/reactions')
   }, [dispatch, rounds, signal, minInterval, maxInterval, color])
 
@@ -63,7 +72,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
             value={rounds}
             onChange={setRounds}
             invalid={!isValidRounds}
-            errorMessage={`Rounds must be set to between ${LIMITS.ROUNDS.MIN} and ${LIMITS.ROUNDS.MAX}.`}
+            errorMessage={`Rounds must be set to between ${LIMITS.rounds.min} and ${LIMITS.rounds.max}.`}
           />
         </div>
 
@@ -73,7 +82,9 @@ export const SetUpReactionsScreen = (): JSX.Element => {
             value={signal}
             onChange={setSignal}
             invalid={!isValidSignal}
-            errorMessage={`Signal duration must be set between ${LIMITS.SIGNAL.MIN} and ${LIMITS.SIGNAL.MAX} ms.`}
+            errorMessage={
+              `Signal duration must be set between ${LIMITS.signalDuration.min} and ${LIMITS.signalDuration.max} ms.`
+            }
           />
         </div>
 
@@ -85,7 +96,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
             invalid={!isValidMinInterval || !isValidIntervalRange}
             errorMessage={joinErrorMessages([
               [
-                `Minimal interval must be set between ${LIMITS.INTERVAL.MIN} and ${LIMITS.INTERVAL.MAX} ms.`,
+                `Minimal interval must be set between ${LIMITS.minInterval.min} and ${LIMITS.minInterval.max} ms.`,
                 isValidMinInterval,
               ],
               ['Minimal interval must less or equal to maximal.', isValidIntervalRange],
@@ -101,7 +112,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
             invalid={!isValidMaxInterval || !isValidIntervalRange}
             errorMessage={joinErrorMessages([
               [
-                `Maximal interval must be set between ${LIMITS.INTERVAL.MIN} and ${LIMITS.INTERVAL.MAX} ms.`,
+                `Maximal interval must be set between ${LIMITS.maxInterval.min} and ${LIMITS.maxInterval.max} ms.`,
                 isValidMaxInterval,
               ],
               ['Maximal interval must greater or equal to minimal.', isValidIntervalRange],
@@ -112,6 +123,19 @@ export const SetUpReactionsScreen = (): JSX.Element => {
         <div className='set-up-item'>
           <label>Signal color:</label>
           <Input type='color' value={color} onChange={setColor} />
+        </div>
+
+        <div className='set-up-item'>
+          <label>Beep:</label>
+          <Select
+            selected={audio}
+            values={[
+              // TODO - names from language
+              [NO_BEEP, 'No audio'],
+              [BEEP_A, 'Beep 1'],
+            ]}
+            onChange={([k, v]) => setAudio([k as BeepType, v])}
+          />
         </div>
       </div>
 

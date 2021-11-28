@@ -5,11 +5,11 @@ import './PlayReactionsScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import {
   selectReactionsIsActual,
-  selectReactionsRounds,
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
-  selectReactionsSignalDuration,
+  selectReactionsRounds,
   selectReactionsSignalColor,
+  selectReactionsSignalDuration,
 } from '../../../redux/reactions/selector'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setNotActualReactions } from '../../../redux/reactions/actions'
@@ -17,6 +17,8 @@ import { getRandomInt } from '../../../utils/random'
 import { PausableTimeout } from '../../../logic/pausableTimeout'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
+import { playBeep, preloadBeep } from '../../../logic/audio/beep'
+import { BEEP_A } from '../../../types/beepType'
 
 
 type PlayPhase = 'init' | 'signal' | 'waiting' | 'finished'
@@ -64,6 +66,8 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   }, [dispatch])
 
   useEffect(() => {
+    // TODO - move to set-up screen
+    preloadBeep(BEEP_A)
     return () => {
       dispatch(setNotActualReactions())
       timeoutObj.pause()
@@ -82,6 +86,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
       }
     } else if (phase === 'signal') {
       // SIGNAL phase has started
+      playBeep(BEEP_A, signalDuration)
       timeoutObj.restart(() => {
         setRound(prev => prev + 1)
         setPhase('waiting')

@@ -1,4 +1,4 @@
-import { isBetweenValidator } from '../../logic/validation'
+import { BeepType, NO_BEEP } from '../../types/beepType'
 
 
 export interface State {
@@ -8,18 +8,7 @@ export interface State {
   minInterval: number
   maxInterval: number
   signalColor: string
-}
-
-export const LIMITS = {
-  ROUNDS: { MIN: 1, MAX: 10000 },
-  SIGNAL: { MIN: 10, MAX: 10000 },
-  INTERVAL: { MIN: 100, MAX: 100000 },
-}
-
-export const VALIDATORS = {
-  ROUNDS: isBetweenValidator(LIMITS.ROUNDS.MIN, LIMITS.ROUNDS.MAX),
-  SIGNAL: isBetweenValidator(LIMITS.SIGNAL.MIN, LIMITS.SIGNAL.MAX),
-  INTERVAL: isBetweenValidator(LIMITS.INTERVAL.MIN, LIMITS.INTERVAL.MAX),
+  audio: BeepType
 }
 
 export const initialState: State = {
@@ -29,4 +18,5 @@ export const initialState: State = {
   minInterval: 2000,
   maxInterval: 4000,
   signalColor: '#ff0000',
+  audio: NO_BEEP,
 }

@@ -1,0 +1,16 @@
+@import 'src/styles/variables';
+@import 'src/styles/theme';
+
+.__button {
+  padding: 0.5rem 1rem;
+  margin: 0;
+  border: none;
+  font-family: $fontFamily;
+  font-size: $text-middle;
+  cursor: pointer;
+  border-radius: $border-radius;
+
+  &:disabled {
+    cursor: auto;
+  }
+}

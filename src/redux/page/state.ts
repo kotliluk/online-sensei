@@ -1,4 +1,5 @@
-export type Theme = 'light' | 'dark'
+import { Theme } from '../../types/theme'
+
 
 export interface State {
   theme: Theme

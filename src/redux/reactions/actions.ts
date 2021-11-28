@@ -1,18 +1,16 @@
 import { Action } from 'redux'
-import { getValidatedNumberFromLS, getValidatedStringFromLS, saveToLS } from '../../logic/localStorage'
-import { initialState, VALIDATORS } from './state'
-import { isHexColor } from '../../utils/color'
+import {
+  getValidatedNumberFromLS,
+  getValidatedStringFromLS,
+  getValidatedTypeFromLS,
+  saveToLS,
+} from '../../logic/localStorage/access'
+import { initialState } from './state'
+import { BeepType } from '../../types/beepType'
+import { LS_KEYS, VALIDATOR } from './utils'
 
 
 export type Actions = InitReactions | SetReactions | SetNotActualReactions
-
-const LS_KEYS = {
-  ROUNDS: 'REACTIONS__ROUNDS',
-  SIGNAL_DURATION: 'REACTIONS__SIGNAL_DURATION',
-  MIN_INTERVAL: 'REACTIONS__MIN_INTERVAL',
-  MAX_INTERVAL: 'REACTIONS__MAX_INTERVAL',
-  SIGNAL_COLOR: 'REACTIONS__SIGNAL_COLOR',
-} as const
 
 /** ******************* Init reactions state from local storage *********************/
 
@@ -26,25 +24,30 @@ interface InitReactions extends Action<typeof INIT_REACTIONS> {
     minInterval: number,
     maxInterval: number,
     signalColor: string,
+    audio: BeepType,
   }
 }
 
 export const initReactions = (): InitReactions => {
-  const rounds = getValidatedNumberFromLS(LS_KEYS.ROUNDS, VALIDATORS.ROUNDS, initialState.rounds)
-  const signal = getValidatedNumberFromLS(LS_KEYS.SIGNAL_DURATION, VALIDATORS.SIGNAL, initialState.signalDuration)
-  const minInterval = getValidatedNumberFromLS(LS_KEYS.MIN_INTERVAL, VALIDATORS.INTERVAL, initialState.minInterval)
-  const maxInterval = getValidatedNumberFromLS(LS_KEYS.MAX_INTERVAL, VALIDATORS.INTERVAL, initialState.maxInterval)
-  const signalColor = getValidatedStringFromLS(LS_KEYS.SIGNAL_COLOR, isHexColor, initialState.signalColor)
+  const rounds = getValidatedNumberFromLS(LS_KEYS.rounds, VALIDATOR.rounds, initialState.rounds)
+  const signalDuration = getValidatedNumberFromLS(
+    LS_KEYS.signalDuration, VALIDATOR.signalDuration, initialState.signalDuration,
+  )
+  const minInterval = getValidatedNumberFromLS(LS_KEYS.minInterval, VALIDATOR.minInterval, initialState.minInterval)
+  const maxInterval = getValidatedNumberFromLS(LS_KEYS.maxInterval, VALIDATOR.maxInterval, initialState.maxInterval)
+  const signalColor = getValidatedStringFromLS(LS_KEYS.signalColor, VALIDATOR.signalColor, initialState.signalColor)
+  const audio = getValidatedTypeFromLS(LS_KEYS.audio, VALIDATOR.audio, initialState.audio)
 
   return {
     type: INIT_REACTIONS,
     payload: {
       isActual: false,
       rounds,
-      signalDuration: signal,
+      signalDuration,
       minInterval,
       maxInterval,
       signalColor,
+      audio,
     },
   }
 }
@@ -60,6 +63,7 @@ interface SetReactions extends Action<typeof SET_REACTIONS> {
     minInterval: number,
     maxInterval: number,
     signalColor: string,
+    audio: BeepType,
   }
 }
 
@@ -69,12 +73,14 @@ export const setReactions = (
   minInterval: number,
   maxInterval: number,
   signalColor: string,
+  audio: BeepType,
 ): SetReactions => {
-  saveToLS(LS_KEYS.ROUNDS, rounds)
-  saveToLS(LS_KEYS.SIGNAL_DURATION, signalDuration)
-  saveToLS(LS_KEYS.MIN_INTERVAL, minInterval)
-  saveToLS(LS_KEYS.MAX_INTERVAL, maxInterval)
-  saveToLS(LS_KEYS.SIGNAL_COLOR, signalColor)
+  saveToLS(LS_KEYS.rounds, rounds)
+  saveToLS(LS_KEYS.signalDuration, signalDuration)
+  saveToLS(LS_KEYS.minInterval, minInterval)
+  saveToLS(LS_KEYS.maxInterval, maxInterval)
+  saveToLS(LS_KEYS.signalColor, signalColor)
+  saveToLS(LS_KEYS.audio, audio)
 
   return {
     type: SET_REACTIONS,
@@ -84,6 +90,7 @@ export const setReactions = (
       minInterval,
       maxInterval,
       signalColor,
+      audio,
     },
   }
 }

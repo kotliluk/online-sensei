@@ -1,14 +1,9 @@
 import { Action } from 'redux'
-import { Theme } from './state'
-import { getValidatedStringFromLS, saveToLS } from '../../logic/localStorage'
-import { initialState } from './state'
+import { Theme } from '../../types/theme'
+import { LS_ACCESS } from './utils'
 
 
 export type Actions = InitPage | SetTheme
-
-const LS_KEYS = {
-  THEME: 'PAGE__THEME',
-} as const
 
 /** ******************* Init page state *********************/
 
@@ -21,16 +16,15 @@ interface InitPage extends Action<typeof INIT_PAGE> {
 }
 
 export const initPage = (): InitPage => {
-  const theme = getValidatedStringFromLS(LS_KEYS.THEME, (str) => str === 'light' || str === 'dark', initialState.theme)
+  const theme = LS_ACCESS.theme.get()
 
   return {
     type: INIT_PAGE,
     payload: {
-      theme: theme as Theme,
+      theme: theme,
     },
   }
 }
-
 
 /** ******************* Set theme state *********************/
 
@@ -43,7 +37,7 @@ interface SetTheme extends Action<typeof SET_THEME> {
 }
 
 export const setTheme = (theme: Theme): SetTheme => {
-  saveToLS(LS_KEYS.THEME, theme)
+  LS_ACCESS.theme.set(theme)
 
   return {
     type: SET_THEME,
