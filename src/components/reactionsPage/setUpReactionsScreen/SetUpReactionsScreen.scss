@@ -51,6 +51,24 @@
     }
   }
 
+  .set-up-volume {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .set-up-volume-select {
+      margin-right: 1rem;
+    }
+
+    .set-up-volume-input {
+      width: 12ch;
+    }
+
+    .set-up-volume-btn {
+      @include button-color($orange);
+    }
+  }
+
   .set-up-confirm-btn {
     width: $button-middle-width;
     @include button-color($orange);

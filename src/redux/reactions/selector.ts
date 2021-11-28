@@ -1,4 +1,5 @@
 import { RootState } from '../state'
+import { BeepType } from '../../types/beepType'
 
 
 export const selectReactionsIsActual = (state: RootState): boolean => {
@@ -23,4 +24,8 @@ export const selectReactionsMaxInterval = (state: RootState): number => {
 
 export const selectReactionsSignalColor = (state: RootState): string => {
   return state.reactions.signalColor
+}
+
+export const selectReactionsAudio = (state: RootState): BeepType => {
+  return state.reactions.audio
 }

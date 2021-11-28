@@ -1,0 +1,24 @@
+@import 'src/styles/variables';
+@import 'src/styles/theme';
+@import 'src/styles/mixins';
+
+
+.__volume_input-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .__volume_input-btn {
+    @include center-content;
+
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+    margin-left: 0.5rem;
+
+    & > svg {
+      height: 1.5rem;
+      width: 1.5rem;
+    }
+  }
+}

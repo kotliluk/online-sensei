@@ -1,16 +1,20 @@
 @import 'src/styles/variables';
 @import 'src/styles/theme';
 
-.__button {
-  padding: 0.5rem 1rem;
-  margin: 0;
-  border: none;
-  font-family: $fontFamily;
+.__select {
+  padding: 0.5rem;
   font-size: $text-middle;
-  cursor: pointer;
+
+  outline: none;
+  border-width: 1px;
+  border-style: solid;
   border-radius: $border-radius;
 
-  &:disabled {
-    cursor: auto;
+  cursor: pointer;
+
+  @include themed {
+    color: t($primary-text);
+    background-color: t($primary-color);
+    border-color: t($secondary-text);
   }
 }

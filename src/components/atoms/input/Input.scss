@@ -3,6 +3,7 @@
 
 .__input-wrapper {
   position: relative;
+
   .__input {
     padding: 0.5rem;
     font-size: $text-middle;
@@ -14,6 +15,7 @@
 
     &[type="color"] {
       padding: 0;
+      cursor: pointer;
     }
 
     @include themed {

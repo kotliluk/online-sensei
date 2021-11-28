@@ -27,6 +27,13 @@
   }
 }
 
+@mixin center-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 @mixin button-color($color) {
   .theme--light & {
     background: lighten($color, 15%);

@@ -9,6 +9,7 @@ import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { useSelector } from '../../../redux/useSelector'
 import {
+  selectReactionsAudio,
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
   selectReactionsRounds,
@@ -21,6 +22,7 @@ import { Select } from '../../atoms/select/Select'
 import { BEEP_A, BeepType, NO_BEEP } from '../../../types/beepType'
 import { LIMITS, VALIDATOR } from '../../../redux/reactions/utils'
 import { preloadBeep } from '../../../logic/audio/beep'
+import { VolumeInput } from '../../atoms/input/VolumeInput'
 
 
 export const SetUpReactionsScreen = (): JSX.Element => {
@@ -29,6 +31,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const initMinInterval = useSelector(selectReactionsMinInterval)
   const initMaxInterval = useSelector(selectReactionsMaxInterval)
   const initColor = useSelector(selectReactionsSignalColor)
+  const initAudioSound = useSelector(selectReactionsAudio)
 
   const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATOR.rounds)
   const [signal, setSignal, isValidSignal] = useValidatedState(initSignalDuration, VALIDATOR.signalDuration)
@@ -36,7 +39,8 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const [maxInterval, setMaxInterval, isValidMaxInterval] = useValidatedState(initMaxInterval, VALIDATOR.maxInterval)
   const [isValidIntervalRange, setIsValidIntervalRange] = useState(initMinInterval <= initMaxInterval)
   const [color, setColor] = useState(initColor)
-  const [audio, setAudio] = useState<BeepType>(NO_BEEP)
+  const [audioSound, setAudioSound] = useState(initAudioSound)
+  const [audioVolume, setAudioVolume] = useState(1)
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -44,12 +48,6 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const handleMinIntervalChange = useCallback((newValue: number) => {
     setMinInterval(newValue)
     setIsValidIntervalRange(newValue <= maxInterval)
-    const needNum = (n: number): void => {
-      console.log(n)
-      console.log(n % 1)
-      console.log(typeof n)
-    }
-    needNum('1' as unknown as number)
   }, [maxInterval, setMinInterval, setIsValidIntervalRange])
 
   const handleMaxIntervalChange = useCallback((newValue: number) => {
@@ -59,13 +57,14 @@ export const SetUpReactionsScreen = (): JSX.Element => {
 
   const handleAudioChange = useCallback((newValue: string) => {
     preloadBeep(newValue as BeepType)
-    setAudio(newValue as BeepType)
-  }, [setAudio])
+    setAudioSound(newValue as BeepType)
+  }, [setAudioSound])
 
   const handleStart = useCallback(() => {
-    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audio))
+    // TODO - save audio volume in redux and LS
+    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audioSound))
     history.push('/reactions')
-  }, [dispatch, rounds, signal, minInterval, maxInterval, color, audio])
+  }, [dispatch, rounds, signal, minInterval, maxInterval, color, audioSound])
 
   return (
     <main className='set-up-reactions'>
@@ -132,16 +131,26 @@ export const SetUpReactionsScreen = (): JSX.Element => {
         </div>
 
         <div className='set-up-item'>
-          <label>Beep:</label>
-          <Select
-            selected={audio}
-            values={[
-              // TODO - names from language
-              { value: NO_BEEP, text: 'No audio' },
-              { value: BEEP_A, text: 'Beep 1' },
-            ]}
-            onChange={handleAudioChange}
-          />
+          <label>Sound:</label>
+          <div className='set-up-volume'>
+            <Select
+              className='set-up-volume-select'
+              selected={audioSound}
+              values={[
+                // TODO - names from language
+                { value: NO_BEEP, text: 'No audio' },
+                { value: BEEP_A, text: 'Beep 1' },
+              ]}
+              onChange={handleAudioChange}
+            />
+            <VolumeInput
+              inputClassName='set-up-volume-input'
+              buttonClassName='set-up-volume-btn'
+              value={audioVolume}
+              onChange={setAudioVolume}
+              disabled={audioSound === NO_BEEP}
+            />
+          </div>
         </div>
       </div>
 

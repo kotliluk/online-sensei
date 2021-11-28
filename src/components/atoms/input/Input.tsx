@@ -4,7 +4,7 @@ import './Input.scss'
 
 
 interface InputProps {
-  type: 'text' | 'number' | 'color'
+  type: 'text' | 'number' | 'color' | 'range'
   value: string | number
   onChange: (value: string) => void
   className?: string

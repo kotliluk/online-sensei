@@ -1,0 +1,10 @@
+@import 'src/styles/variables';
+@import 'src/styles/theme';
+@import 'src/styles/mixins';
+
+
+.__range_input {
+  &:not(:disabled) {
+    cursor: pointer;
+  }
+}

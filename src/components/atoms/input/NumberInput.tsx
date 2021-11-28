@@ -13,6 +13,7 @@ interface InputProps {
   max?: number
   invalid?: boolean
   errorMessage?: string
+  disabled?: boolean
 }
 
 export const NumberInput = (props: InputProps): JSX.Element => {

@@ -19,7 +19,7 @@ export const Select = (props: SelectProps): JSX.Element => {
       id={id}
       value={selected}
       onChange={(e) => onChange(e.target.value)}
-      className={className}
+      className={`__select ${className}`}
     >
       {values.map(v => <option key={v.value} value={v.value}>{v.text}</option>)}
     </select>
