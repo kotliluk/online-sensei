@@ -20,6 +20,7 @@ import { joinErrorMessages } from '../../../utils/error'
 import { Select } from '../../atoms/select/Select'
 import { BEEP_A, BeepType, NO_BEEP } from '../../../types/beepType'
 import { LIMITS, VALIDATOR } from '../../../redux/reactions/utils'
+import { preloadBeep } from '../../../logic/audio/beep'
 
 
 export const SetUpReactionsScreen = (): JSX.Element => {
@@ -35,7 +36,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const [maxInterval, setMaxInterval, isValidMaxInterval] = useValidatedState(initMaxInterval, VALIDATOR.maxInterval)
   const [isValidIntervalRange, setIsValidIntervalRange] = useState(initMinInterval <= initMaxInterval)
   const [color, setColor] = useState(initColor)
-  const [audio, setAudio] = useState<[BeepType, string]>([NO_BEEP, 'No audio'])
+  const [audio, setAudio] = useState<BeepType>(NO_BEEP)
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -56,10 +57,15 @@ export const SetUpReactionsScreen = (): JSX.Element => {
     setIsValidIntervalRange(newValue >= minInterval)
   }, [minInterval, setMaxInterval, setIsValidIntervalRange])
 
+  const handleAudioChange = useCallback((newValue: string) => {
+    preloadBeep(newValue as BeepType)
+    setAudio(newValue as BeepType)
+  }, [setAudio])
+
   const handleStart = useCallback(() => {
-    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audio[0]))
+    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audio))
     history.push('/reactions')
-  }, [dispatch, rounds, signal, minInterval, maxInterval, color])
+  }, [dispatch, rounds, signal, minInterval, maxInterval, color, audio])
 
   return (
     <main className='set-up-reactions'>
@@ -131,10 +137,10 @@ export const SetUpReactionsScreen = (): JSX.Element => {
             selected={audio}
             values={[
               // TODO - names from language
-              [NO_BEEP, 'No audio'],
-              [BEEP_A, 'Beep 1'],
+              { value: NO_BEEP, text: 'No audio' },
+              { value: BEEP_A, text: 'Beep 1' },
             ]}
-            onChange={([k, v]) => setAudio([k as BeepType, v])}
+            onChange={handleAudioChange}
           />
         </div>
       </div>

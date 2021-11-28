@@ -4,9 +4,9 @@ import './Select.scss'
 
 
 interface SelectProps {
-  selected: [string, string]
-  values: [string, string][]
-  onChange: (value: [string, string]) => void
+  selected: string
+  values: { value: string, text: string }[]
+  onChange: (value: string) => void
   id?: string
   className?: string
 }
@@ -14,19 +14,14 @@ interface SelectProps {
 export const Select = (props: SelectProps): JSX.Element => {
   const { selected, values, onChange, id, className } = props
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = values.find(v => v[0] === e.target.value)
-    value && onChange(value)
-  }, [values, onChange])
-
   return (
     <select
       id={id}
-      value={selected[0]}
-      onChange={handleChange}
+      value={selected}
+      onChange={(e) => onChange(e.target.value)}
       className={className}
     >
-      {values.map(v => <option key={v[0]} value={v[0]}>{v[1]}</option>)}
+      {values.map(v => <option key={v.value} value={v.value}>{v.text}</option>)}
     </select>
   )
 }

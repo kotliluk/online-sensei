@@ -17,7 +17,7 @@ import { getRandomInt } from '../../../utils/random'
 import { PausableTimeout } from '../../../logic/pausableTimeout'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
-import { playBeep, preloadBeep } from '../../../logic/audio/beep'
+import { playBeep } from '../../../logic/audio/beep'
 import { BEEP_A } from '../../../types/beepType'
 
 
@@ -36,7 +36,6 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   const minInterval = useSelector(selectReactionsMinInterval)
   const maxInterval = useSelector(selectReactionsMaxInterval)
   const signalColor = useSelector(selectReactionsSignalColor)
-  // TODO - audio settings
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -66,8 +65,6 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   }, [dispatch])
 
   useEffect(() => {
-    // TODO - move to set-up screen
-    preloadBeep(BEEP_A)
     return () => {
       dispatch(setNotActualReactions())
       timeoutObj.pause()

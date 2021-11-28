@@ -19,6 +19,7 @@ export function reducer (state = initialState, action: Actions): State {
         minInterval: action.payload.minInterval,
         maxInterval: action.payload.maxInterval,
         signalColor: action.payload.signalColor,
+        audio: action.payload.audio,
       }
 
     case SET_NOT_ACTUAL_REACTIONS:
