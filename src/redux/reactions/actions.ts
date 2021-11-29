@@ -24,7 +24,8 @@ interface InitReactions extends Action<typeof INIT_REACTIONS> {
     minInterval: number,
     maxInterval: number,
     signalColor: string,
-    audio: BeepType,
+    audioSound: BeepType,
+    audioVolume: number,
   }
 }
 
@@ -36,7 +37,8 @@ export const initReactions = (): InitReactions => {
   const minInterval = getValidatedNumberFromLS(LS_KEYS.minInterval, VALIDATOR.minInterval, initialState.minInterval)
   const maxInterval = getValidatedNumberFromLS(LS_KEYS.maxInterval, VALIDATOR.maxInterval, initialState.maxInterval)
   const signalColor = getValidatedStringFromLS(LS_KEYS.signalColor, VALIDATOR.signalColor, initialState.signalColor)
-  const audio = getValidatedTypeFromLS(LS_KEYS.audio, VALIDATOR.audio, initialState.audio)
+  const audioSound = getValidatedTypeFromLS(LS_KEYS.audioSound, VALIDATOR.audioSound, initialState.audioSound)
+  const audioVolume = getValidatedNumberFromLS(LS_KEYS.audioVolume, VALIDATOR.audioVolume, initialState.audioVolume)
 
   return {
     type: INIT_REACTIONS,
@@ -47,7 +49,8 @@ export const initReactions = (): InitReactions => {
       minInterval,
       maxInterval,
       signalColor,
-      audio,
+      audioSound,
+      audioVolume,
     },
   }
 }
@@ -63,7 +66,8 @@ interface SetReactions extends Action<typeof SET_REACTIONS> {
     minInterval: number,
     maxInterval: number,
     signalColor: string,
-    audio: BeepType,
+    audioSound: BeepType,
+    audioVolume: number,
   }
 }
 
@@ -73,14 +77,16 @@ export const setReactions = (
   minInterval: number,
   maxInterval: number,
   signalColor: string,
-  audio: BeepType,
+  audioSound: BeepType,
+  audioVolume: number,
 ): SetReactions => {
   saveToLS(LS_KEYS.rounds, rounds)
   saveToLS(LS_KEYS.signalDuration, signalDuration)
   saveToLS(LS_KEYS.minInterval, minInterval)
   saveToLS(LS_KEYS.maxInterval, maxInterval)
   saveToLS(LS_KEYS.signalColor, signalColor)
-  saveToLS(LS_KEYS.audio, audio)
+  saveToLS(LS_KEYS.audioSound, audioSound)
+  saveToLS(LS_KEYS.audioVolume, audioVolume)
 
   return {
     type: SET_REACTIONS,
@@ -90,7 +96,8 @@ export const setReactions = (
       minInterval,
       maxInterval,
       signalColor,
-      audio,
+      audioSound,
+      audioVolume,
     },
   }
 }

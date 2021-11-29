@@ -64,13 +64,21 @@
       width: 12ch;
     }
 
-    .set-up-volume-btn {
+    .set-up-volume-mute {
       @include button-color($orange);
+    }
+
+    .set-up-volume-try {
+      @include button-color($orange);
+      @include center-content;
+      height: 2rem;
+      width: 4rem;
+      margin-left: 0.5rem;
     }
   }
 
   .set-up-confirm-btn {
-    width: $button-middle-width;
     @include button-color($orange);
+    width: $button-middle-width;
   }
 }

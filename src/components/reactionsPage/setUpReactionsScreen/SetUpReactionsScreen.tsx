@@ -9,7 +9,8 @@ import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { useSelector } from '../../../redux/useSelector'
 import {
-  selectReactionsAudio,
+  selectReactionsAudioSound,
+  selectReactionsAudioVolume,
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
   selectReactionsRounds,
@@ -31,7 +32,8 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const initMinInterval = useSelector(selectReactionsMinInterval)
   const initMaxInterval = useSelector(selectReactionsMaxInterval)
   const initColor = useSelector(selectReactionsSignalColor)
-  const initAudioSound = useSelector(selectReactionsAudio)
+  const initAudioSound = useSelector(selectReactionsAudioSound)
+  const initAudioVolume = useSelector(selectReactionsAudioVolume)
 
   const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATOR.rounds)
   const [signal, setSignal, isValidSignal] = useValidatedState(initSignalDuration, VALIDATOR.signalDuration)
@@ -40,7 +42,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const [isValidIntervalRange, setIsValidIntervalRange] = useState(initMinInterval <= initMaxInterval)
   const [color, setColor] = useState(initColor)
   const [audioSound, setAudioSound] = useState(initAudioSound)
-  const [audioVolume, setAudioVolume] = useState(1)
+  const [audioVolume, setAudioVolume] = useState(initAudioVolume)
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -60,11 +62,16 @@ export const SetUpReactionsScreen = (): JSX.Element => {
     setAudioSound(newValue as BeepType)
   }, [setAudioSound])
 
+  // TODO - Fix
+  // const handleTryAudio = useCallback(() => {
+  //   console.log(audioSound, 300, audioVolume)
+  //   playBeep(audioSound, 300, audioVolume)
+  // }, [audioSound, audioVolume])
+
   const handleStart = useCallback(() => {
-    // TODO - save audio volume in redux and LS
-    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audioSound))
+    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audioSound, audioVolume))
     history.push('/reactions')
-  }, [dispatch, rounds, signal, minInterval, maxInterval, color, audioSound])
+  }, [dispatch, rounds, signal, minInterval, maxInterval, color, audioSound, audioVolume])
 
   return (
     <main className='set-up-reactions'>
@@ -145,11 +152,18 @@ export const SetUpReactionsScreen = (): JSX.Element => {
             />
             <VolumeInput
               inputClassName='set-up-volume-input'
-              buttonClassName='set-up-volume-btn'
+              buttonClassName='set-up-volume-mute'
               value={audioVolume}
               onChange={setAudioVolume}
               disabled={audioSound === NO_BEEP}
             />
+            {/* <Button
+              className='set-up-volume-try'
+              onClick={handleTryAudio}
+              disabled={audioSound === NO_BEEP}
+            >
+              Try
+            </Button> */}
           </div>
         </div>
       </div>

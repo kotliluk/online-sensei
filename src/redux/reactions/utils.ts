@@ -18,6 +18,7 @@ export const LIMITS: Limits<State> = {
   signalDuration: { min: 50, max: 10000 },
   minInterval: { min: 100, max: 100000 },
   maxInterval: { min: 100, max: 100000 },
+  audioVolume: { min: 0, max: 1 },
 }
 
 export const VALIDATOR: Validator<State> = {
@@ -27,7 +28,8 @@ export const VALIDATOR: Validator<State> = {
   minInterval: isBetweenValidator(LIMITS.minInterval),
   maxInterval: isBetweenValidator(LIMITS.maxInterval),
   signalColor: isHexColor,
-  audio: isBeepType,
+  audioSound: isBeepType,
+  audioVolume: isBetweenValidator(LIMITS.audioVolume),
 }
 
 export const LS_KEYS: LSMapper<State> = {
@@ -36,7 +38,8 @@ export const LS_KEYS: LSMapper<State> = {
   minInterval: 'REACTIONS__MIN_INTERVAL',
   maxInterval: 'REACTIONS__MAX_INTERVAL',
   signalColor: 'REACTIONS__SIGNAL_COLOR',
-  audio: 'REACTIONS__AUDIO',
+  audioSound: 'REACTIONS__AUDIO_SOUND',
+  audioVolume: 'REACTIONS__AUDIO_VOLUME',
 }
 
 export const LS_ACCESS: LSAccessWrapper<State> = {
@@ -64,8 +67,12 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
     get: () => getValidatedStringFromLS(LS_KEYS.signalColor, VALIDATOR.signalColor, initialState.signalColor),
     set: (value) => saveToLS(LS_KEYS.signalColor, value),
   },
-  audio: {
-    get: () => getValidatedTypeFromLS(LS_KEYS.audio, VALIDATOR.audio, initialState.audio),
-    set: (value) => saveToLS(LS_KEYS.audio, value),
+  audioSound: {
+    get: () => getValidatedTypeFromLS(LS_KEYS.audioSound, VALIDATOR.audioSound, initialState.audioSound),
+    set: (value) => saveToLS(LS_KEYS.audioSound, value),
+  },
+  audioVolume: {
+    get: () => getValidatedNumberFromLS(LS_KEYS.audioVolume, VALIDATOR.audioVolume, initialState.audioVolume),
+    set: (value) => saveToLS(LS_KEYS.audioVolume, value),
   },
 }

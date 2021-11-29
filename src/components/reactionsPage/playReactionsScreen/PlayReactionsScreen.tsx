@@ -4,7 +4,8 @@ import { useHistory } from 'react-router-dom'
 import './PlayReactionsScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import {
-  selectReactionsAudio,
+  selectReactionsAudioSound,
+  selectReactionsAudioVolume,
   selectReactionsIsActual,
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
@@ -36,8 +37,8 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   const minInterval = useSelector(selectReactionsMinInterval)
   const maxInterval = useSelector(selectReactionsMaxInterval)
   const signalColor = useSelector(selectReactionsSignalColor)
-  const audioSound = useSelector(selectReactionsAudio)
-  // TODO - use audio volume
+  const audioSound = useSelector(selectReactionsAudioSound)
+  const audioVolume = useSelector(selectReactionsAudioVolume)
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -85,7 +86,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
       }
     } else if (phase === 'signal') {
       // SIGNAL phase has started
-      playBeep(audioSound, signalDuration)
+      playBeep(audioSound, signalDuration, audioVolume)
       timeoutObj.restart(() => {
         setRound(prev => prev + 1)
         setPhase('waiting')

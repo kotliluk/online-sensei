@@ -26,6 +26,10 @@ export const selectReactionsSignalColor = (state: RootState): string => {
   return state.reactions.signalColor
 }
 
-export const selectReactionsAudio = (state: RootState): BeepType => {
-  return state.reactions.audio
+export const selectReactionsAudioSound = (state: RootState): BeepType => {
+  return state.reactions.audioSound
+}
+
+export const selectReactionsAudioVolume = (state: RootState): number => {
+  return state.reactions.audioVolume
 }
