@@ -1,8 +1,7 @@
 import { LSAccessWrapper, LSMapper } from '../../logic/localStorage/types'
 import { emptyFunc } from '../../utils/function'
 import {
-  getValidatedNumberFromLS,
-  getValidatedStringFromLS,
+  getValidatedNumberFromLS, getValidatedObjectFromLS,
   getValidatedTypeFromLS,
   saveToLS,
 } from '../../logic/localStorage/access'
@@ -18,6 +17,7 @@ export const LIMITS: Limits<State> = {
   signalDuration: { min: 50, max: 10000 },
   minInterval: { min: 100, max: 100000 },
   maxInterval: { min: 100, max: 100000 },
+  signalCount: { min: 1, max: 4 },
   audioVolume: { min: 0, max: 1 },
 }
 
@@ -27,7 +27,12 @@ export const VALIDATOR: Validator<State> = {
   signalDuration: isBetweenValidator(LIMITS.signalDuration),
   minInterval: isBetweenValidator(LIMITS.minInterval),
   maxInterval: isBetweenValidator(LIMITS.maxInterval),
-  signalColor: isHexColor,
+  signalCount: isBetweenValidator(LIMITS.signalCount),
+  signalColors: (arr) => {
+    return Array.isArray(arr)
+      && arr.length === LIMITS.signalCount.max
+      && arr.reduce<boolean>((agg, cur) => agg && isHexColor(cur), true)
+  },
   audioSound: isBeepType,
   audioVolume: isBetweenValidator(LIMITS.audioVolume),
 }
@@ -37,7 +42,8 @@ export const LS_KEYS: LSMapper<State> = {
   signalDuration: 'REACTIONS__SIGNAL_DURATION',
   minInterval: 'REACTIONS__MIN_INTERVAL',
   maxInterval: 'REACTIONS__MAX_INTERVAL',
-  signalColor: 'REACTIONS__SIGNAL_COLOR',
+  signalCount: 'REACTIONS__SIGNAL_COUNT',
+  signalColors: 'REACTIONS__SIGNAL_COLORS',
   audioSound: 'REACTIONS__AUDIO_SOUND',
   audioVolume: 'REACTIONS__AUDIO_VOLUME',
 }
@@ -63,9 +69,13 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
     get: () => getValidatedNumberFromLS(LS_KEYS.maxInterval, VALIDATOR.maxInterval, initialState.maxInterval),
     set: (value) => saveToLS(LS_KEYS.maxInterval, value),
   },
-  signalColor: {
-    get: () => getValidatedStringFromLS(LS_KEYS.signalColor, VALIDATOR.signalColor, initialState.signalColor),
-    set: (value) => saveToLS(LS_KEYS.signalColor, value),
+  signalCount: {
+    get: () => getValidatedNumberFromLS(LS_KEYS.signalCount, VALIDATOR.signalCount, initialState.signalCount),
+    set: (value) => saveToLS(LS_KEYS.signalCount, value),
+  },
+  signalColors: {
+    get: () => getValidatedObjectFromLS(LS_KEYS.signalColors, VALIDATOR.signalColors, initialState.signalColors),
+    set: (value) => saveToLS(LS_KEYS.signalColors, JSON.stringify(value)),
   },
   audioSound: {
     get: () => getValidatedTypeFromLS(LS_KEYS.audioSound, VALIDATOR.audioSound, initialState.audioSound),

@@ -10,7 +10,7 @@ import {
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
   selectReactionsRounds,
-  selectReactionsSignalColor,
+  selectReactionsSignalColors, selectReactionsSignalCount,
   selectReactionsSignalDuration,
 } from '../../../redux/reactions/selector'
 import { useDispatch } from '../../../redux/useDispatch'
@@ -24,24 +24,25 @@ import { selectTranslation } from '../../../redux/page/selector'
 
 
 type PlayPhase = 'init' | 'signal' | 'waiting' | 'finished'
-type TimeoutState = 'running' | 'paused'
 
 export const PlayReactionsScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
-
-  const [round, setRound] = useState(0)
-  const [phase, setPhase] = useState<PlayPhase>('init')
-  const [timeoutState, setTimeoutState] = useState<TimeoutState>('running')
-  const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
 
   const isActual = useSelector(selectReactionsIsActual)
   const rounds = useSelector(selectReactionsRounds)
   const signalDuration = useSelector(selectReactionsSignalDuration)
   const minInterval = useSelector(selectReactionsMinInterval)
   const maxInterval = useSelector(selectReactionsMaxInterval)
-  const signalColor = useSelector(selectReactionsSignalColor)
+  const signalCount = useSelector(selectReactionsSignalCount)
+  const signalColors = useSelector(selectReactionsSignalColors)
   const audioSound = useSelector(selectReactionsAudioSound)
   const audioVolume = useSelector(selectReactionsAudioVolume)
+
+  const [round, setRound] = useState(0)
+  const [phase, setPhase] = useState<PlayPhase>('init')
+  const [isPaused, setIsPaused] = useState(false)
+  const [curSignal, setCurSignal] = useState(0)
+  const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -51,20 +52,20 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
       return
     }
 
-    if (timeoutState === 'running') {
-      setTimeoutState('paused')
-      timeoutObj.pause()
-    } else {
-      setTimeoutState('running')
+    if (isPaused) {
+      setIsPaused(false)
       timeoutObj.resume()
+    } else {
+      setIsPaused(true)
+      timeoutObj.pause()
     }
-  }, [phase, timeoutState, setTimeoutState, timeoutObj])
+  }, [phase, isPaused, setIsPaused, timeoutObj])
 
   const handleTimeoutReset = useCallback(() => {
     setPhase('init')
-    setTimeoutState('running')
+    setIsPaused(false)
     setRound(0)
-  }, [timeoutState, setTimeoutState, setRound])
+  }, [isPaused, setIsPaused, setRound])
 
   const handleGoBack = useCallback(() => {
     dispatch(setNotActualReactions())
@@ -84,6 +85,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
         setPhase('finished')
       } else {
         timeoutObj.restart(() => {
+          setCurSignal(getRandomInt(0, signalCount))
           setPhase('signal')
         }, getRandomInt(minInterval, maxInterval))
       }
@@ -115,17 +117,26 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
         {round === rounds && `${ct.finished}!`}
       </p>
 
-      <div className='signal-box' style={phase === 'signal' ? { backgroundColor: signalColor } : {}}>
-        {timeoutState === 'paused' && ct.paused}
+      {/* TODO - 2 boxy - na mobilu pod sebe, na PC dat mezi ne mezeru */}
+      <div className='signal-boxes'>
+        {signalColors.slice(0, signalCount).map((color, i) => (
+          <div
+            key={i}
+            className='signal-box'
+            style={(phase === 'signal' && curSignal === i) ? { backgroundColor: color } : {}}
+          >
+            {isPaused && ct.paused}
+          </div>
+        ))}
       </div>
 
       <div className='buttons'>
         <Button
-          className={timeoutState === 'running' ? 'orange' : 'green'}
+          className={isPaused ? 'green' : 'orange'}
           onClick={handleTimeoutStateChange}
           disabled={phase === 'finished'}
         >
-          {timeoutState === 'running' ? ct.pause : ct.resume}
+          {isPaused ? ct.resume : ct.pause}
         </Button>
         <Button className='orange' onClick={handleTimeoutReset}>{ct.reset}</Button>
         <Button className='orange' onClick={handleGoBack}>{ct.back}</Button>

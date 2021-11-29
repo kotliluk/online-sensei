@@ -14,7 +14,7 @@ import {
   selectReactionsMaxInterval,
   selectReactionsMinInterval,
   selectReactionsRounds,
-  selectReactionsSignalColor,
+  selectReactionsSignalColors, selectReactionsSignalCount,
   selectReactionsSignalDuration,
 } from '../../../redux/reactions/selector'
 import useValidatedState from '../../../logic/hooks/useValidatedState'
@@ -26,6 +26,7 @@ import { preloadBeep } from '../../../logic/audio/beep'
 import { VolumeInput } from '../../atoms/input/VolumeInput'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
+import { CounterInput } from '../../atoms/input/CounterInput'
 
 
 export const SetUpReactionsScreen = (): JSX.Element => {
@@ -35,7 +36,8 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const initSignalDuration = useSelector(selectReactionsSignalDuration)
   const initMinInterval = useSelector(selectReactionsMinInterval)
   const initMaxInterval = useSelector(selectReactionsMaxInterval)
-  const initColor = useSelector(selectReactionsSignalColor)
+  const initSignalCount = useSelector(selectReactionsSignalCount)
+  const initSignalColors = useSelector(selectReactionsSignalColors)
   const initAudioSound = useSelector(selectReactionsAudioSound)
   const initAudioVolume = useSelector(selectReactionsAudioVolume)
 
@@ -44,7 +46,8 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   const [minInterval, setMinInterval, isValidMinInterval] = useValidatedState(initMinInterval, VALIDATOR.minInterval)
   const [maxInterval, setMaxInterval, isValidMaxInterval] = useValidatedState(initMaxInterval, VALIDATOR.maxInterval)
   const [isValidIntervalRange, setIsValidIntervalRange] = useState(initMinInterval <= initMaxInterval)
-  const [color, setColor] = useState(initColor)
+  const [signalCount, setSignalCount] = useState(initSignalCount)
+  const [signalColors, setSignalColors] = useState(initSignalColors)
   const [audioSound, setAudioSound] = useState(initAudioSound)
   const [audioVolume, setAudioVolume] = useState(initAudioVolume)
 
@@ -61,6 +64,14 @@ export const SetUpReactionsScreen = (): JSX.Element => {
     setIsValidIntervalRange(newValue >= minInterval)
   }, [minInterval, setMaxInterval, setIsValidIntervalRange])
 
+  const handleSignalColorChange = useCallback((newValue: string, index: number) => {
+    setSignalColors(prevColors => {
+      const newColors = [...prevColors]
+      newColors[index] = newValue
+      return newColors
+    })
+  }, [setSignalColors])
+
   const handleAudioChange = useCallback((newValue: string) => {
     preloadBeep(newValue as BeepType)
     setAudioSound(newValue as BeepType)
@@ -73,9 +84,9 @@ export const SetUpReactionsScreen = (): JSX.Element => {
   // }, [audioSound, audioVolume])
 
   const handleStart = useCallback(() => {
-    dispatch(setReactions(rounds, signal, minInterval, maxInterval, color, audioSound, audioVolume))
+    dispatch(setReactions(rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume))
     history.push('/reactions')
-  }, [dispatch, rounds, signal, minInterval, maxInterval, color, audioSound, audioVolume])
+  }, [dispatch, rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
 
   const { reactions: { setUpScreen: t } } = translation
 
@@ -87,6 +98,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
         <div className='set-up-item'>
           <label>{t.rounds.label}:</label>
           <NumberInput
+            className='set-up-input'
             value={rounds}
             onChange={setRounds}
             invalid={!isValidRounds}
@@ -97,6 +109,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
         <div className='set-up-item'>
           <label>{t.signalDuration.label}:</label>
           <NumberInput
+            className='set-up-input'
             value={signal}
             onChange={setSignal}
             invalid={!isValidSignal}
@@ -107,6 +120,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
         <div className='set-up-item'>
           <label>{t.minInterval.label}:</label>
           <NumberInput
+            className='set-up-input'
             value={minInterval}
             onChange={handleMinIntervalChange}
             invalid={!isValidMinInterval || !isValidIntervalRange}
@@ -120,6 +134,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
         <div className='set-up-item'>
           <label>{t.maxInterval.label}:</label>
           <NumberInput
+            className='set-up-input'
             value={maxInterval}
             onChange={handleMaxIntervalChange}
             invalid={!isValidMaxInterval || !isValidIntervalRange}
@@ -131,9 +146,28 @@ export const SetUpReactionsScreen = (): JSX.Element => {
         </div>
 
         <div className='set-up-item'>
-          <label>{t.signalColor.label}:</label>
-          <Input type='color' value={color} onChange={setColor} />
+          <label>{t.signalCount.label}:</label>
+          <CounterInput
+            minusBtnClassName='set-up-signal-count-cnt-btn'
+            plusBtnClassName='set-up-signal-count-cnt-btn'
+            value={signalCount}
+            onChange={setSignalCount}
+            min={LIMITS.signalCount.min}
+            max={LIMITS.signalCount.max}
+          />
         </div>
+
+        {signalColors.slice(0, signalCount).map((color, i) => (
+          <div key={i} className='set-up-item'>
+            <label>{`${t.signalColor.label} ${i + 1}:`}</label>
+            <Input
+              type='color'
+              className='set-up-input'
+              value={color}
+              onChange={color => handleSignalColorChange(color, i)}
+            />
+          </div>
+        ))}
 
         <div className='set-up-item'>
           <label>{t.sound.label}:</label>

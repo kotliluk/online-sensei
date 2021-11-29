@@ -10,32 +10,53 @@
     font-weight: bold;
   }
 
-  .signal-box {
-    width: $screen-content-width-small-device;
-    height: $screen-content-width-small-device;
-
-    @include medium-device {
-      width: $screen-content-width-medium-device;
-      height: $screen-content-width-medium-device;
-    }
-
-    @include large-device {
-      width: $screen-content-width-large-device;
-      height: $screen-content-width-large-device;
-    }
-
+  .signal-boxes {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: $text-huge;
-    font-weight: bold;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
 
-    margin-bottom: 2rem;
+    .signal-box {
+      @include center-content();
+      font-size: $text-huge;
+      font-weight: bold;
 
-    border: 2px solid $black;
-    border-radius: 50%;
-    background-color: transparent;
+      margin-bottom: 2rem;
+
+      border: 2px solid $black;
+      border-radius: 50%;
+      background-color: transparent;
+
+      &:only-child {
+        width: $screen-content-width-small-device;
+        height: $screen-content-width-small-device;
+
+        @include medium-device {
+          width: $screen-content-width-medium-device;
+          height: $screen-content-width-medium-device;
+        }
+
+        @include large-device {
+          width: $screen-content-width-large-device;
+          height: $screen-content-width-large-device;
+        }
+      }
+
+      &:not(:only-child) {
+        width: calc(#{$screen-content-width-small-device} * 0.45);
+        height: calc(#{$screen-content-width-small-device} * 0.45);
+
+        @include medium-device {
+          width: calc(#{$screen-content-width-medium-device} * 0.45);
+          height: calc(#{$screen-content-width-medium-device} * 0.45);
+        }
+
+        @include large-device {
+          width: calc(#{$screen-content-width-large-device} * 0.45);
+          height: calc(#{$screen-content-width-large-device} * 0.45);
+        }
+      }
+    }
   }
 
   .buttons {

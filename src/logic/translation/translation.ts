@@ -58,6 +58,9 @@ export interface Translation {
         error: string,
         rangeError: string,
       },
+      signalCount: {
+        label: string,
+      },
       signalColor: {
         label: string,
       },

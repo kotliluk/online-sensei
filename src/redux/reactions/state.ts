@@ -7,7 +7,8 @@ export interface State {
   signalDuration: number
   minInterval: number
   maxInterval: number
-  signalColor: string
+  signalCount: number
+  signalColors: string[]
   audioSound: BeepType
   audioVolume: number
 }
@@ -18,7 +19,8 @@ export const initialState: State = {
   signalDuration: 200,
   minInterval: 2000,
   maxInterval: 4000,
-  signalColor: '#ff0000',
+  signalCount: 2,
+  signalColors: ['#ff0000', '#0000ff', '#35d600', '#ffc800'],
   audioSound: NO_BEEP,
   audioVolume: 1,
 }

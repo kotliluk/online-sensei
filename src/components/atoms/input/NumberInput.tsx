@@ -1,6 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback } from 'react'
-import './Input.scss'
 import { Input } from './Input'
 import { parseIntOrDefault } from '../../../utils/number'
 

@@ -46,9 +46,13 @@
       }
     }
 
-    input {
+    .set-up-input {
       width: 16ch;
     }
+  }
+
+  .set-up-signal-count-cnt-btn {
+    @include button-color($orange);
   }
 
   .set-up-volume {

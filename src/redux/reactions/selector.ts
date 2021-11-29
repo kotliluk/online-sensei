@@ -22,8 +22,12 @@ export const selectReactionsMaxInterval = (state: RootState): number => {
   return state.reactions.maxInterval
 }
 
-export const selectReactionsSignalColor = (state: RootState): string => {
-  return state.reactions.signalColor
+export const selectReactionsSignalCount = (state: RootState): number => {
+  return state.reactions.signalCount
+}
+
+export const selectReactionsSignalColors = (state: RootState): string[] => {
+  return state.reactions.signalColors
 }
 
 export const selectReactionsAudioSound = (state: RootState): BeepType => {

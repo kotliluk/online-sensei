@@ -1,13 +1,8 @@
 import { Action } from 'redux'
-import {
-  getValidatedNumberFromLS,
-  getValidatedStringFromLS,
-  getValidatedTypeFromLS,
-  saveToLS,
-} from '../../logic/localStorage/access'
+import { getValidatedNumberFromLS } from '../../logic/localStorage/access'
 import { initialState } from './state'
 import { BeepType } from '../../types/beepType'
-import { LS_KEYS, VALIDATOR } from './utils'
+import { LS_ACCESS, LS_KEYS, VALIDATOR } from './utils'
 
 
 export type Actions = InitReactions | SetReactions | SetNotActualReactions
@@ -23,7 +18,8 @@ interface InitReactions extends Action<typeof INIT_REACTIONS> {
     signalDuration: number,
     minInterval: number,
     maxInterval: number,
-    signalColor: string,
+    signalCount: number,
+    signalColors: string[],
     audioSound: BeepType,
     audioVolume: number,
   }
@@ -34,11 +30,12 @@ export const initReactions = (): InitReactions => {
   const signalDuration = getValidatedNumberFromLS(
     LS_KEYS.signalDuration, VALIDATOR.signalDuration, initialState.signalDuration,
   )
-  const minInterval = getValidatedNumberFromLS(LS_KEYS.minInterval, VALIDATOR.minInterval, initialState.minInterval)
-  const maxInterval = getValidatedNumberFromLS(LS_KEYS.maxInterval, VALIDATOR.maxInterval, initialState.maxInterval)
-  const signalColor = getValidatedStringFromLS(LS_KEYS.signalColor, VALIDATOR.signalColor, initialState.signalColor)
-  const audioSound = getValidatedTypeFromLS(LS_KEYS.audioSound, VALIDATOR.audioSound, initialState.audioSound)
-  const audioVolume = getValidatedNumberFromLS(LS_KEYS.audioVolume, VALIDATOR.audioVolume, initialState.audioVolume)
+  const minInterval = LS_ACCESS.minInterval.get()
+  const maxInterval = LS_ACCESS.maxInterval.get()
+  const signalCount = LS_ACCESS.signalCount.get()
+  const signalColors = LS_ACCESS.signalColors.get()
+  const audioSound = LS_ACCESS.audioSound.get()
+  const audioVolume = LS_ACCESS.audioVolume.get()
 
   return {
     type: INIT_REACTIONS,
@@ -48,7 +45,8 @@ export const initReactions = (): InitReactions => {
       signalDuration,
       minInterval,
       maxInterval,
-      signalColor,
+      signalCount,
+      signalColors,
       audioSound,
       audioVolume,
     },
@@ -65,7 +63,8 @@ interface SetReactions extends Action<typeof SET_REACTIONS> {
     signalDuration: number,
     minInterval: number,
     maxInterval: number,
-    signalColor: string,
+    signalCount: number,
+    signalColors: string[],
     audioSound: BeepType,
     audioVolume: number,
   }
@@ -76,17 +75,19 @@ export const setReactions = (
   signalDuration: number,
   minInterval: number,
   maxInterval: number,
-  signalColor: string,
+  signalCount: number,
+  signalColors: string[],
   audioSound: BeepType,
   audioVolume: number,
 ): SetReactions => {
-  saveToLS(LS_KEYS.rounds, rounds)
-  saveToLS(LS_KEYS.signalDuration, signalDuration)
-  saveToLS(LS_KEYS.minInterval, minInterval)
-  saveToLS(LS_KEYS.maxInterval, maxInterval)
-  saveToLS(LS_KEYS.signalColor, signalColor)
-  saveToLS(LS_KEYS.audioSound, audioSound)
-  saveToLS(LS_KEYS.audioVolume, audioVolume)
+  LS_ACCESS.rounds.set(rounds)
+  LS_ACCESS.signalDuration.set(signalDuration)
+  LS_ACCESS.minInterval.set(minInterval)
+  LS_ACCESS.maxInterval.set(maxInterval)
+  LS_ACCESS.signalCount.set(signalCount)
+  LS_ACCESS.signalColors.set(signalColors)
+  LS_ACCESS.audioSound.set(audioSound)
+  LS_ACCESS.audioVolume.set(audioVolume)
 
   return {
     type: SET_REACTIONS,
@@ -95,7 +96,8 @@ export const setReactions = (
       signalDuration,
       minInterval,
       maxInterval,
-      signalColor,
+      signalCount,
+      signalColors,
       audioSound,
       audioVolume,
     },

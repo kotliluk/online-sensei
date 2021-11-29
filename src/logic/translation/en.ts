@@ -55,6 +55,9 @@ export const EN: Translation = {
         error: 'Maximal interval must be set between __{1}__ and __{2}__.',
         rangeError: 'Maximal interval must be greater or equal to minimal.',
       },
+      signalCount: {
+        label: 'Signal boxes count',
+      },
       signalColor: {
         label: 'Signal color',
       },

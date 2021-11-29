@@ -72,6 +72,33 @@ export const getValidatedTypeFromLS = <T extends string>(
 }
 
 /**
+ * Returns saved item typed as given object type if the key exists in local storage and the item is valid.
+ * If not, saves the given default value in local storage and returns it.
+ */
+export const getValidatedObjectFromLS = <T extends object>(
+  key: string | undefined,
+  validator: Predicate<T>,
+  defaultValue: T,
+): T => {
+  if (key === undefined) {
+    return defaultValue
+  }
+
+  try {
+    const item = localStorage.getItem(key)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const obj = JSON.parse(item ?? '{}')
+
+    if (item !== null && validator(obj)) {
+      return obj as T
+    }
+  } catch (_) {}
+
+  localStorage.setItem(key, JSON.stringify(defaultValue))
+  return defaultValue
+}
+
+/**
  * Saves given key-value pair into local storage if the key is defined.
  */
 export const saveToLS = (key: string | undefined, value: string | number): void => {

@@ -22,7 +22,7 @@ export const CS: Translation = {
     appIntroduction: 'Trénuj sám a nebo s přáteli s OnlineSensei!',
     availableFeatures: 'Dostupné funkce',
     reactions: {
-      annotation: 'Trénuj své reakce s přizpůsobitelným časovačem s náhdnými signály',
+      annotation: 'Trénuj své reakce s přizpůsobitelným časovačem s náhodnými signály',
       link: 'Reakce',
     },
     kumiteTimer: {
@@ -54,6 +54,9 @@ export const CS: Translation = {
         // 2 params
         error: 'Maximální délku intervalu musíš zvolit mezi __{1}__ a __{2}__ ms.',
         rangeError: 'Maximální interval nesmí být menší než minimální.',
+      },
+      signalCount: {
+        label: 'Počet terčů',
       },
       signalColor: {
         label: 'Barva signálu',

@@ -1,0 +1,25 @@
+@import 'src/styles/variables';
+@import 'src/styles/theme';
+@import 'src/styles/mixins';
+
+
+.__counter_input-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .__counter_input {
+    width: 2rem;
+    height: 2rem;
+    margin: 0 0.5rem;
+    cursor: default;
+  }
+
+  .__counter_input-btn {
+    padding: 0;
+    @include center-content();
+    width: 2rem;
+    height: 2rem;
+    font-weight: bold;
+  }
+}
