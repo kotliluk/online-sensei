@@ -20,7 +20,7 @@ import {
 import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { joinErrorMessages } from '../../../utils/error'
 import { Select } from '../../atoms/select/Select'
-import { BEEP_A, BeepType, NO_BEEP } from '../../../types/beepType'
+import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
 import { LIMITS, VALIDATOR } from '../../../redux/reactions/utils'
 import { preloadBeep } from '../../../logic/audio/beep'
 import { VolumeInput } from '../../atoms/input/VolumeInput'
@@ -142,9 +142,8 @@ export const SetUpReactionsScreen = (): JSX.Element => {
               className='set-up-volume-select'
               selected={audioSound}
               values={[
-                // TODO - names from language
                 { value: NO_BEEP, text: t.sound.noAudio },
-                { value: BEEP_A, text: 'Beep 1' },
+                { value: BEEP_A, text: getBeepName(BEEP_A) },
               ]}
               onChange={handleAudioChange}
             />

@@ -22,3 +22,12 @@ export const getPreferredDuration = (beepType: BeepType, preferred: number): num
   const durations = BEEP_DURATIONS[beepType]
   return durations.reduce((prev, curr) => curr < preferred ? curr : prev, durations[0])
 }
+
+export const getBeepName = (beepType: BeepType): string => {
+  switch (beepType) {
+    case 'NO_BEEP':
+      return 'No beep'
+    case 'BEEP_A':
+      return 'Beep 1'
+  }
+}
