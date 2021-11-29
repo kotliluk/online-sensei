@@ -6,7 +6,6 @@ import { PlayReactionsScreen } from '../../components/reactionsPage/playReaction
 
 
 export const ReactionsPage = (): JSX.Element => {
-
   return (
     <Switch>
       <Route path='/reactions/set-up' exact>

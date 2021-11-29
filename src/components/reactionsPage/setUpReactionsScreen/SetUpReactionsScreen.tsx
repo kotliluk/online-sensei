@@ -17,16 +17,20 @@ import {
   selectReactionsSignalColor,
   selectReactionsSignalDuration,
 } from '../../../redux/reactions/selector'
-import useValidatedState from '../../../hooks/useValidatedState'
+import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { joinErrorMessages } from '../../../utils/error'
 import { Select } from '../../atoms/select/Select'
 import { BEEP_A, BeepType, NO_BEEP } from '../../../types/beepType'
 import { LIMITS, VALIDATOR } from '../../../redux/reactions/utils'
 import { preloadBeep } from '../../../logic/audio/beep'
 import { VolumeInput } from '../../atoms/input/VolumeInput'
+import { selectTranslation } from '../../../redux/page/selector'
+import { insertWords } from '../../../logic/translation'
 
 
 export const SetUpReactionsScreen = (): JSX.Element => {
+  const translation = useSelector(selectTranslation)
+
   const initRounds = useSelector(selectReactionsRounds)
   const initSignalDuration = useSelector(selectReactionsSignalDuration)
   const initMinInterval = useSelector(selectReactionsMinInterval)
@@ -73,79 +77,73 @@ export const SetUpReactionsScreen = (): JSX.Element => {
     history.push('/reactions')
   }, [dispatch, rounds, signal, minInterval, maxInterval, color, audioSound, audioVolume])
 
+  const { reactions: { setUpScreen: t } } = translation
+
   return (
     <main className='set-up-reactions'>
-      <h1>Reactions</h1>
+      <h1>{t.heading}</h1>
 
       <div className='set-up-items'>
         <div className='set-up-item'>
-          <label>Rounds:</label>
+          <label>{t.rounds.label}:</label>
           <NumberInput
             value={rounds}
             onChange={setRounds}
             invalid={!isValidRounds}
-            errorMessage={`Rounds must be set to between ${LIMITS.rounds.min} and ${LIMITS.rounds.max}.`}
+            errorMessage={insertWords(t.rounds.error, LIMITS.rounds.min, LIMITS.rounds.max)}
           />
         </div>
 
         <div className='set-up-item'>
-          <label>Signal duration (ms):</label>
+          <label>{t.signalDuration.label}:</label>
           <NumberInput
             value={signal}
             onChange={setSignal}
             invalid={!isValidSignal}
-            errorMessage={
-              `Signal duration must be set between ${LIMITS.signalDuration.min} and ${LIMITS.signalDuration.max} ms.`
-            }
+            errorMessage={insertWords(t.signalDuration.error, LIMITS.signalDuration.min, LIMITS.signalDuration.max)}
           />
         </div>
 
         <div className='set-up-item'>
-          <label>Minimal interval (ms):</label>
+          <label>{t.minInterval.label}:</label>
           <NumberInput
             value={minInterval}
             onChange={handleMinIntervalChange}
             invalid={!isValidMinInterval || !isValidIntervalRange}
             errorMessage={joinErrorMessages([
-              [
-                `Minimal interval must be set between ${LIMITS.minInterval.min} and ${LIMITS.minInterval.max} ms.`,
-                isValidMinInterval,
-              ],
-              ['Minimal interval must less or equal to maximal.', isValidIntervalRange],
+              [insertWords(t.minInterval.error, LIMITS.minInterval.min, LIMITS.minInterval.max), isValidMinInterval],
+              [t.minInterval.rangeError, isValidIntervalRange],
             ])}
           />
         </div>
 
         <div className='set-up-item'>
-          <label>Maximal interval (ms):</label>
+          <label>{t.maxInterval.label}:</label>
           <NumberInput
             value={maxInterval}
             onChange={handleMaxIntervalChange}
             invalid={!isValidMaxInterval || !isValidIntervalRange}
             errorMessage={joinErrorMessages([
-              [
-                `Maximal interval must be set between ${LIMITS.maxInterval.min} and ${LIMITS.maxInterval.max} ms.`,
-                isValidMaxInterval,
-              ],
-              ['Maximal interval must greater or equal to minimal.', isValidIntervalRange],
+              [insertWords(t.maxInterval.error, LIMITS.maxInterval.min, LIMITS.maxInterval.max), isValidMinInterval],
+              [t.maxInterval.rangeError, isValidIntervalRange],
             ])}
           />
         </div>
 
         <div className='set-up-item'>
-          <label>Signal color:</label>
+          <label>{t.signalColor.label}:</label>
           <Input type='color' value={color} onChange={setColor} />
         </div>
 
         <div className='set-up-item'>
-          <label>Sound:</label>
+          <label>{t.sound.label}:</label>
           <div className='set-up-volume'>
             <Select
               className='set-up-volume-select'
               selected={audioSound}
               values={[
                 // TODO - names from language
-                { value: NO_BEEP, text: 'No audio' },
+                { value: NO_BEEP, text: t.sound.noAudio },
                 { value: BEEP_A, text: 'Beep 1' },
               ]}
               onChange={handleAudioChange}
@@ -176,7 +174,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
           || !isValidMaxInterval || !isValidIntervalRange
         }
       >
-        Start
+        {translation.common.start}
       </Button>
     </main>
   )

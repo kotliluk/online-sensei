@@ -16,9 +16,21 @@
   }
 
   .home-link {
+    flex-grow: 1;
+
     font-size: $text-large;
     font-weight: bold;
     text-decoration: none;
     color: inherit;
+  }
+
+  [class$="settings"]:not(:first-of-type) {
+    margin-left: 2rem;
+  }
+
+  .lang-settings {
+    label {
+      margin-right: 0.5rem;
+    }
   }
 }

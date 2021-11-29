@@ -20,12 +20,15 @@ import { PausableTimeout } from '../../../logic/pausableTimeout'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { playBeep } from '../../../logic/audio/beep'
+import { selectTranslation } from '../../../redux/page/selector'
 
 
 type PlayPhase = 'init' | 'signal' | 'waiting' | 'finished'
 type TimeoutState = 'running' | 'paused'
 
 export const PlayReactionsScreen = (): JSX.Element | null => {
+  const translation = useSelector(selectTranslation)
+
   const [round, setRound] = useState(0)
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [timeoutState, setTimeoutState] = useState<TimeoutState>('running')
@@ -102,16 +105,18 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
     return null
   }
 
+  const { reactions: { playScreen: t }, common: ct } = translation
+
   return (
     <main className='play-reactions'>
-      <h1>Reactions</h1>
+      <h1>{t.heading}</h1>
       <p>
-        {round < rounds && `Round: ${round + 1}/${rounds}`}
-        {round === rounds && 'Finished!'}
+        {round < rounds && `${t.round}: ${round + 1}/${rounds}`}
+        {round === rounds && `${ct.finished}!`}
       </p>
 
       <div className='signal-box' style={phase === 'signal' ? { backgroundColor: signalColor } : {}}>
-        {timeoutState === 'paused' && 'PAUSED'}
+        {timeoutState === 'paused' && ct.paused}
       </div>
 
       <div className='buttons'>
@@ -120,10 +125,10 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
           onClick={handleTimeoutStateChange}
           disabled={phase === 'finished'}
         >
-          {timeoutState === 'running' ? 'Pause' : 'Resume'}
+          {timeoutState === 'running' ? ct.pause : ct.resume}
         </Button>
-        <Button className='orange' onClick={handleTimeoutReset}>Reset</Button>
-        <Button className='orange' onClick={handleGoBack}>Back</Button>
+        <Button className='orange' onClick={handleTimeoutReset}>{ct.reset}</Button>
+        <Button className='orange' onClick={handleGoBack}>{ct.back}</Button>
       </div>
     </main>
   )
