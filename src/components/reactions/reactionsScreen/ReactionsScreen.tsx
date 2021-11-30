@@ -23,7 +23,7 @@ import { playBeep } from '../../../logic/audio/beep'
 import { selectTranslation } from '../../../redux/page/selector'
 
 
-type PlayPhase = 'init' | 'signal' | 'waiting' | 'finished'
+type PlayPhase = 'init' | 'start' | 'signal' | 'waiting' | 'finished'
 
 export const ReactionsScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
@@ -48,7 +48,7 @@ export const ReactionsScreen = (): JSX.Element | null => {
   const dispatch = useDispatch()
   const history = useHistory()
 
-  const handleTimeoutStateChange = useCallback(() => {
+  const handleTogglePause = useCallback(() => {
     if (phase === 'finished') {
       return
     }
@@ -62,8 +62,8 @@ export const ReactionsScreen = (): JSX.Element | null => {
     }
   }, [phase, isPaused, setIsPaused, timeoutObj])
 
-  const handleTimeoutReset = useCallback(() => {
-    setPhase('init')
+  const handleReset = useCallback(() => {
+    setPhase('start')
     setIsPaused(false)
     setRound(0)
   }, [isPaused, setIsPaused, setRound])
@@ -80,7 +80,7 @@ export const ReactionsScreen = (): JSX.Element | null => {
   }, [])
 
   useEffect(() => {
-    if (phase === 'init' || phase === 'waiting') {
+    if (phase === 'start' || phase === 'waiting') {
       // WAITING phase has started
       if (round === rounds) {
         setPhase('finished')
@@ -110,6 +110,8 @@ export const ReactionsScreen = (): JSX.Element | null => {
 
   const { reactions: { playScreen: t }, common: ct } = translation
 
+  const inProgress = phase === 'waiting' || phase === 'signal' || phase === 'start'
+
   return (
     <main className='play-reactions'>
       <h1>{t.heading}</h1>
@@ -124,22 +126,32 @@ export const ReactionsScreen = (): JSX.Element | null => {
             key={i}
             className='signal-box'
             style={(phase === 'signal' && curSignal === i) ? { backgroundColor: color } : {}}
-          >
-            {isPaused && ct.paused}
-          </div>
+          />
         ))}
       </div>
 
       <div className='buttons'>
         <Button
           className={isPaused ? 'green' : 'orange'}
-          onClick={handleTimeoutStateChange}
-          disabled={phase === 'finished'}
+          onClick={handleTogglePause}
+          disabled={!inProgress}
         >
           {isPaused ? ct.resume : ct.pause}
         </Button>
-        <Button className='orange' onClick={handleTimeoutReset}>{ct.reset}</Button>
-        <Button className='orange' onClick={handleGoBack}>{ct.back}</Button>
+        <Button
+          className={phase === 'init' ? 'green' : 'orange'}
+          onClick={handleReset}
+          disabled={inProgress && !isPaused}
+        >
+          {phase === 'init' ? ct.start : ct.reset}
+        </Button>
+        <Button
+          className='orange'
+          onClick={handleGoBack}
+          disabled={inProgress && !isPaused}
+        >
+          {ct.back}
+        </Button>
       </div>
     </main>
   )

@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import './KumiteTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { useDispatch } from '../../../redux/useDispatch'
-import { PausableTimeout } from '../../../logic/timing/pausableTimeout'
+import { PausableInterval } from '../../../logic/timing/pausableInterval'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
@@ -23,12 +23,12 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [seconds, setSeconds] = useState(0)
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(false)
-  const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
+  const [timeoutObj] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
   const history = useHistory()
 
-  const handleTimeoutStateChange = useCallback(() => {
+  const handleTogglePause = useCallback(() => {
     if (phase === 'finished') {
       return
     }
@@ -42,10 +42,14 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     }
   }, [phase, isPaused, setIsPaused, timeoutObj])
 
-  const handleTimeoutReset = useCallback(() => {
-    setPhase('init')
+  const handleReset = useCallback(() => {
+    setPhase('fight')
     setIsPaused(false)
     setSeconds(0)
+    timeoutObj.restart(() => {
+      console.log(new Date().toISOString())
+      setSeconds(prev => prev + 1)
+    }, 1000)
   }, [isPaused, setIsPaused, setSeconds])
 
   const handleGoBack = useCallback(() => {
@@ -60,25 +64,12 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   }, [])
 
   useEffect(() => {
-    // if (phase === 'init' || phase === 'waiting') {
-    //   // WAITING phase has started
-    //   if (round === rounds) {
-    //     setPhase('finished')
-    //   } else {
-    //     timeoutObj.restart(() => {
-    //       setCurSignal(getRandomInt(0, signalCount))
-    //       setPhase('signal')
-    //     }, getRandomInt(minInterval, maxInterval))
-    //   }
-    // } else if (phase === 'signal') {
-    //   // SIGNAL phase has started
-    //   playBeep(audioSound, signalDuration, audioVolume)
-    //   timeoutObj.restart(() => {
-    //     setRound(prev => prev + 1)
-    //     setPhase('waiting')
-    //   }, signalDuration)
-    // }
-  }, [phase])
+    if (seconds === duration) {
+      console.log('FINISH')
+      setPhase('finished')
+      timeoutObj.pause()
+    }
+  }, [seconds])
 
   useEffect(() => {
     !isActual && history.push('/kumite-timer/set-up')
@@ -93,7 +84,32 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   return (
     <main className='kumite-timer'>
       <h1>Kumite timer</h1>
-      <Button className='orange' onClick={handleGoBack}>{ct.back}</Button>
+
+      <h1>{seconds}</h1>
+
+      <div className='buttons'>
+        <Button
+          className={isPaused ? 'green' : 'orange'}
+          onClick={handleTogglePause}
+          disabled={phase === 'init' || phase === 'finished'}
+        >
+          {isPaused ? ct.resume : ct.pause}
+        </Button>
+        <Button
+          className={phase === 'init' ? 'green' : 'orange'}
+          onClick={handleReset}
+          disabled={phase === 'fight' && !isPaused}
+        >
+          {phase === 'init' ? ct.start : ct.reset}
+        </Button>
+        <Button
+          className='orange'
+          onClick={handleGoBack}
+          disabled={phase === 'fight' && !isPaused}
+        >
+          {ct.back}
+        </Button>
+      </div>
     </main>
   )
 }
