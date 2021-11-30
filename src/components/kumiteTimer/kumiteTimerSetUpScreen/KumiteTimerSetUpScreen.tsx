@@ -29,6 +29,10 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
     history.push('/kumite-timer')
   }, [dispatch, duration])
 
+  const handleBack = useCallback(() => {
+    history.push('/')
+  }, [dispatch])
+
   // TODO - translations
   // const { reactions: { setUpScreen: t } } = translation
 
@@ -49,13 +53,22 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
         </div>
       </div>
 
-      <Button
-        className='set-up-confirm-btn'
-        onClick={handleStart}
-        disabled={!isValidDuration}
-      >
-        {translation.common.start}
-      </Button>
+      <div className='buttons'>
+        <Button
+          className='confirm-btn'
+          onClick={handleStart}
+          disabled={!isValidDuration}
+        >
+          {translation.common.start}
+        </Button>
+
+        <Button
+          className='back-btn'
+          onClick={handleBack}
+        >
+          {translation.common.back}
+        </Button>
+      </div>
     </main>
   )
 }

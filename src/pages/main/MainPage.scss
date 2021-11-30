@@ -4,7 +4,7 @@
 
 
 .main-page {
-  @include app-screen();
+  @include app-screen-with-padding();
 
   p, h1, h2 {
     text-align: center;

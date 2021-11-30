@@ -81,9 +81,20 @@
     }
   }
 
-  .set-up-confirm-btn {
-    @include button-color($orange);
-    width: $button-middle-width;
+  .buttons {
+    .confirm-btn {
+      @include button-color($green);
+      width: $button-middle-width;
+    }
+
+    .back-btn {
+      @include button-color($orange);
+      width: $button-middle-width;
+    }
+
+    & > :not(:first-child) {
+      margin-left: 1rem;
+    }
   }
 }
 

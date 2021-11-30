@@ -88,6 +88,10 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
     history.push('/reactions')
   }, [dispatch, rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
 
+  const handleBack = useCallback(() => {
+    history.push('/')
+  }, [dispatch])
+
   const { reactions: { setUpScreen: t } } = translation
 
   return (
@@ -199,16 +203,25 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
         </div>
       </div>
 
-      <Button
-        className='set-up-confirm-btn'
-        onClick={handleStart}
-        disabled={
-          !isValidRounds || !isValidSignal || !isValidMinInterval
-          || !isValidMaxInterval || !isValidIntervalRange
-        }
-      >
-        {translation.common.start}
-      </Button>
+      <div className='buttons'>
+        <Button
+          className='confirm-btn'
+          onClick={handleStart}
+          disabled={
+            !isValidRounds || !isValidSignal || !isValidMinInterval
+            || !isValidMaxInterval || !isValidIntervalRange
+          }
+        >
+          {translation.common.start}
+        </Button>
+
+        <Button
+          className='back-btn'
+          onClick={handleBack}
+        >
+          {translation.common.back}
+        </Button>
+      </div>
     </main>
   )
 }
