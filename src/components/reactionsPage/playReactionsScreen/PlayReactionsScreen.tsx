@@ -117,8 +117,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
         {round === rounds && `${ct.finished}!`}
       </p>
 
-      {/* TODO - 2 boxy - na mobilu pod sebe, na PC dat mezi ne mezeru */}
-      <div className='signal-boxes'>
+      <div className={`signal-boxes boxes-${signalCount}`}>
         {signalColors.slice(0, signalCount).map((color, i) => (
           <div
             key={i}
