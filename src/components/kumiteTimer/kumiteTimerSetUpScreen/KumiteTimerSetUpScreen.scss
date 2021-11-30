@@ -1,0 +1,8 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.set-up-kumite-timer {
+  @include set-up-screen();
+}

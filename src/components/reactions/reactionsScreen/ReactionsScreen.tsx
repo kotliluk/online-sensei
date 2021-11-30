@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import './PlayReactionsScreen.scss'
+import './ReactionsScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import {
   selectReactionsAudioSound,
@@ -16,7 +16,7 @@ import {
 import { useDispatch } from '../../../redux/useDispatch'
 import { setNotActualReactions } from '../../../redux/reactions/actions'
 import { getRandomInt } from '../../../utils/random'
-import { PausableTimeout } from '../../../logic/pausableTimeout'
+import { PausableTimeout } from '../../../logic/timing/pausableTimeout'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { playBeep } from '../../../logic/audio/beep'
@@ -25,7 +25,7 @@ import { selectTranslation } from '../../../redux/page/selector'
 
 type PlayPhase = 'init' | 'signal' | 'waiting' | 'finished'
 
-export const PlayReactionsScreen = (): JSX.Element | null => {
+export const ReactionsScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
 
   const isActual = useSelector(selectReactionsIsActual)
@@ -38,6 +38,7 @@ export const PlayReactionsScreen = (): JSX.Element | null => {
   const audioSound = useSelector(selectReactionsAudioSound)
   const audioVolume = useSelector(selectReactionsAudioVolume)
 
+  // TODO - add start button
   const [round, setRound] = useState(0)
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(false)

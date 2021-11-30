@@ -6,12 +6,6 @@
 .play-reactions {
   @include app-screen();
 
-  // resets side padding to zero
-  @media all {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
   & > p {
     font-weight: bold;
   }

@@ -9,7 +9,18 @@
   justify-content: flex-start;
   align-items: center;
 
+  padding: 2rem 0;
+
   min-height: calc(100% - #{$page-header-height});
+
+  @include themed() {
+    background-color: t($primary-color);
+    color: t($primary-text);
+  }
+}
+
+@mixin app-screen-with-padding {
+  @include app-screen();
 
   padding: 2rem $screen-side-padding-small-device;
 
@@ -20,10 +31,59 @@
   @include large-device {
     padding: 2rem $screen-side-padding-large-device;
   }
+}
 
-  @include themed() {
-    background-color: t($primary-color);
-    color: t($primary-text);
+@mixin set-up-screen {
+  @include app-screen-with-padding();
+
+  h1 {
+    text-align: center;
+  }
+
+  .set-up-items {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+
+  .set-up-item {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 1rem;
+
+    &:not(:first-of-type) {
+      @include themed {
+        border-top: 1px solid t($secondary-color);
+      }
+    }
+
+    @include medium-device {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+
+    label {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+
+      @include medium-device {
+        margin-bottom: 0;
+      }
+    }
+
+    .set-up-input {
+      width: 16ch;
+    }
+  }
+
+  .set-up-confirm-btn {
+    @include button-color($orange);
+    width: $button-middle-width;
   }
 }
 

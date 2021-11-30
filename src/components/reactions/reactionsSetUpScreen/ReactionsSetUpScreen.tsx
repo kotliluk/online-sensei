@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback, useState } from 'react'
-import './SetUpReactionsScreen.scss'
+import './ReactionsSetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setReactions } from '../../../redux/reactions/actions'
 import { useHistory } from 'react-router-dom'
@@ -29,7 +29,7 @@ import { insertWords } from '../../../logic/translation'
 import { CounterInput } from '../../atoms/input/CounterInput'
 
 
-export const SetUpReactionsScreen = (): JSX.Element => {
+export const ReactionsSetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
   const initRounds = useSelector(selectReactionsRounds)
@@ -139,7 +139,7 @@ export const SetUpReactionsScreen = (): JSX.Element => {
             onChange={handleMaxIntervalChange}
             invalid={!isValidMaxInterval || !isValidIntervalRange}
             errorMessage={joinErrorMessages([
-              [insertWords(t.maxInterval.error, LIMITS.maxInterval.min, LIMITS.maxInterval.max), isValidMinInterval],
+              [insertWords(t.maxInterval.error, LIMITS.maxInterval.min, LIMITS.maxInterval.max), isValidMaxInterval],
               [t.maxInterval.rangeError, isValidIntervalRange],
             ])}
           />

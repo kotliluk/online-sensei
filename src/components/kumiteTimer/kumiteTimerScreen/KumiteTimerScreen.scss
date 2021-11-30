@@ -1,0 +1,30 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.kumite-timer {
+  @include app-screen();
+
+  & > p {
+    font-weight: bold;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: row;
+
+    button {
+      width: $button-long-width;
+      margin: 0 0.25rem;
+
+      &.green {
+        @include button-color($green);
+      }
+
+      &.orange {
+        @include button-color($orange);
+      }
+    }
+  }
+}

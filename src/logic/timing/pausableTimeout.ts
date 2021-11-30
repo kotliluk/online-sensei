@@ -1,4 +1,4 @@
-import { Func } from '../utils/function'
+import { Func } from '../../utils/function'
 
 
 /**

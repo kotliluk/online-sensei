@@ -36,23 +36,23 @@ export const CS: Translation = {
       rounds: {
         label: 'Kola',
         // 2 params
-        error: 'Musíš zvolit mezi __{1}__ a __{2}__ koly.',
+        error: 'Kol musí být mezi __{1}__ a __{2}__.',
       },
       signalDuration: {
         label: 'Délka signálu (ms)',
         // 2 params
-        error: 'Délku signálu musíš zvolit mezi __{1}__ a __{2}__ ms.',
+        error: 'Délka signálu musí být mezi __{1}__ a __{2}__ ms.',
       },
       minInterval: {
         label: 'Minimální interval (ms)',
         // 2 params
-        error: 'Minimální délku intervalu musíš zvolit mezi __{1}__ a __{2}__ ms.',
+        error: 'Minimální délka intervalu musí být mezi __{1}__ a __{2}__ ms.',
         rangeError: 'Minimální interval nesmí být větší než maximální.',
       },
       maxInterval: {
         label: 'Maximální interval (ms)',
         // 2 params
-        error: 'Maximální délku intervalu musíš zvolit mezi __{1}__ a __{2}__ ms.',
+        error: 'Maximální délka intervalu musí být mezi __{1}__ a __{2}__ ms.',
         rangeError: 'Maximální interval nesmí být menší než minimální.',
       },
       signalCount: {
