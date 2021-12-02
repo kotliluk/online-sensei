@@ -10,9 +10,13 @@ import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
 import { selectKumiteTimerDuration, selectKumiteTimerIsActual } from '../../../redux/kumiteTimer/selector'
 import { setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
+import { FighterStats } from '../fighterStats/FighterStats'
+import useControlledState from '../../../logic/hooks/useControledState'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
+
+type Senchu = 'NONE' | 'RED' | 'BLUE'
 
 export const KumiteTimerScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
@@ -21,6 +25,15 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const duration = useSelector(selectKumiteTimerDuration)
 
   const [seconds, setSeconds] = useState(0)
+  const [scoreRed, setScoreRed] = useControlledState(88, (value) => value >= 0)
+  const [foulsOneRed, setFoulsOneRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
+  const [foulsTwoRed, setFoulsTwoRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
+  const [scoreBlue, setScoreBlue] = useControlledState(88, (value) => value >= 0)
+  const [foulsOneBlue, setFoulsOneBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
+  const [foulsTwoBlue, setFoulsTwoBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
+  // TODO - atoshibaraku
+  const [senchu, setSenchu] = useState<Senchu>('NONE')
+
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(false)
   const [timeoutObj] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
@@ -75,17 +88,46 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     !isActual && history.push('/kumite-timer/set-up')
   }, [isActual])
 
+  const renderRedData = useCallback((className: string) => (
+    <FighterStats
+      className={className}
+      isRed={true}
+      score={scoreRed}
+      foulsOne={foulsOneRed}
+      foulsTwo={foulsTwoRed}
+      onFoulsOneChange={setFoulsOneRed}
+      onFoulsTwoChange={setFoulsTwoRed}
+    />
+  ), [scoreRed, foulsOneRed, foulsTwoRed])
+
+  const renderBlueData = useCallback((className: string) => (
+    <FighterStats
+      className={className}
+      isRed={false}
+      score={scoreBlue}
+      foulsOne={foulsOneBlue}
+      foulsTwo={foulsTwoBlue}
+      onFoulsOneChange={setFoulsOneBlue}
+      onFoulsTwoChange={setFoulsTwoBlue}
+    />
+  ), [scoreBlue, foulsOneBlue, foulsTwoBlue])
+
   if (!isActual) {
     return null
   }
 
+  // TODO - translation
   const { reactions: { playScreen: t }, common: ct } = translation
 
   return (
     <main className='kumite-timer'>
       <h1>Kumite timer</h1>
 
-      <h1>{seconds}</h1>
+      <div className='timer'>
+        {renderRedData('left')}
+        <h1 className='common'>{seconds}</h1>
+        {renderBlueData('right')}
+      </div>
 
       <div className='buttons'>
         <Button

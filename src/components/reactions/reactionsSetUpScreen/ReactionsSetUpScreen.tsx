@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import './ReactionsSetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setReactions } from '../../../redux/reactions/actions'
@@ -91,6 +91,10 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
   const handleBack = useCallback(() => {
     history.push('/')
   }, [dispatch])
+
+  useEffect(() => {
+    preloadBeep(initAudioSound)
+  }, [])
 
   const { reactions: { setUpScreen: t } } = translation
 

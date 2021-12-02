@@ -38,7 +38,6 @@ export const ReactionsScreen = (): JSX.Element | null => {
   const audioSound = useSelector(selectReactionsAudioSound)
   const audioVolume = useSelector(selectReactionsAudioVolume)
 
-  // TODO - add start button
   const [round, setRound] = useState(0)
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(false)

@@ -1,5 +1,6 @@
 $medium-device-width: 768px;
 $large-device-width: 1024px;
+$huge-device-width: 1440px;
 
 
 @mixin medium-device {
@@ -10,6 +11,12 @@ $large-device-width: 1024px;
 
 @mixin large-device {
   @media (min-width: #{$large-device-width}) {
+    @content;
+  }
+}
+
+@mixin huge-device {
+  @media (min-width: #{$huge-device-width}) {
     @content;
   }
 }

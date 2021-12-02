@@ -10,6 +10,41 @@
     font-weight: bold;
   }
 
+  .left {
+    grid-area: left;
+  }
+
+  .right {
+    grid-area: right;
+  }
+
+  .common {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    grid-area: common;
+  }
+
+  .timer {
+    max-height: 90vh;
+
+    display: grid;
+    grid-template-columns: 50fr 50fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "left   right"
+      "common common";
+
+    @include huge-device() {
+      grid-template-columns: 40fr 20fr 40fr;
+      grid-template-rows: auto;
+      grid-template-areas: "left common right";
+    }
+
+    width: 100%;
+  }
+
   .buttons {
     display: flex;
     flex-direction: row;
