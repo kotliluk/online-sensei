@@ -1,0 +1,68 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+$btn-margin: 2%;
+$btn-size: 14%;
+
+.score {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 5vmin;
+
+  .score__value {
+    margin: -8vmin 0;
+    flex-grow: 1;
+    font-size: 40vmin;
+  }
+
+  &.red {
+    .score__value {
+      color: $red;
+    }
+  }
+
+  &.blue {
+    .score__value {
+      color: $blue;
+    }
+  }
+
+  .score__btns {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .score__btn {
+    @include button-color($orange);
+
+    position: relative;
+    display: inline-block;
+    height: 0;
+    padding: 0 0 $btn-size 0;
+    margin: 0 $btn-margin;
+    width: $btn-size;
+
+    @include medium-device() {
+      padding: 0 0 3rem 0;
+      width: 3rem;
+    }
+
+    .score__btn__text {
+      @include center-content();
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+
+      font-weight: bold;
+    }
+  }
+}

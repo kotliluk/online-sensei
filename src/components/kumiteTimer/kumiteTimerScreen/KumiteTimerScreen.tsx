@@ -25,10 +25,10 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const duration = useSelector(selectKumiteTimerDuration)
 
   const [seconds, setSeconds] = useState(0)
-  const [scoreRed, setScoreRed] = useControlledState(88, (value) => value >= 0)
+  const [scoreRed, setScoreRed] = useControlledState(0, (value) => value >= 0 && value <= 99)
   const [foulsOneRed, setFoulsOneRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
   const [foulsTwoRed, setFoulsTwoRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
-  const [scoreBlue, setScoreBlue] = useControlledState(88, (value) => value >= 0)
+  const [scoreBlue, setScoreBlue] = useControlledState(0, (value) => value >= 0 && value <= 99)
   const [foulsOneBlue, setFoulsOneBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
   const [foulsTwoBlue, setFoulsTwoBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
   // TODO - atoshibaraku
@@ -95,6 +95,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       score={scoreRed}
       foulsOne={foulsOneRed}
       foulsTwo={foulsTwoRed}
+      onScoreChange={setScoreRed}
       onFoulsOneChange={setFoulsOneRed}
       onFoulsTwoChange={setFoulsTwoRed}
     />
@@ -107,6 +108,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       score={scoreBlue}
       foulsOne={foulsOneBlue}
       foulsTwo={foulsTwoBlue}
+      onScoreChange={setScoreBlue}
       onFoulsOneChange={setFoulsOneBlue}
       onFoulsTwoChange={setFoulsTwoBlue}
     />

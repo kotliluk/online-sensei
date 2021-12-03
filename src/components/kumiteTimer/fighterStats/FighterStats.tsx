@@ -2,6 +2,7 @@
 import React from 'react'
 import './FighterStats.scss'
 import { Fouls } from '../fouls/Fouls'
+import { Score } from '../score/Score'
 
 
 interface FighterStatsProps {
@@ -10,6 +11,7 @@ interface FighterStatsProps {
   score: number
   foulsOne: number
   foulsTwo: number
+  onScoreChange: (score: number) => void
   onFoulsOneChange: (fouls: number) => void
   onFoulsTwoChange: (fouls: number) => void
 }
@@ -17,13 +19,12 @@ interface FighterStatsProps {
 export const FighterStats = (props: FighterStatsProps): JSX.Element | null => {
   const {
     className, isRed, score, foulsOne, foulsTwo,
-    onFoulsOneChange, onFoulsTwoChange,
+    onScoreChange, onFoulsOneChange, onFoulsTwoChange,
   } = props
 
-  // TODO - score component
   return (
     <section className={`fighter-stats ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
-      <span className='score'>{score}</span>
+      <Score isRed={isRed} score={score} onChange={onScoreChange} />
       <Fouls isRed={isRed} fouls={foulsOne} onChange={onFoulsOneChange} />
       <Fouls isRed={isRed} fouls={foulsTwo} onChange={onFoulsTwoChange} />
     </section>

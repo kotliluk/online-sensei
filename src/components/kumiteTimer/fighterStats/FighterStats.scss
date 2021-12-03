@@ -7,22 +7,4 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  .score {
-    flex-grow: 1;
-    font-size: 40vmin;
-    margin: -5vmin 0;
-  }
-
-  &.red {
-    .score {
-      color: $red;
-    }
-  }
-
-  &.blue {
-    .score {
-      color: $blue;
-    }
-  }
 }

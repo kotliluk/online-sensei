@@ -6,6 +6,10 @@
 .kumite-timer {
   @include app-screen();
 
+  & > h1 {
+    margin-bottom: 0;
+  }
+
   & > p {
     font-weight: bold;
   }

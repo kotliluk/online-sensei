@@ -4,14 +4,14 @@ import './Fouls.scss'
 import { Button } from '../../atoms/button/Button'
 
 
-interface FighterStatsProps {
+interface FoulsProps {
   className?: string
   isRed: boolean
   fouls: number
   onChange: (fouls: number) => void
 }
 
-export const Fouls = (props: FighterStatsProps): JSX.Element | null => {
+export const Fouls = (props: FoulsProps): JSX.Element | null => {
   const { className, isRed, fouls, onChange } = props
 
   return (
