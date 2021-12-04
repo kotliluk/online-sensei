@@ -8,6 +8,8 @@ export const CS: Translation = {
     darkTheme: 'Tmavý motiv',
     lightTheme: 'Světlý motiv',
     language: 'Jazyk',
+    time: 'Čas',
+    fight: 'Zápas',
     // user actions
     back: 'Zpět',
     finished: 'Hotovo',
@@ -69,6 +71,24 @@ export const CS: Translation = {
     playScreen: {
       heading: 'Reakce',
       round: 'Kolo',
+    },
+  },
+  kumiteTimer: {
+    setUpScreen: {
+      heading: 'Kumite Časomíra',
+      duration: {
+        label: 'Délka zápasu (s)',
+        // 2 params
+        error: 'Délka zápasu musí být mezi __{1}__ a __{2}__ ms.',
+      },
+      atoshibaraku: {
+        label: 'Atoshibaraku (s)',
+        // 2 params
+        error: 'Atoshibaraku musí být mezi __{1}__ a __{2}__ ms.',
+      },
+    },
+    playScreen: {
+      heading: 'Kumite Časomíra',
     },
   },
 }

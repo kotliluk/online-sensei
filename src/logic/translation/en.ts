@@ -8,6 +8,8 @@ export const EN: Translation = {
     darkTheme: 'Dark theme',
     lightTheme: 'Light theme',
     language: 'Language',
+    time: 'Time',
+    fight: 'Fight',
     // user actions
     back: 'Back',
     finished: 'Finished',
@@ -69,6 +71,24 @@ export const EN: Translation = {
     playScreen: {
       heading: 'Reactions',
       round: 'Round',
+    },
+  },
+  kumiteTimer: {
+    setUpScreen: {
+      heading: 'Kumite Timer',
+      duration: {
+        label: 'Fight duration (s)',
+        // 2 params
+        error: 'Duration must be set between __{1}__ and __{2}__.',
+      },
+      atoshibaraku: {
+        label: 'Atoshibaraku (s)',
+        // 2 params
+        error: 'Atoshibaraku must be set between __{1}__ and __{2}__.',
+      },
+    },
+    playScreen: {
+      heading: 'Kumite Timer',
     },
   },
 }

@@ -28,6 +28,10 @@
   .fight-stats__btn {
     @include button-color($orange);
     margin: 0 0.25rem;
+
+    &.reset {
+      width: 8rem;
+    }
   }
 
   .fight-stats__senchu {

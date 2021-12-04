@@ -38,33 +38,32 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
     history.push('/')
   }, [dispatch])
 
-  // TODO - translations
-  // const { reactions: { setUpScreen: t } } = translation
+  const { kumiteTimer: { setUpScreen: t } } = translation
 
   return (
     <main className='set-up-kumite-timer'>
-      <h1>Kumite timer</h1>
+      <h1>{t.heading}</h1>
 
       <div className='set-up-items'>
         <div className='set-up-item'>
-          <label>Duration:</label>
+          <label>{t.duration.label}:</label>
           <NumberInput
             className='set-up-input'
             value={duration}
             onChange={setDuration}
             invalid={!isValidDuration}
-            errorMessage={insertWords('TODO error translation', LIMITS.duration.min, LIMITS.duration.max)}
+            errorMessage={insertWords(t.duration.error, LIMITS.duration.min, LIMITS.duration.max)}
           />
         </div>
 
         <div className='set-up-item'>
-          <label>Senchu time:</label>
+          <label>{t.atoshibaraku.label}:</label>
           <NumberInput
             className='set-up-input'
             value={atoshibaraku}
             onChange={setAtoshibaraku}
             invalid={!isValidAtoshibaraku}
-            errorMessage={insertWords('TODO error translation', LIMITS.atoshibaraku.min, LIMITS.atoshibaraku.max)}
+            errorMessage={insertWords(t.atoshibaraku.error, LIMITS.atoshibaraku.min, LIMITS.atoshibaraku.max)}
           />
         </div>
       </div>

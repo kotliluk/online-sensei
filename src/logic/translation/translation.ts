@@ -11,6 +11,8 @@ export interface Translation {
     darkTheme: string,
     lightTheme: string,
     language: string,
+    time: string,
+    fight: string,
     // user actions
     back: string,
     finished: string,
@@ -72,6 +74,24 @@ export interface Translation {
     playScreen: {
       heading: string,
       round: string,
+    },
+  }
+  kumiteTimer: {
+    setUpScreen: {
+      heading: string,
+      duration: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      atoshibaraku: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+    },
+    playScreen: {
+      heading: string,
     },
   }
 }
