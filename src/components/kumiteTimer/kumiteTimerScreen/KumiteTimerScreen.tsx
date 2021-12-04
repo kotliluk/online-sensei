@@ -12,11 +12,12 @@ import { selectKumiteTimerDuration, selectKumiteTimerIsActual } from '../../../r
 import { setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
 import { FighterStats } from '../fighterStats/FighterStats'
 import useControlledState from '../../../logic/hooks/useControledState'
+import { Senchu } from '../utils'
+import { FightStats } from '../fightStats/FightStats'
+import { LIMITS } from '../../../redux/kumiteTimer/utils'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
-
-type Senchu = 'NONE' | 'RED' | 'BLUE'
 
 export const KumiteTimerScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
@@ -24,7 +25,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const isActual = useSelector(selectKumiteTimerIsActual)
   const duration = useSelector(selectKumiteTimerDuration)
 
-  const [seconds, setSeconds] = useState(0)
+  const [time, setTime] = useState(duration)
   const [scoreRed, setScoreRed] = useControlledState(0, (value) => value >= 0 && value <= 99)
   const [foulsOneRed, setFoulsOneRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
   const [foulsTwoRed, setFoulsTwoRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
@@ -35,11 +36,21 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
   const [phase, setPhase] = useState<PlayPhase>('init')
-  const [isPaused, setIsPaused] = useState(false)
+  const [isPaused, setIsPaused] = useState(true)
   const [timeoutObj] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
   const history = useHistory()
+
+  const handleManualTimeChange = useCallback((newTime: number) => {
+    if (newTime >= 0 && newTime <= LIMITS.duration.max) {
+      setTime(newTime)
+    }
+  }, [setTime])
+
+  const handleSenchuChange = useCallback((senchu: Senchu) => {
+    setSenchu(prev => prev === senchu ? 'NONE' : senchu)
+  }, [setSenchu])
 
   const handleTogglePause = useCallback(() => {
     if (phase === 'finished') {
@@ -55,15 +66,27 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     }
   }, [phase, isPaused, setIsPaused, timeoutObj])
 
-  const handleReset = useCallback(() => {
+  const handleStart = useCallback(() => {
     setPhase('fight')
     setIsPaused(false)
-    setSeconds(0)
+    setTime(duration)
     timeoutObj.restart(() => {
-      console.log(new Date().toISOString())
-      setSeconds(prev => prev + 1)
+      setTime(prev => prev - 1)
     }, 1000)
-  }, [isPaused, setIsPaused, setSeconds])
+  }, [isPaused, setIsPaused, setTime])
+
+  const handleReset = useCallback(() => {
+    setPhase('init')
+    setIsPaused(true)
+    setTime(duration)
+    setScoreRed(0)
+    setFoulsOneRed(0)
+    setFoulsTwoRed(0)
+    setScoreBlue(0)
+    setFoulsOneBlue(0)
+    setFoulsTwoBlue(0)
+    timeoutObj.pause()
+  }, [isPaused, setIsPaused, setTime])
 
   const handleGoBack = useCallback(() => {
     dispatch(setNotActualKumiteTimer())
@@ -77,12 +100,11 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   }, [])
 
   useEffect(() => {
-    if (seconds === duration) {
-      console.log('FINISH')
+    if (time === 0) {
       setPhase('finished')
       timeoutObj.pause()
     }
-  }, [seconds])
+  }, [time])
 
   useEffect(() => {
     !isActual && history.push('/kumite-timer/set-up')
@@ -121,14 +143,24 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   // TODO - translation
   const { reactions: { playScreen: t }, common: ct } = translation
 
+  const dangerousButtonsDisabled = phase === 'fight' && !isPaused
+
   return (
     <main className='kumite-timer'>
       <h1>Kumite timer</h1>
 
       <div className='timer'>
-        {renderRedData('left')}
-        <h1 className='common'>{seconds}</h1>
-        {renderBlueData('right')}
+        {renderRedData('left-fighter')}
+        <FightStats
+          className='fight-stats'
+          time={time}
+          senchu={senchu}
+          timeButtonsDisabled={dangerousButtonsDisabled}
+          onTimeReset={() => setTime(duration)}
+          onTimeChange={handleManualTimeChange}
+          onSenchuChange={handleSenchuChange}
+        />
+        {renderBlueData('right-fighter')}
       </div>
 
       <div className='buttons'>
@@ -141,15 +173,15 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
         </Button>
         <Button
           className={phase === 'init' ? 'green' : 'orange'}
-          onClick={handleReset}
-          disabled={phase === 'fight' && !isPaused}
+          onClick={phase === 'init' ? handleStart : handleReset}
+          disabled={dangerousButtonsDisabled}
         >
           {phase === 'init' ? ct.start : ct.reset}
         </Button>
         <Button
           className='orange'
           onClick={handleGoBack}
-          disabled={phase === 'fight' && !isPaused}
+          disabled={dangerousButtonsDisabled}
         >
           {ct.back}
         </Button>

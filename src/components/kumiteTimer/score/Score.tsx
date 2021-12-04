@@ -15,7 +15,7 @@ export const Score = (props: ScoreProps): JSX.Element | null => {
   const { className, isRed, score, onChange } = props
 
   return (
-    <div className={`score ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
+    <div className={`__score ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <span className='score__value'>{score}</span>
       <div className='score__btns'>
         <Button className='score__btn' onClick={() => onChange(0)}>

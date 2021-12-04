@@ -7,7 +7,7 @@ $foul-circle-size: 14%;
 $foul-circle-margin: 1%;
 $foul-btn-size: 14%;
 
-.fouls {
+.__fouls {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -46,7 +46,7 @@ $foul-btn-size: 14%;
     padding: 0 0 $foul-btn-size 0;
     width: $foul-btn-size;
 
-    @include medium-device() {
+    @include M-device() {
       padding: 0 0 3rem 0;
       width: 3rem;
     }

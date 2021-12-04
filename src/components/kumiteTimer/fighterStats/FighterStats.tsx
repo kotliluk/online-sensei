@@ -23,7 +23,7 @@ export const FighterStats = (props: FighterStatsProps): JSX.Element | null => {
   } = props
 
   return (
-    <section className={`fighter-stats ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
+    <section className={`__fighter-stats ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <Score isRed={isRed} score={score} onChange={onScoreChange} />
       <Fouls isRed={isRed} fouls={foulsOne} onChange={onFoulsOneChange} />
       <Fouls isRed={isRed} fouls={foulsTwo} onChange={onFoulsTwoChange} />

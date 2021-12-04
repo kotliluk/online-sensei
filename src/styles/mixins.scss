@@ -24,11 +24,11 @@
 
   padding: 2rem $screen-side-padding-small-device;
 
-  @include medium-device {
+  @include M-device {
     padding: 2rem $screen-side-padding-medium-device;
   }
 
-  @include large-device {
+  @include L-device {
     padding: 2rem $screen-side-padding-large-device;
   }
 }
@@ -61,7 +61,7 @@
       }
     }
 
-    @include medium-device {
+    @include M-device {
       flex-direction: row;
       justify-content: space-between;
     }
@@ -71,7 +71,7 @@
       font-weight: bold;
       margin-bottom: 0.5rem;
 
-      @include medium-device {
+      @include M-device {
         margin-bottom: 0;
       }
     }

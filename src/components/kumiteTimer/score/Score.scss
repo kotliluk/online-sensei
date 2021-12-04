@@ -6,7 +6,7 @@
 $btn-margin: 2%;
 $btn-size: 14%;
 
-.score {
+.__score {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -48,7 +48,7 @@ $btn-size: 14%;
     margin: 0 $btn-margin;
     width: $btn-size;
 
-    @include medium-device() {
+    @include M-device() {
       padding: 0 0 3rem 0;
       width: 3rem;
     }

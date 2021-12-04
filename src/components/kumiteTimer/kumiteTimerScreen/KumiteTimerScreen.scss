@@ -14,24 +14,21 @@
     font-weight: bold;
   }
 
-  .left {
+  .left-fighter {
     grid-area: left;
   }
 
-  .right {
+  .right-fighter {
     grid-area: right;
   }
 
-  .common {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  .fight-stats {
     grid-area: common;
+    margin-top: 1rem;
   }
 
   .timer {
-    max-height: 90vh;
+    width: 100%;
 
     display: grid;
     grid-template-columns: 50fr 50fr;
@@ -40,18 +37,17 @@
       "left   right"
       "common common";
 
-    @include huge-device() {
+    @include XL-device() {
       grid-template-columns: 40fr 20fr 40fr;
       grid-template-rows: auto;
       grid-template-areas: "left common right";
     }
-
-    width: 100%;
   }
 
   .buttons {
     display: flex;
     flex-direction: row;
+    margin-top: 1rem;
 
     button {
       width: $button-long-width;

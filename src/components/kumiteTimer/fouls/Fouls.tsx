@@ -15,7 +15,7 @@ export const Fouls = (props: FoulsProps): JSX.Element | null => {
   const { className, isRed, fouls, onChange } = props
 
   return (
-    <div className={`fouls ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
+    <div className={`__fouls ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <Button className='fouls__btn' onClick={() => onChange(fouls - 1)}>
         <span className='fouls__btn__text'>-</span>
       </Button>

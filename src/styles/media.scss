@@ -1,22 +1,29 @@
-$medium-device-width: 768px;
-$large-device-width: 1024px;
-$huge-device-width: 1440px;
+$device-M-width: 768px;
+$device-L-width: 1024px;
+$device-XL-width: 1280px;
+$device-XXL-width: 1440px;
 
 
-@mixin medium-device {
-  @media (min-width: #{$medium-device-width}) {
+@mixin M-device {
+  @media (min-width: #{$device-M-width}) {
     @content;
   }
 }
 
-@mixin large-device {
-  @media (min-width: #{$large-device-width}) {
+@mixin L-device {
+  @media (min-width: #{$device-L-width}) {
     @content;
   }
 }
 
-@mixin huge-device {
-  @media (min-width: #{$huge-device-width}) {
+@mixin XL-device {
+  @media (min-width: #{$device-XL-width}) {
+    @content;
+  }
+}
+
+@mixin XXL-device {
+  @media (min-width: #{$device-XXL-width}) {
     @content;
   }
 }

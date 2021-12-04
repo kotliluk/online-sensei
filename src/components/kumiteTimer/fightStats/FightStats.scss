@@ -1,0 +1,68 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.__fight-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .fight-stats__time {
+    order: 2;
+
+    text-align: center;
+    font-size: 20vw;
+    margin: -2vw 0;
+  }
+
+  .fight-stats__btns {
+    order: 3;
+
+    text-align: center;
+  }
+
+  .fight-stats__btn {
+    @include button-color($orange);
+    margin: 0 0.25rem;
+  }
+
+  .fight-stats__senchu {
+    order: 1;
+
+    width: 50%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fight-stats__senchu__text {
+    font-size: $text-large;
+  }
+
+  @include XL-device() {
+    .fight-stats__time {
+      order: 1;
+      font-size: 24vmin;
+      margin: 0;
+    }
+
+    .fight-stats__btns {
+      order: 2;
+    }
+
+    .fight-stats__senchu {
+      order: 3;
+
+      width: 80%;
+      margin-top: 2rem;
+    }
+
+    .fight-stats__senchu__text {
+      font-size: $text-huge;
+    }
+  }
+}
