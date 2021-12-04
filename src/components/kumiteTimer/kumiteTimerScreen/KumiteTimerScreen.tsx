@@ -41,6 +41,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
   // TODO - switch sides
+  // TODO - open in new mirror window
 
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(true)
