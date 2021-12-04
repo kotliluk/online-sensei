@@ -10,7 +10,7 @@ import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { LIMITS, VALIDATOR } from '../../../redux/kumiteTimer/utils'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
-import { selectKumiteTimerDuration } from '../../../redux/kumiteTimer/selector'
+import { selectKumiteTimerAtoshibaraku, selectKumiteTimerDuration } from '../../../redux/kumiteTimer/selector'
 import { setKumiteTimer } from '../../../redux/kumiteTimer/actions'
 
 
@@ -18,16 +18,21 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
   const initDuration = useSelector(selectKumiteTimerDuration)
+  const initAtoshibaraku = useSelector(selectKumiteTimerAtoshibaraku)
 
   const [duration, setDuration, isValidDuration] = useValidatedState(initDuration, VALIDATOR.duration)
+  const [atoshibaraku, setAtoshibaraku, isValidAtoshibaraku] = useValidatedState(
+    initAtoshibaraku,
+    VALIDATOR.atoshibaraku,
+  )
 
   const dispatch = useDispatch()
   const history = useHistory()
 
   const handleStart = useCallback(() => {
-    dispatch(setKumiteTimer(duration))
+    dispatch(setKumiteTimer(duration, atoshibaraku))
     history.push('/kumite-timer')
-  }, [dispatch, duration])
+  }, [dispatch, duration, atoshibaraku])
 
   const handleBack = useCallback(() => {
     history.push('/')
@@ -49,6 +54,17 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
             onChange={setDuration}
             invalid={!isValidDuration}
             errorMessage={insertWords('TODO error translation', LIMITS.duration.min, LIMITS.duration.max)}
+          />
+        </div>
+
+        <div className='set-up-item'>
+          <label>Senchu time:</label>
+          <NumberInput
+            className='set-up-input'
+            value={atoshibaraku}
+            onChange={setAtoshibaraku}
+            invalid={!isValidAtoshibaraku}
+            errorMessage={insertWords('TODO error translation', LIMITS.atoshibaraku.min, LIMITS.atoshibaraku.max)}
           />
         </div>
       </div>

@@ -8,13 +8,18 @@ import { PausableInterval } from '../../../logic/timing/pausableInterval'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
-import { selectKumiteTimerDuration, selectKumiteTimerIsActual } from '../../../redux/kumiteTimer/selector'
+import {
+  selectKumiteTimerAtoshibaraku,
+  selectKumiteTimerDuration,
+  selectKumiteTimerIsActual,
+} from '../../../redux/kumiteTimer/selector'
 import { setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
 import { FighterStats } from '../fighterStats/FighterStats'
 import useControlledState from '../../../logic/hooks/useControledState'
 import { Senchu } from '../utils'
 import { FightStats } from '../fightStats/FightStats'
 import { LIMITS } from '../../../redux/kumiteTimer/utils'
+import { playAtoshibaraku, playSignalEnd, preloadKumiteAudio } from '../../../logic/audio/kumite'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
@@ -24,6 +29,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   const isActual = useSelector(selectKumiteTimerIsActual)
   const duration = useSelector(selectKumiteTimerDuration)
+  const atoshibaraku = useSelector(selectKumiteTimerAtoshibaraku)
 
   const [time, setTime] = useState(duration)
   const [scoreRed, setScoreRed] = useControlledState(0, (value) => value >= 0 && value <= 99)
@@ -32,7 +38,6 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [scoreBlue, setScoreBlue] = useControlledState(0, (value) => value >= 0 && value <= 99)
   const [foulsOneBlue, setFoulsOneBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
   const [foulsTwoBlue, setFoulsTwoBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
-  // TODO - atoshibaraku
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
   const [phase, setPhase] = useState<PlayPhase>('init')
@@ -93,6 +98,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   }, [dispatch])
 
   useEffect(() => {
+    preloadKumiteAudio()
     return () => {
       dispatch(setNotActualKumiteTimer())
       timeoutObj.pause()
@@ -101,10 +107,13 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   useEffect(() => {
     if (time === 0) {
+      playSignalEnd()
       setPhase('finished')
       timeoutObj.pause()
+    } else if (time === atoshibaraku) {
+      playAtoshibaraku()
     }
-  }, [time])
+  }, [time, atoshibaraku])
 
   useEffect(() => {
     !isActual && history.push('/kumite-timer/set-up')

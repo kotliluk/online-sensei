@@ -12,17 +12,20 @@ interface InitKumiteTimer extends Action<typeof INIT_KUMITE_TIMER> {
   payload: {
     isActual: boolean,
     duration: number,
+    atoshibaraku: number,
   }
 }
 
 export const initKumiteTimer = (): InitKumiteTimer => {
   const duration = LS_ACCESS.duration.get()
+  const atoshibaraku = LS_ACCESS.atoshibaraku.get()
 
   return {
     type: INIT_KUMITE_TIMER,
     payload: {
       isActual: false,
       duration,
+      atoshibaraku,
     },
   }
 }
@@ -34,16 +37,19 @@ export const SET_KUMITE_TIMER = 'kumiteTimer/SET_KUMITE_TIMER'
 interface SetKumiteTimer extends Action<typeof SET_KUMITE_TIMER> {
   payload: {
     duration: number,
+    atoshibaraku: number,
   }
 }
 
-export const setKumiteTimer = (duration: number): SetKumiteTimer => {
+export const setKumiteTimer = (duration: number, atoshibaraku: number): SetKumiteTimer => {
   LS_ACCESS.duration.set(duration)
+  LS_ACCESS.atoshibaraku.set(atoshibaraku)
 
   return {
     type: SET_KUMITE_TIMER,
     payload: {
       duration,
+      atoshibaraku,
     },
   }
 }
