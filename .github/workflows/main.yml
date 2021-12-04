@@ -19,6 +19,13 @@ jobs:
         with:
           node-version: 12.x
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
       - name: Install dependencies
         run: yarn install
 
@@ -35,8 +42,12 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run the tests
         run: yarn test
@@ -54,8 +65,12 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
 
       - name: Deploy
         run: |
