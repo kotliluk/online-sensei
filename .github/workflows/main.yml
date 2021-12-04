@@ -49,7 +49,7 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-v2-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run the tests
         run: yarn test
@@ -72,7 +72,7 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-v2-${{ hashFiles('**/package-lock.json') }}
 
       - name: Deploy
         run: |
