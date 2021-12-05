@@ -77,6 +77,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const handleStart = useCallback(() => {
     setPhase('fight')
     setIsPaused(false)
+    // TODO - delete
     setTime(duration)
     timeoutObj.restart(() => {
       setTime(prev => prev - 1)
