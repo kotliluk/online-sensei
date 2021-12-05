@@ -2,9 +2,9 @@ name: CI/CD
 
 on:
   push:
-    branches: [ master, ci-configuraion ]
+    branches: [ main, ci-configuraion ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   prepare:
@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Cache dependencies
+      - name: Try to get cached dependencies
         uses: actions/cache@v2
         id: cache
         with:
@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Cache dependencies
+      - name: Get cached dependencies
         uses: actions/cache@v2
         with:
           path: |
@@ -67,14 +67,14 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Cache dependencies
+      - name: Get cached dependencies
         uses: actions/cache@v2
         with:
           path: |
             **/node_modules
           key: ${{ runner.os }}-v2-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Deploy
+      - name: Deploy on GitHub Pages
         run: |
           git config --global user.name $user_name
           git config --global user.email $user_email
