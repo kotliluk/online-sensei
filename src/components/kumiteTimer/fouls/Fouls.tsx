@@ -14,6 +14,7 @@ interface FoulsProps {
 export const Fouls = (props: FoulsProps): JSX.Element | null => {
   const { className, isRed, fouls, onChange } = props
 
+  // TODO - try without buttons
   return (
     <div className={`__fouls ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <Button className='fouls__btn' onClick={() => onChange(fouls - 1)}>
