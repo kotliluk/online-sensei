@@ -16,6 +16,9 @@ export const CheckBox = (props: CheckBoxProps): JSX.Element => {
   }, [onChange])
 
   return (
-    <input type='checkbox' checked={checked} onChange={handleChange} />
+    <span className={`__checkbox_container ${checked ? 'checked' : ''}`}>
+      <span className='checkmark'/>
+      <input type='checkbox' checked={checked} onChange={handleChange} />
+    </span>
   )
 }
