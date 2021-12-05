@@ -10,6 +10,7 @@ import { setTheme, setTranslation } from '../../../redux/page/actions'
 import { Select } from '../../atoms/select/Select'
 import { getAllTranslations, Language } from '../../../logic/translation'
 import { config } from '../../../config'
+import { OSIcon } from '../../icons/OSIcon'
 
 
 export const PageHeader = (): JSX.Element => {
@@ -29,7 +30,10 @@ export const PageHeader = (): JSX.Element => {
 
   return (
     <header className='page-header'>
-      <Link to={config.basename} className='home-link'>OnlineSensei</Link>
+      <Link to={config.basename} className='home-link'>
+        <OSIcon className='logo' />
+        OnlineSensei
+      </Link>
 
       <div className='lang-settings'>
         <label>{translation.common.language}:</label>

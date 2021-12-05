@@ -40,6 +40,7 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
 
   const { kumiteTimer: { setUpScreen: t } } = translation
 
+  // TODO - change to ul > li
   return (
     <main className='set-up-kumite-timer'>
       <h1>{t.heading}</h1>

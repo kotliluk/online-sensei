@@ -6,5 +6,8 @@ export const playAudio = (file: string, volume = 1): void => {
 
 export const loadAudio = (file: string): void => {
   const a = new Audio(file)
-  a.load()
+  // TODO - fix loading in production
+  // a.load()
+  a.volume = 0
+  a.play().catch(console.error)
 }
