@@ -75,7 +75,25 @@ jobs:
           key: ${{ runner.os }}-v2-${{ hashFiles('**/package-lock.json') }}
 
       - name: Get branch name
+        id: extract_branch
         run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
+
+      - name: Print branch name 1
+        run: echo "${{ steps.extract_branch.outputs.branch }}"
+
+      - name: Print branch name 2
+        run: echo "${ steps.extract_branch.outputs.branch }"
+
+      - name: Print branch name 3
+        run: echo "$( steps.extract_branch.outputs.branch )"
+
+      - name: Install dependencies
+        if: steps.extract_branch.outputs.branch == 'main'
+        run: echo "main"
+
+      - name: Install dependencies
+        if: steps.extract_branch.outputs.branch != 'main'
+        run: echo "not main"
 
 #      - name: Deploy on GitHub Pages
 #        run: |
