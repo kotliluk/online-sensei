@@ -1,9 +1,7 @@
-name: CI/CD
+name: CI/CD main
 
 on:
   push:
-    branches: [ main, ci-configuraion ]
-  pull_request:
     branches: [ main ]
 
 jobs:
@@ -74,16 +72,7 @@ jobs:
             **/node_modules
           key: ${{ runner.os }}-v2-${{ hashFiles('**/package-lock.json') }}
 
-      - name: Get branch name
-        id: extract_branch
-        run: echo "##[set-output name=branch;]${GITHUB_REF#refs/heads/}"
-
-      - name: Skip deploy if not main branch
-        if: steps.extract_branch.outputs.branch != 'main'
-        run: echo "Not main branch, skipping deploy..."
-
-      - name: Deploy if main branch
-        if: steps.extract_branch.outputs.branch == 'main'
+      - name: Deploy
         run: |
           git config --global user.name $user_name
           git config --global user.email $user_email
