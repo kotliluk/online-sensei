@@ -55,7 +55,7 @@ jobs:
 #        run: yarn test
 
   deploy:
-    needs: [ test ]
+#    needs: [ test ]
     runs-on: ubuntu-latest
 
     steps:
