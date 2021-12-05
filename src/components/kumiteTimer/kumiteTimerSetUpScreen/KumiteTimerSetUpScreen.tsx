@@ -45,8 +45,8 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
     <main className='set-up-kumite-timer'>
       <h1>{t.heading}</h1>
 
-      <div className='set-up-items'>
-        <div className='set-up-item'>
+      <ul className='set-up-items'>
+        <li className='set-up-item'>
           <label>{t.duration.label}:</label>
           <NumberInput
             className='set-up-input'
@@ -55,9 +55,9 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
             invalid={!isValidDuration}
             errorMessage={insertWords(t.duration.error, LIMITS.duration.min, LIMITS.duration.max)}
           />
-        </div>
+        </li>
 
-        <div className='set-up-item'>
+        <li className='set-up-item'>
           <label>{t.atoshibaraku.label}:</label>
           <NumberInput
             className='set-up-input'
@@ -66,8 +66,8 @@ export const KumiteTimerSetUpScreen = (): JSX.Element => {
             invalid={!isValidAtoshibaraku}
             errorMessage={insertWords(t.atoshibaraku.error, LIMITS.atoshibaraku.min, LIMITS.atoshibaraku.max)}
           />
-        </div>
-      </div>
+        </li>
+      </ul>
 
       <div className='buttons'>
         <Button

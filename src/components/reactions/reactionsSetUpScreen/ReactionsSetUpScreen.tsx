@@ -102,8 +102,8 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
     <main className='set-up-reactions'>
       <h1>{t.heading}</h1>
 
-      <div className='set-up-items'>
-        <div className='set-up-item'>
+      <ul className='set-up-items'>
+        <li className='set-up-item'>
           <label>{t.rounds.label}:</label>
           <NumberInput
             className='set-up-input'
@@ -112,9 +112,9 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
             invalid={!isValidRounds}
             errorMessage={insertWords(t.rounds.error, LIMITS.rounds.min, LIMITS.rounds.max)}
           />
-        </div>
+        </li>
 
-        <div className='set-up-item'>
+        <li className='set-up-item'>
           <label>{t.signalDuration.label}:</label>
           <NumberInput
             className='set-up-input'
@@ -123,9 +123,9 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
             invalid={!isValidSignal}
             errorMessage={insertWords(t.signalDuration.error, LIMITS.signalDuration.min, LIMITS.signalDuration.max)}
           />
-        </div>
+        </li>
 
-        <div className='set-up-item'>
+        <li className='set-up-item'>
           <label>{t.minInterval.label}:</label>
           <NumberInput
             className='set-up-input'
@@ -137,9 +137,9 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
               [t.minInterval.rangeError, isValidIntervalRange],
             ])}
           />
-        </div>
+        </li>
 
-        <div className='set-up-item'>
+        <li className='set-up-item'>
           <label>{t.maxInterval.label}:</label>
           <NumberInput
             className='set-up-input'
@@ -151,9 +151,9 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
               [t.maxInterval.rangeError, isValidIntervalRange],
             ])}
           />
-        </div>
+        </li>
 
-        <div className='set-up-item'>
+        <li className='set-up-item'>
           <label>{t.signalCount.label}:</label>
           <CounterInput
             minusBtnClassName='set-up-signal-count-cnt-btn'
@@ -163,10 +163,10 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
             min={LIMITS.signalCount.min}
             max={LIMITS.signalCount.max}
           />
-        </div>
+        </li>
 
         {signalColors.slice(0, signalCount).map((color, i) => (
-          <div key={i} className='set-up-item'>
+          <li key={i} className='set-up-item'>
             <label>{`${t.signalColor.label} ${i + 1}:`}</label>
             <Input
               type='color'
@@ -174,10 +174,10 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
               value={color}
               onChange={color => handleSignalColorChange(color, i)}
             />
-          </div>
+          </li>
         ))}
 
-        <div className='set-up-item'>
+        <li className='set-up-item'>
           <label>{t.sound.label}:</label>
           <div className='set-up-volume'>
             <Select
@@ -204,8 +204,8 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
               Try
             </Button> */}
           </div>
-        </div>
-      </div>
+        </li>
+      </ul>
 
       <div className='buttons'>
         <Button
