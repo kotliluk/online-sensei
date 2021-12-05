@@ -31,7 +31,6 @@ export const SettingsMenu = (): JSX.Element => {
     dispatch(setTheme(isDark ? 'dark' : 'light'))
   }, [dispatch])
 
-  // TODO - styled scrollbar
   // TODO - styled toggle input
   return (
     <>

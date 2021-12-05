@@ -9,7 +9,8 @@
   justify-content: flex-start;
   align-items: center;
 
-  padding: 2rem 0;
+  padding-top: 2rem;
+  padding-bottom: 8rem;
 
   min-height: calc(100% - #{$page-header-height});
 
@@ -22,14 +23,17 @@
 @mixin app-screen-with-padding {
   @include app-screen();
 
-  padding: 2rem $screen-side-padding-small-device;
+  padding-left: $screen-side-padding-small-device;
+  padding-right: $screen-side-padding-small-device;
 
   @include M-device {
-    padding: 2rem $screen-side-padding-medium-device;
+    padding-left: $screen-side-padding-medium-device;
+    padding-right: $screen-side-padding-medium-device;
   }
 
   @include L-device {
-    padding: 2rem $screen-side-padding-large-device;
+    padding-left: $screen-side-padding-large-device;
+    padding-right: $screen-side-padding-large-device;
   }
 }
 
@@ -145,5 +149,29 @@
     &:active:not(:disabled) {
       background: darken($color, 25%);
     }
+  }
+}
+
+@mixin with-scrollbar($color, $bg, $hover) {
+  &::-webkit-scrollbar {
+    background-color: $bg;
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: $bg;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $color;
+    border-radius: $border-radius;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: $hover;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: $color;
   }
 }
