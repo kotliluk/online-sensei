@@ -9,6 +9,8 @@ import { setTheme, setTranslation } from '../../../redux/page/actions'
 import { Select } from '../../atoms/select/Select'
 import { getAllTranslations, Language } from '../../../logic/translation'
 import { Button } from '../../atoms/button/Button'
+import { MenuOpened } from '../../icons/MenuOpened'
+import { MenuClosed } from '../../icons/MenuClosed'
 
 
 export const SettingsMenu = (): JSX.Element => {
@@ -28,13 +30,13 @@ export const SettingsMenu = (): JSX.Element => {
     dispatch(setTheme(isDark ? 'dark' : 'light'))
   }, [dispatch])
 
-  // TODO - menu icon
   // TODO - styled checkbox
+  // TODO - styled scrollbar
   // TODO - styled toggle input
   return (
     <>
-      <Button onClick={() => setOpened(o => !o)}>
-        MENU
+      <Button className='menu-toggle-btn' onClick={() => setOpened(o => !o)}>
+        {opened ? <MenuOpened /> : <MenuClosed />}
       </Button>
       <section className={`settings-menu ${opened ? 'opened' : ''}`}>
         <ul className='settings-list'>

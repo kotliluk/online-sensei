@@ -1,8 +1,23 @@
 @import 'src/styles/variables';
 @import 'src/styles/theme';
+@import 'src/styles/mixins';
 
 
 $menu-width: 18rem;
+
+.menu-toggle-btn {
+  @include center-content();
+
+  width: 2rem;
+  height: 2rem;
+
+  @include button-color($orange);
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
 
 .settings-menu {
   position: absolute;
@@ -51,6 +66,8 @@ $menu-width: 18rem;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+
+    font-size: $text-small;
 
     @include themed() {
       color: t($secondary-text);
