@@ -31,6 +31,7 @@ export const SettingsMenu = (): JSX.Element => {
     dispatch(setTheme(isDark ? 'dark' : 'light'))
   }, [dispatch])
 
+  // TODO - closing on click outside
   // TODO - styled toggle input
   return (
     <>

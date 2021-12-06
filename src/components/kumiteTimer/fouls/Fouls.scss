@@ -1,11 +1,8 @@
 @import "src/styles/variables";
 @import "src/styles/mixins";
 @import "src/styles/media";
+@import "src/styles/css-function";
 
-
-$foul-circle-size: 14%;
-$foul-circle-margin: 1%;
-$foul-btn-size: 14%;
 
 .__fouls {
   display: flex;
@@ -17,12 +14,12 @@ $foul-btn-size: 14%;
   .foul-circle {
     display: inline-block;
     height: 0;
-    padding-bottom: $foul-circle-size;
-    width: $foul-circle-size;
+    padding-bottom: css-min(20%, 10vh);
+    width: css-min(20%, 10vh);
 
     border-radius: 50%;
     border: 1px solid $black;
-    margin: calc(#{$foul-circle-margin} * 2) $foul-circle-margin;
+    margin: 2% 1%;
   }
 
   &.red {
@@ -34,33 +31,6 @@ $foul-btn-size: 14%;
   &.blue {
     .foul-circle.checked {
       background-color: $blue;
-    }
-  }
-
-  .fouls__btn {
-    @include button-color($orange);
-
-    position: relative;
-    display: inline-block;
-    height: 0;
-    padding: 0 0 $foul-btn-size 0;
-    width: $foul-btn-size;
-
-    @include M-device() {
-      padding: 0 0 3rem 0;
-      width: 3rem;
-    }
-
-    .fouls__btn__text {
-      @include center-content();
-
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-
-      font-weight: bold;
     }
   }
 }
