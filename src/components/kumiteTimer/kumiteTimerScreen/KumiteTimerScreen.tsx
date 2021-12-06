@@ -32,6 +32,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const atoshibaraku = useSelector(selectKumiteTimerAtoshibaraku)
 
   const [time, setTime] = useState(duration)
+  const [redOnLeft, setRedOnLeft] = useState(true)
   const [scoreRed, setScoreRed] = useControlledState(0, (value) => value >= 0 && value <= 99)
   const [foulsOneRed, setFoulsOneRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
   const [foulsTwoRed, setFoulsTwoRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
@@ -161,17 +162,18 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       <h1>{t.heading}</h1>
 
       <div className='timer'>
-        {renderRedData('left-fighter')}
+        {redOnLeft ? renderRedData('left-fighter') : renderBlueData('left-fighter')}
         <FightStats
           className='fight-stats'
           time={time}
+          redOnLeft={redOnLeft}
           senchu={senchu}
           timeButtonsDisabled={dangerousButtonsDisabled}
           onTimeReset={() => setTime(duration)}
           onTimeChange={handleManualTimeChange}
           onSenchuChange={handleSenchuChange}
         />
-        {renderBlueData('right-fighter')}
+        {redOnLeft ? renderBlueData('right-fighter') : renderRedData('right-fighter')}
       </div>
 
       <div className='buttons'>

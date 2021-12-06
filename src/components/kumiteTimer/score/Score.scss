@@ -39,30 +39,23 @@ $btn-size: 14%;
   }
 
   .score__btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
     @include button-color($orange);
 
-    position: relative;
-    display: inline-block;
-    height: 0;
-    padding: 0 0 $btn-size 0;
-    margin: 0 $btn-margin;
-    width: $btn-size;
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+    margin: 0 0.25rem;
+
+    font-weight: bold;
 
     @include M-device() {
-      padding: 0 0 3rem 0;
+      height: 3rem;
       width: 3rem;
-    }
-
-    .score__btn__text {
-      @include center-content();
-
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-
-      font-weight: bold;
+      margin: 0 0.5rem;
     }
   }
 }

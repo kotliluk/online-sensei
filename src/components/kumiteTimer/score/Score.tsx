@@ -18,15 +18,9 @@ export const Score = (props: ScoreProps): JSX.Element | null => {
     <div className={`__score ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <span className='score__value'>{score}</span>
       <div className='score__btns'>
-        <Button className='score__btn' onClick={() => onChange(0)}>
-          <span className='score__btn__text'>0</span>
-        </Button>
-        <Button className='score__btn' onClick={() => onChange(score - 1)}>
-          <span className='score__btn__text'>-</span>
-        </Button>
-        <Button className='score__btn' onClick={() => onChange(score + 1)}>
-          <span className='score__btn__text'>+</span>
-        </Button>
+        <Button className='score__btn' onClick={() => onChange(0)}>0</Button>
+        <Button className='score__btn' onClick={() => onChange(score - 1)}>-</Button>
+        <Button className='score__btn' onClick={() => onChange(score + 1)}>+</Button>
       </div>
     </div>
   )

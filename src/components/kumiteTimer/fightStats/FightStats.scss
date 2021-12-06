@@ -19,15 +19,31 @@
     cursor: default;
   }
 
-  .fight-stats__btns {
+  .fight-stats__time-btns {
     order: 3;
 
     text-align: center;
   }
 
-  .fight-stats__btn {
+  .fight-stats__time-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
     @include button-color($orange);
+
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
     margin: 0 0.25rem;
+
+    font-weight: bold;
+
+    @include M-device() {
+      height: 3rem;
+      width: 3rem;
+      margin: 0 0.5rem;
+    }
 
     &.reset {
       width: 8rem;
