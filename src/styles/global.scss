@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
 @import 'variables';
+@import 'mixins';
+
 
 html, body, #root, .app {
   height: 100%;
@@ -10,6 +12,18 @@ html, body, #root {
   padding: 0;
   font-family: $fontFamily;
   font-size: 1rem;
+}
+
+.theme--light.app {
+  @include with-scrollbar($grey-light, $white, darken($grey-light, 10%));
+}
+
+.theme--dark.app {
+  @include with-scrollbar($grey-dark, $grey, lighten($grey-dark, 5%));
+}
+
+.app {
+  overflow-x: hidden;
 }
 
 * {
@@ -34,6 +48,11 @@ h3 {
 hr {
   margin: 1rem 0;
   width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 .hidden {

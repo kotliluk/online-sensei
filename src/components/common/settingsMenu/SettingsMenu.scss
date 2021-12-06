@@ -1,0 +1,80 @@
+@import 'src/styles/variables';
+@import 'src/styles/theme';
+@import 'src/styles/mixins';
+
+
+$menu-width: 18rem;
+
+.menu-toggle-btn {
+  @include center-content();
+
+  width: 2rem;
+  height: 2rem;
+
+  @include button-color($orange);
+
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+.settings-menu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  width: $menu-width;
+  min-height: 30vh;
+
+  top: calc(100% + 0.125rem);
+  right: 0;
+  transform: translateX($menu-width);
+  transition: transform 200ms linear;
+  z-index: 1;
+
+  border-radius: $border-radius 0 0 $border-radius;
+  padding: 1.5rem;
+
+  &.opened {
+    transform: translateX(0);
+  }
+
+  @include themed() {
+    background-color: t($secondary-color);
+    color: t($primary-text);
+  }
+
+  .settings-list {
+    padding: 0;
+    margin: 0;
+  }
+
+  [class$="settings"] {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 100%;
+    height: 2.5rem;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: $text-small;
+
+    @include themed() {
+      color: t($secondary-text);
+    }
+  }
+
+  .github-link {
+    text-decoration: underline;
+  }
+}

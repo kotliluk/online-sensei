@@ -13,7 +13,7 @@ const App = (): JSX.Element => {
   const theme = useSelector(selectTheme)
 
   return (
-    <div className={`app theme theme--${theme}`}>
+    <div className={`app theme--${theme}`}>
       <PageHeader />
       <Switch>
         <Route path='/reactions'>

@@ -44,11 +44,18 @@
     justify-content: space-between;
     align-items: center;
 
-    cursor: default;
+    .senchu-red .checkmark {
+      background-color: $red;
+    }
+
+    .senchu-blue  .checkmark {
+      background-color: $blue;
+    }
   }
 
   .fight-stats__senchu__text {
     font-size: $text-large;
+    cursor: default;
   }
 
   @include XL-device() {

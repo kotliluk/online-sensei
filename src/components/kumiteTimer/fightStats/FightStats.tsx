@@ -41,9 +41,9 @@ export const FightStats = (props: FightStatsProps): JSX.Element | null => {
       </div>
 
       <div className='fight-stats__senchu'>
-        <CheckBox checked={senchu === 'RED'} onChange={() => onSenchuChange('RED')} />
+        <CheckBox className='senchu-red' checked={senchu === 'RED'} onChange={() => onSenchuChange('RED')} />
         <span className='fight-stats__senchu__text'>Senchu</span>
-        <CheckBox checked={senchu === 'BLUE'} onChange={() => onSenchuChange('BLUE')} />
+        <CheckBox className='senchu-blue' checked={senchu === 'BLUE'} onChange={() => onSenchuChange('BLUE')} />
       </div>
     </div>
   )
