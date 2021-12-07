@@ -2,32 +2,37 @@
 import React from 'react'
 import './Score.scss'
 import { Button } from '../../atoms/button/Button'
+import { emptyFunc } from '../../../utils/function'
 
 
 interface ScoreProps {
   className?: string
   isRed: boolean
   score: number
-  onChange: (score: number) => void
+  isMirror: boolean
+  onChange?: (score: number) => void
 }
 
-export const Score = (props: ScoreProps): JSX.Element | null => {
-  const { className, isRed, score, onChange } = props
+export const Score = ({
+  className,
+  isRed,
+  score,
+  isMirror,
+  onChange = emptyFunc,
+}: ScoreProps): JSX.Element | null => {
 
+  // TODO - use __ prefixes constantly
   return (
-    <div className={`__score ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
-      <span className='score__value'>{score}</span>
-      <div className='score__btns'>
-        <Button className='score__btn' onClick={() => onChange(0)}>
-          <span className='score__btn__text'>0</span>
-        </Button>
-        <Button className='score__btn' onClick={() => onChange(score - 1)}>
-          <span className='score__btn__text'>-</span>
-        </Button>
-        <Button className='score__btn' onClick={() => onChange(score + 1)}>
-          <span className='score__btn__text'>+</span>
-        </Button>
-      </div>
+    <div className={`__score ${isRed ? '__red' : '__blue'} ${className ?? ''}`}>
+      <span className={`__score__value ${isMirror ? '__mirror' : ''}`}>{score}</span>
+
+      {!isMirror && (
+        <div className='__score__btns'>
+          <Button className='__score__btn' onClick={() => onChange(0)}>0</Button>
+          <Button className='__score__btn' onClick={() => onChange(score - 1)}>-</Button>
+          <Button className='__score__btn' onClick={() => onChange(score + 1)}>+</Button>
+        </div>
+      )}
     </div>
   )
 }

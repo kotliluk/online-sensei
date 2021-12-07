@@ -9,7 +9,7 @@
   justify-content: center;
   align-items: center;
 
-  .fight-stats__time {
+  .__fight-stats__time {
     order: 2;
 
     text-align: center;
@@ -19,22 +19,38 @@
     cursor: default;
   }
 
-  .fight-stats__btns {
+  .__fight-stats__time-btns {
     order: 3;
 
     text-align: center;
-  }
 
-  .fight-stats__btn {
-    @include button-color($orange);
-    margin: 0 0.25rem;
+    .__time-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
 
-    &.reset {
-      width: 8rem;
+      @include button-color($orange);
+
+      height: 2rem;
+      width: 2rem;
+      padding: 0;
+      margin: 0 0.25rem;
+
+      font-weight: bold;
+
+      @include M-device() {
+        height: 3rem;
+        width: 3rem;
+        margin: 0 0.5rem;
+      }
+
+      &.__reset-btn {
+        width: 8rem;
+      }
     }
   }
 
-  .fight-stats__senchu {
+  .__fight-stats__senchu {
     order: 1;
 
     width: 50%;
@@ -44,40 +60,67 @@
     justify-content: space-between;
     align-items: center;
 
-    .senchu-red .checkmark {
+    .__senchu-red .checkmark {
       background-color: $red;
     }
 
-    .senchu-blue  .checkmark {
+    .__senchu-blue  .checkmark {
       background-color: $blue;
+    }
+
+    .__senchu-text {
+      font-size: $text-large;
+      cursor: default;
     }
   }
 
-  .fight-stats__senchu__text {
-    font-size: $text-large;
-    cursor: default;
+  .__fight-stats__settings {
+    order: 4;
+    margin-top: 1rem;
+
+    .__settings-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+
+      @include button-color($orange);
+
+      height: 2.5rem;
+      width: 2.5rem;
+      padding: 0;
+      margin: 0 0.5rem;
+
+      svg {
+        height: 1.8rem;
+        width: 1.8rem;
+      }
+    }
   }
 
   @include XL-device() {
-    .fight-stats__time {
+    .__fight-stats__time {
       order: 1;
       font-size: 24vmin;
       margin: 0;
     }
 
-    .fight-stats__btns {
+    .__fight-stats__btns {
       order: 2;
     }
 
-    .fight-stats__senchu {
+    .__fight-stats__senchu {
       order: 3;
 
       width: 80%;
       margin-top: 2rem;
+
+      .__senchu-text {
+        font-size: $text-huge;
+      }
     }
 
-    .fight-stats__senchu__text {
-      font-size: $text-huge;
+    .__fight-stats__settings {
+      margin-top: 2rem;
     }
   }
 }

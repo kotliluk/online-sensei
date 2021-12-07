@@ -13,56 +13,54 @@ $btn-size: 14%;
   text-align: center;
   margin-bottom: 5vmin;
 
-  .score__value {
-    margin: -8vmin 0;
+  .__score__value {
     flex-grow: 1;
     font-size: 40vmin;
+    margin: -8vmin 0;
+
+    &.__mirror {
+      font-size: 50vmin;
+      margin: -10vmin -1vmin;
+    }
   }
 
-  &.red {
-    .score__value {
+  &.__red {
+    .__score__value {
       color: $red;
     }
   }
 
-  &.blue {
-    .score__value {
+  &.__blue {
+    .__score__value {
       color: $blue;
     }
   }
 
-  .score__btns {
+  .__score__btns {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
   }
 
-  .score__btn {
+  .__score__btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
     @include button-color($orange);
 
-    position: relative;
-    display: inline-block;
-    height: 0;
-    padding: 0 0 $btn-size 0;
-    margin: 0 $btn-margin;
-    width: $btn-size;
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+    margin: 0 0.25rem;
+
+    font-weight: bold;
 
     @include M-device() {
-      padding: 0 0 3rem 0;
+      height: 3rem;
       width: 3rem;
-    }
-
-    .score__btn__text {
-      @include center-content();
-
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-
-      font-weight: bold;
+      margin: 0 0.5rem;
     }
   }
 }

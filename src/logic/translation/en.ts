@@ -89,6 +89,7 @@ export const EN: Translation = {
     },
     playScreen: {
       heading: 'Kumite Timer',
+      switchSides: 'Switch sides',
     },
   },
 }

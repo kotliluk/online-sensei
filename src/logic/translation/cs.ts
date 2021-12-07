@@ -89,6 +89,7 @@ export const CS: Translation = {
     },
     playScreen: {
       heading: 'Kumite Časomíra',
+      switchSides: 'Změnit strany',
     },
   },
 }
