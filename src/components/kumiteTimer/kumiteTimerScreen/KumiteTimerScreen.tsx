@@ -41,7 +41,6 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [foulsTwoBlue, setFoulsTwoBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
-  // TODO - switch sides
   // TODO - open in new mirror window
 
   const [phase, setPhase] = useState<PlayPhase>('init')
@@ -56,6 +55,10 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       setTime(newTime)
     }
   }, [setTime])
+
+  const handleSwitchSides = useCallback(() => {
+    setRedOnLeft(prev => !prev)
+  }, [setRedOnLeft])
 
   const handleSenchuChange = useCallback((senchu: Senchu) => {
     setSenchu(prev => prev === senchu ? 'NONE' : senchu)
@@ -171,6 +174,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
           timeButtonsDisabled={dangerousButtonsDisabled}
           onTimeReset={() => setTime(duration)}
           onTimeChange={handleManualTimeChange}
+          onSwitchSides={handleSwitchSides}
           onSenchuChange={handleSenchuChange}
         />
         {redOnLeft ? renderBlueData('right-fighter') : renderRedData('right-fighter')}

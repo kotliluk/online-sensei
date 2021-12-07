@@ -17,13 +17,17 @@ interface FightStatsProps {
   timeButtonsDisabled: boolean
   onTimeChange: (time: number) => void
   onTimeReset: () => void
+  onSwitchSides: () => void
   onSenchuChange: (senchu: Senchu) => void
 }
 
 export const FightStats = (props: FightStatsProps): JSX.Element | null => {
-  const { className, time, redOnLeft, senchu, timeButtonsDisabled, onTimeChange, onTimeReset, onSenchuChange } = props
+  const {
+    className, time, redOnLeft, senchu, timeButtonsDisabled,
+    onTimeChange, onTimeReset, onSwitchSides, onSenchuChange,
+  } = props
 
-  const { common: t } = useSelector(selectTranslation)
+  const { common: ct, kumiteTimer: t } = useSelector(selectTranslation)
 
   const renderCheckBox = useCallback((color: 'RED' | 'BLUE') => (
     <CheckBox
@@ -35,28 +39,30 @@ export const FightStats = (props: FightStatsProps): JSX.Element | null => {
 
   return (
     <div className={`__fight-stats ${className ?? ''}`}>
-      <span className='fight-stats__time'>{parseTimeFromSeconds(time)}</span>
+      <span className='__fight-stats__time'>{parseTimeFromSeconds(time)}</span>
 
-      <div className='fight-stats__time-btns'>
-        <Button className='fight-stats__time-btn reset' onClick={() => onTimeReset()} disabled={timeButtonsDisabled}>
-          {`${t.reset} ${t.time.toLowerCase()}`}
+      <div className='__fight-stats__time-btns'>
+        <Button className='__time-btn __reset-btn' onClick={() => onTimeReset()} disabled={timeButtonsDisabled}>
+          {`${ct.reset} ${ct.time.toLowerCase()}`}
         </Button>
-        <Button className='fight-stats__time-btn' onClick={() => onTimeChange(time - 1)} disabled={timeButtonsDisabled}>
+        <Button className='__time-btn' onClick={() => onTimeChange(time - 1)} disabled={timeButtonsDisabled}>
           -
         </Button>
-        <Button className='fight-stats__time-btn' onClick={() => onTimeChange(time + 1)} disabled={timeButtonsDisabled}>
+        <Button className='__time-btn' onClick={() => onTimeChange(time + 1)} disabled={timeButtonsDisabled}>
           +
         </Button>
       </div>
 
-      <div className='fight-stats__senchu'>
+      <div className='__fight-stats__senchu'>
         {redOnLeft ? renderCheckBox('RED') : renderCheckBox('BLUE')}
-        <span className='fight-stats__senchu__text'>Senchu</span>
+        <span className='__senchu-text'>Senchu</span>
         {redOnLeft ? renderCheckBox('BLUE') : renderCheckBox('RED')}
       </div>
 
-      <div>
-        {/* TODO - sides toggle */}
+      <div className='__fight-stats__settings'>
+        <Button className='__switch-sides-btn' onClick={onSwitchSides} disabled={timeButtonsDisabled}>
+          {t.playScreen.switchSides}
+        </Button>
       </div>
     </div>
   )

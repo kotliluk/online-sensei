@@ -92,6 +92,7 @@ export interface Translation {
     },
     playScreen: {
       heading: string,
+      switchSides: string,
     },
   }
 }
