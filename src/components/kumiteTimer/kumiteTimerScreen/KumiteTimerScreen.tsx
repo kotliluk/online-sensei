@@ -16,10 +16,11 @@ import {
 import { setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
 import { FighterStats } from '../fighterStats/FighterStats'
 import useControlledState from '../../../logic/hooks/useControledState'
-import { Senchu } from '../utils'
+import { LS_KEYS, Senchu } from '../utils'
 import { FightStats } from '../fightStats/FightStats'
 import { LIMITS } from '../../../redux/kumiteTimer/utils'
 import { playAtoshibaraku, playSignalEnd, preloadKumiteAudio } from '../../../logic/audio/kumite'
+import { useLSSyncProvider } from '../../../logic/hooks/useLSSyncProvider'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
@@ -41,7 +42,14 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [foulsTwoBlue, setFoulsTwoBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
-  // TODO - open in new mirror window
+  useLSSyncProvider(time, LS_KEYS.time)
+  useLSSyncProvider(scoreRed, LS_KEYS.scoreRed)
+  useLSSyncProvider(foulsOneRed, LS_KEYS.foulsOneRed)
+  useLSSyncProvider(foulsTwoRed, LS_KEYS.foulsTwoRed)
+  useLSSyncProvider(scoreBlue, LS_KEYS.scoreBlue)
+  useLSSyncProvider(foulsOneBlue, LS_KEYS.foulsOneBlue)
+  useLSSyncProvider(foulsTwoBlue, LS_KEYS.foulsTwoBlue)
+  useLSSyncProvider(senchu, LS_KEYS.senchu)
 
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(true)
@@ -54,6 +62,10 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     if (newTime >= 0 && newTime <= LIMITS.duration.max) {
       setTime(newTime)
     }
+  }, [setTime])
+
+  const handleManualTimeReset = useCallback(() => {
+    setTime(duration)
   }, [setTime])
 
   const handleSwitchSides = useCallback(() => {
@@ -133,6 +145,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       score={scoreRed}
       foulsOne={foulsOneRed}
       foulsTwo={foulsTwoRed}
+      isMirror={false}
       onScoreChange={setScoreRed}
       onFoulsOneChange={setFoulsOneRed}
       onFoulsTwoChange={setFoulsTwoRed}
@@ -146,6 +159,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       score={scoreBlue}
       foulsOne={foulsOneBlue}
       foulsTwo={foulsTwoBlue}
+      isMirror={false}
       onScoreChange={setScoreBlue}
       onFoulsOneChange={setFoulsOneBlue}
       onFoulsTwoChange={setFoulsTwoBlue}
@@ -171,8 +185,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
           time={time}
           redOnLeft={redOnLeft}
           senchu={senchu}
+          isMirror={false}
           timeButtonsDisabled={dangerousButtonsDisabled}
-          onTimeReset={() => setTime(duration)}
+          onTimeReset={handleManualTimeReset}
           onTimeChange={handleManualTimeChange}
           onSwitchSides={handleSwitchSides}
           onSenchuChange={handleSenchuChange}

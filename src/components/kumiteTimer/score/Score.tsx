@@ -2,26 +2,36 @@
 import React from 'react'
 import './Score.scss'
 import { Button } from '../../atoms/button/Button'
+import { emptyFunc } from '../../../utils/function'
 
 
 interface ScoreProps {
   className?: string
   isRed: boolean
   score: number
-  onChange: (score: number) => void
+  isMirror: boolean
+  onChange?: (score: number) => void
 }
 
-export const Score = (props: ScoreProps): JSX.Element | null => {
-  const { className, isRed, score, onChange } = props
+export const Score = ({
+  className,
+  isRed,
+  score,
+  isMirror,
+  onChange = emptyFunc,
+}: ScoreProps): JSX.Element | null => {
 
   return (
     <div className={`__score ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <span className='score__value'>{score}</span>
-      <div className='score__btns'>
-        <Button className='score__btn' onClick={() => onChange(0)}>0</Button>
-        <Button className='score__btn' onClick={() => onChange(score - 1)}>-</Button>
-        <Button className='score__btn' onClick={() => onChange(score + 1)}>+</Button>
-      </div>
+
+      {!isMirror && (
+        <div className='score__btns'>
+          <Button className='score__btn' onClick={() => onChange(0)}>0</Button>
+          <Button className='score__btn' onClick={() => onChange(score - 1)}>-</Button>
+          <Button className='score__btn' onClick={() => onChange(score + 1)}>+</Button>
+        </div>
+      )}
     </div>
   )
 }

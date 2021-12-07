@@ -3,6 +3,7 @@ import React from 'react'
 import './FighterStats.scss'
 import { Fouls } from '../fouls/Fouls'
 import { Score } from '../score/Score'
+import { emptyFunc } from '../../../utils/function'
 
 
 interface FighterStatsProps {
@@ -11,20 +12,27 @@ interface FighterStatsProps {
   score: number
   foulsOne: number
   foulsTwo: number
-  onScoreChange: (score: number) => void
-  onFoulsOneChange: (fouls: number) => void
-  onFoulsTwoChange: (fouls: number) => void
+  isMirror: boolean
+  onScoreChange?: (score: number) => void
+  onFoulsOneChange?: (fouls: number) => void
+  onFoulsTwoChange?: (fouls: number) => void
 }
 
-export const FighterStats = (props: FighterStatsProps): JSX.Element | null => {
-  const {
-    className, isRed, score, foulsOne, foulsTwo,
-    onScoreChange, onFoulsOneChange, onFoulsTwoChange,
-  } = props
+export const FighterStats = ({
+  className,
+  isRed,
+  score,
+  foulsOne,
+  foulsTwo,
+  isMirror,
+  onScoreChange = emptyFunc,
+  onFoulsOneChange = emptyFunc,
+  onFoulsTwoChange = emptyFunc,
+}: FighterStatsProps): JSX.Element | null => {
 
   return (
     <section className={`__fighter-stats ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
-      <Score isRed={isRed} score={score} onChange={onScoreChange} />
+      <Score isRed={isRed} score={score} isMirror={isMirror} onChange={onScoreChange} />
       <Fouls isRed={isRed} fouls={foulsOne} onChange={onFoulsOneChange} />
       <Fouls isRed={isRed} fouls={foulsTwo} onChange={onFoulsTwoChange} />
     </section>
