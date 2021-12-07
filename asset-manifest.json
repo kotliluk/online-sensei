@@ -1,25 +1,27 @@
 {
   "files": {
-    "main.css": "/online-sensei/static/css/main.2fc26ec8.chunk.css",
-    "main.js": "/online-sensei/static/js/main.6f14c3bf.chunk.js",
-    "main.js.map": "/online-sensei/static/js/main.6f14c3bf.chunk.js.map",
+    "main.css": "/online-sensei/static/css/main.43b6602f.chunk.css",
+    "main.js": "/online-sensei/static/js/main.c8a78b33.chunk.js",
+    "main.js.map": "/online-sensei/static/js/main.c8a78b33.chunk.js.map",
     "runtime-main.js": "/online-sensei/static/js/runtime-main.eba61c75.js",
     "runtime-main.js.map": "/online-sensei/static/js/runtime-main.eba61c75.js.map",
-    "static/js/2.8ff16e62.chunk.js": "/online-sensei/static/js/2.8ff16e62.chunk.js",
-    "static/js/2.8ff16e62.chunk.js.map": "/online-sensei/static/js/2.8ff16e62.chunk.js.map",
+    "static/js/2.a4620c99.chunk.js": "/online-sensei/static/js/2.a4620c99.chunk.js",
+    "static/js/2.a4620c99.chunk.js.map": "/online-sensei/static/js/2.a4620c99.chunk.js.map",
     "index.html": "/online-sensei/index.html",
-    "static/css/main.2fc26ec8.chunk.css.map": "/online-sensei/static/css/main.2fc26ec8.chunk.css.map",
-    "static/js/2.8ff16e62.chunk.js.LICENSE.txt": "/online-sensei/static/js/2.8ff16e62.chunk.js.LICENSE.txt",
+    "static/css/main.43b6602f.chunk.css.map": "/online-sensei/static/css/main.43b6602f.chunk.css.map",
+    "static/js/2.a4620c99.chunk.js.LICENSE.txt": "/online-sensei/static/js/2.a4620c99.chunk.js.LICENSE.txt",
     "static/media/audio_off.2c544e8d.svg": "/online-sensei/static/media/audio_off.2c544e8d.svg",
     "static/media/audio_on.2768b73f.svg": "/online-sensei/static/media/audio_on.2768b73f.svg",
     "static/media/menu_closed.64d02871.svg": "/online-sensei/static/media/menu_closed.64d02871.svg",
     "static/media/menu_opened.cbdc1067.svg": "/online-sensei/static/media/menu_opened.cbdc1067.svg",
-    "static/media/os_icon.3313ce1a.svg": "/online-sensei/static/media/os_icon.3313ce1a.svg"
+    "static/media/os_icon.3313ce1a.svg": "/online-sensei/static/media/os_icon.3313ce1a.svg",
+    "static/media/switch.3d312cb0.svg": "/online-sensei/static/media/switch.3d312cb0.svg",
+    "static/media/two_monitors.9abc9cd9.svg": "/online-sensei/static/media/two_monitors.9abc9cd9.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.eba61c75.js",
-    "static/js/2.8ff16e62.chunk.js",
-    "static/css/main.2fc26ec8.chunk.css",
-    "static/js/main.6f14c3bf.chunk.js"
+    "static/js/2.a4620c99.chunk.js",
+    "static/css/main.43b6602f.chunk.css",
+    "static/js/main.c8a78b33.chunk.js"
   ]
 }
