@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { unquote } from '../../utils/string'
 
 
 /**
@@ -8,8 +9,13 @@ export const useLSSyncConsumer = <T = string>(key: string, parser: (value: strin
   const [value, setValue] = useState(localStorage.getItem(key))
 
   const update = useCallback(() => {
-    setValue(localStorage.getItem(key))
-  }, [setValue])
+    const newValue = localStorage.getItem(key)
+    if (newValue === null) {
+      setValue(newValue)
+    } else {
+      setValue(unquote(newValue))
+    }
+  }, [setValue, key])
 
   useEffect(() => {
     window.addEventListener('storage', update)

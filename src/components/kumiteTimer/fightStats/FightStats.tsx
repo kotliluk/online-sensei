@@ -9,6 +9,8 @@ import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
 import { config } from '../../../config'
 import { emptyFunc } from '../../../utils/function'
+import { Switch } from '../../icons/Switch'
+import { TwoMonitors } from '../../icons/TwoMonitors'
 
 
 interface FightStatsProps {
@@ -44,13 +46,13 @@ export const FightStats = ({
 
   const renderCheckBox = useCallback((color: 'RED' | 'BLUE') => (
     <CheckBox
-      className={`senchu-${color.toLowerCase()}`}
+      className={`__senchu-${color.toLowerCase()}`}
       checked={senchu === color}
       onChange={() => onSenchuChange(color)}
     />
   ), [senchu, onSenchuChange])
 
-  const { common: ct, kumiteTimer: t } = useSelector(selectTranslation)
+  const { common: ct } = useSelector(selectTranslation)
 
   return (
     <div className={`__fight-stats ${className ?? ''}`}>
@@ -77,13 +79,13 @@ export const FightStats = ({
       </div>
 
       <div className='__fight-stats__settings'>
-        <Button className='__switch-sides-btn' onClick={onSwitchSides} disabled={timeButtonsDisabled && !isMirror}>
-          {t.playScreen.switchSides}
+        <Button className='__settings-btn' onClick={onSwitchSides} disabled={timeButtonsDisabled && !isMirror}>
+          <Switch />
         </Button>
 
         {!isMirror && (
-          <Button className='__open-mirror-btn' onClick={openMirrorWindow} disabled={timeButtonsDisabled}>
-            [_][_]
+          <Button className='__settings-btn' onClick={openMirrorWindow} disabled={timeButtonsDisabled}>
+            <TwoMonitors />
           </Button>
         )}
       </div>

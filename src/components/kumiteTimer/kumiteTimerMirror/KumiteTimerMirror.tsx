@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback, useState } from 'react'
-import './KumiteTimerMirror.scss'
+import '../kumiteTimerScreen/KumiteTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
 import { FighterStats } from '../fighterStats/FighterStats'
@@ -21,7 +21,7 @@ export const KumiteTimerMirror = (): JSX.Element | null => {
   const scoreBlue = useLSSyncConsumer(LS_KEYS.scoreBlue, intOrDefaultParser(0))
   const foulsOneBlue = useLSSyncConsumer(LS_KEYS.foulsOneBlue, intOrDefaultParser(0))
   const foulsTwoBlue = useLSSyncConsumer(LS_KEYS.foulsTwoBlue, intOrDefaultParser(0))
-  const senchu = useLSSyncConsumer(LS_KEYS.foulsTwoBlue, (value) => value ? value as Senchu : 'NONE')
+  const senchu = useLSSyncConsumer(LS_KEYS.senchu, (value) => value ? value as Senchu : 'BLUE')
 
   const handleSwitchSides = useCallback(() => {
     setRedOnLeft(prev => !prev)
