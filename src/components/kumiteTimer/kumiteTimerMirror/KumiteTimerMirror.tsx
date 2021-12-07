@@ -1,8 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback, useState } from 'react'
 import '../kumiteTimerScreen/KumiteTimerScreen.scss'
-import { useSelector } from '../../../redux/useSelector'
-import { selectTranslation } from '../../../redux/page/selector'
 import { FighterStats } from '../fighterStats/FighterStats'
 import { LS_KEYS, Senchu } from '../utils'
 import { FightStats } from '../fightStats/FightStats'
@@ -11,8 +9,6 @@ import { intOrDefaultParser } from '../../../utils/number'
 
 
 export const KumiteTimerMirror = (): JSX.Element | null => {
-  const translation = useSelector(selectTranslation)
-
   const [redOnLeft, setRedOnLeft] = useState(true)
   const time = useLSSyncConsumer(LS_KEYS.time, intOrDefaultParser(0))
   const scoreRed = useLSSyncConsumer(LS_KEYS.scoreRed, intOrDefaultParser(0))
@@ -49,12 +45,8 @@ export const KumiteTimerMirror = (): JSX.Element | null => {
     />
   ), [scoreBlue, foulsOneBlue, foulsTwoBlue])
 
-  const { kumiteTimer: { playScreen: t } } = translation
-
   return (
     <main className='kumite-timer'>
-      <h1>{t.heading}</h1>
-
       <div className='timer'>
         {redOnLeft ? renderRedData('left-fighter') : renderBlueData('left-fighter')}
         <FightStats

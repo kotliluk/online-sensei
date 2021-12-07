@@ -21,15 +21,16 @@ export const Score = ({
   onChange = emptyFunc,
 }: ScoreProps): JSX.Element | null => {
 
+  // TODO - use __ prefixes constantly
   return (
-    <div className={`__score ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
-      <span className='score__value'>{score}</span>
+    <div className={`__score ${isRed ? '__red' : '__blue'} ${className ?? ''}`}>
+      <span className={`__score__value ${isMirror ? '__mirror' : ''}`}>{score}</span>
 
       {!isMirror && (
-        <div className='score__btns'>
-          <Button className='score__btn' onClick={() => onChange(0)}>0</Button>
-          <Button className='score__btn' onClick={() => onChange(score - 1)}>-</Button>
-          <Button className='score__btn' onClick={() => onChange(score + 1)}>+</Button>
+        <div className='__score__btns'>
+          <Button className='__score__btn' onClick={() => onChange(0)}>0</Button>
+          <Button className='__score__btn' onClick={() => onChange(score - 1)}>-</Button>
+          <Button className='__score__btn' onClick={() => onChange(score + 1)}>+</Button>
         </div>
       )}
     </div>

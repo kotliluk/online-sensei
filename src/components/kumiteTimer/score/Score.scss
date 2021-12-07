@@ -13,32 +13,37 @@ $btn-size: 14%;
   text-align: center;
   margin-bottom: 5vmin;
 
-  .score__value {
-    margin: -8vmin 0;
+  .__score__value {
     flex-grow: 1;
     font-size: 40vmin;
+    margin: -8vmin 0;
+
+    &.__mirror {
+      font-size: 50vmin;
+      margin: -10vmin -1vmin;
+    }
   }
 
-  &.red {
-    .score__value {
+  &.__red {
+    .__score__value {
       color: $red;
     }
   }
 
-  &.blue {
-    .score__value {
+  &.__blue {
+    .__score__value {
       color: $blue;
     }
   }
 
-  .score__btns {
+  .__score__btns {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
   }
 
-  .score__btn {
+  .__score__btn {
     display: inline-flex;
     justify-content: center;
     align-items: center;
