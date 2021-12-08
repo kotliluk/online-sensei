@@ -117,6 +117,7 @@ export const EN: Translation = {
     },
     playScreen: {
       heading: 'Interval timer',
+      round: 'Round',
     },
   },
 }

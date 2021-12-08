@@ -3,49 +3,73 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import './IntervalTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
-import {
-  selectReactionsAudioSound,
-  selectReactionsAudioVolume,
-  selectReactionsIsActual,
-  selectReactionsMaxInterval,
-  selectReactionsMinInterval,
-  selectReactionsRounds,
-  selectReactionsSignalColors, selectReactionsSignalCount,
-  selectReactionsSignalDuration,
-} from '../../../redux/reactions/selector'
 import { useDispatch } from '../../../redux/useDispatch'
-import { setNotActualReactions } from '../../../redux/reactions/actions'
-import { getRandomInt } from '../../../utils/random'
-import { PausableTimeout } from '../../../logic/timing/pausableTimeout'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
-import { playBeep } from '../../../logic/audio/beep'
 import { selectTranslation } from '../../../redux/page/selector'
+import { selectIntervalTimerIntervals, selectIntervalTimerIsActual } from '../../../redux/intervalTimer/selector'
+import { setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
+import { PausableInterval } from '../../../logic/timing/pausableInterval'
 
 
-type PlayPhase = 'init' | 'start' | 'signal' | 'waiting' | 'finished'
+type PlayPhase = 'init' | 'start' | 'intervals' | 'finished'
 
 export const IntervalTimerScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
 
-  const isActual = useSelector(selectReactionsIsActual)
-  const rounds = useSelector(selectReactionsRounds)
-  const signalDuration = useSelector(selectReactionsSignalDuration)
-  const minInterval = useSelector(selectReactionsMinInterval)
-  const maxInterval = useSelector(selectReactionsMaxInterval)
-  const signalCount = useSelector(selectReactionsSignalCount)
-  const signalColors = useSelector(selectReactionsSignalColors)
-  const audioSound = useSelector(selectReactionsAudioSound)
-  const audioVolume = useSelector(selectReactionsAudioVolume)
+  const isActual = useSelector(selectIntervalTimerIsActual)
+  const intervals = useSelector(selectIntervalTimerIntervals)
 
-  const [round, setRound] = useState(0)
+  // remaining time in current interval
+  const [currTime, setCurrTime] = useState(intervals[0].duration)
+  // total number of rounds (work intervals)
+  const [totalRounds] = useState(intervals.filter((i) => i.type === 'work').length)
+  // actual round (number of previous work intervals)
+  const [currRound, setCurrRound] = useState(intervals[0].type === 'work' ? 1 : 0)
+  // total number of intervals
+  const [totalIntervals] = useState(intervals.length)
+  // index of the current interval
+  const [currInterval, setCurrentInterval] = useState(0)
+  // type of the current interval
+  const [currIntervalType, setCurrentIntervalType] = useState(intervals[0].type)
+
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(false)
-  const [curSignal, setCurSignal] = useState(0)
-  const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
+  const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
   const history = useHistory()
+
+  // handles change of intervals
+  useEffect(() => {
+    if (phase === 'init' || phase === 'finished') {
+      return
+    }
+
+    clock.pause()
+    if (currInterval === totalIntervals) {
+      setPhase('finished')
+    } else {
+      if (intervals[currInterval].type === 'work') {
+        setCurrRound(prev => prev + 1)
+      }
+      setCurrTime(intervals[currInterval].duration)
+      setCurrentIntervalType(intervals[currInterval].type)
+      clock.restart()
+    }
+  }, [currInterval])
+
+  // handles change of seconds
+  useEffect(() => {
+    if (phase === 'init' || phase === 'finished') {
+      return
+    }
+
+    if (currTime === 0) {
+      setCurrentInterval(prev => prev + 1)
+      clock.pause()
+    }
+  }, [currTime])
 
   const handleTogglePause = useCallback(() => {
     if (phase === 'finished') {
@@ -54,50 +78,37 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
 
     if (isPaused) {
       setIsPaused(false)
-      timeoutObj.resume()
+      clock.resume()
     } else {
       setIsPaused(true)
-      timeoutObj.pause()
+      clock.pause()
     }
-  }, [phase, isPaused, setIsPaused, timeoutObj])
+  }, [phase, isPaused, setIsPaused, clock])
+
+  const handleStart = useCallback(() => {
+    setPhase('intervals')
+    setIsPaused(false)
+    clock.restart(() => setCurrTime(prev => prev - 1), 1000)
+  }, [isPaused, setIsPaused, setCurrTime])
 
   const handleReset = useCallback(() => {
-    setPhase('start')
-    setIsPaused(false)
-    setRound(0)
-  }, [isPaused, setIsPaused, setRound])
+    setPhase('init')
+    setIsPaused(true)
+    setCurrTime(intervals[0].duration)
+    setCurrentInterval(0)
+    setCurrRound(intervals[0].type === 'work' ? 1 : 0)
+  }, [isPaused, setIsPaused, setCurrRound])
 
   const handleGoBack = useCallback(() => {
-    dispatch(setNotActualReactions())
+    dispatch(setNotActualIntervalTimer())
   }, [dispatch])
 
   useEffect(() => {
     return () => {
-      dispatch(setNotActualReactions())
-      timeoutObj.pause()
+      dispatch(setNotActualIntervalTimer())
+      clock.pause()
     }
   }, [])
-
-  useEffect(() => {
-    if (phase === 'start' || phase === 'waiting') {
-      // WAITING phase has started
-      if (round === rounds) {
-        setPhase('finished')
-      } else {
-        timeoutObj.restart(() => {
-          setCurSignal(getRandomInt(0, signalCount))
-          setPhase('signal')
-        }, getRandomInt(minInterval, maxInterval))
-      }
-    } else if (phase === 'signal') {
-      // SIGNAL phase has started
-      playBeep(audioSound, signalDuration, audioVolume)
-      timeoutObj.restart(() => {
-        setRound(prev => prev + 1)
-        setPhase('waiting')
-      }, signalDuration)
-    }
-  }, [phase])
 
   useEffect(() => {
     !isActual && history.push('/interval-timer/set-up')
@@ -107,27 +118,20 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
     return null
   }
 
-  const { reactions: { playScreen: t }, common: ct } = translation
+  const { intervalTimer: { playScreen: t }, common: ct } = translation
 
-  const inProgress = phase === 'waiting' || phase === 'signal' || phase === 'start'
+  const inProgress = phase === 'intervals' || phase === 'start'
 
   return (
     <main className='play-reactions'>
       <h1>{t.heading}</h1>
       <p>
-        {round < rounds && `${t.round}: ${round + 1}/${rounds}`}
-        {round === rounds && `${ct.finished}!`}
+        {currInterval < totalIntervals && `${t.round}: ${currRound}/${totalRounds}`}
+        {currInterval === totalIntervals && `${ct.finished}!`}
       </p>
 
-      <div className={`signal-boxes boxes-${signalCount}`}>
-        {signalColors.slice(0, signalCount).map((color, i) => (
-          <div
-            key={i}
-            className='signal-box'
-            style={(phase === 'signal' && curSignal === i) ? { backgroundColor: color } : {}}
-          />
-        ))}
-      </div>
+      <h1>{currTime}</h1>
+      <h1>{currIntervalType}</h1>
 
       <div className='buttons'>
         <Button
@@ -139,7 +143,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
         </Button>
         <Button
           className={phase === 'init' ? 'green' : 'orange'}
-          onClick={handleReset}
+          onClick={phase === 'init' ? handleStart : handleReset}
           disabled={inProgress && !isPaused}
         >
           {phase === 'init' ? ct.start : ct.reset}

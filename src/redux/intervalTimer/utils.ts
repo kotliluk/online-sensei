@@ -4,6 +4,7 @@ import { getValidatedNumberFromLS, saveToLS } from '../../logic/localStorage/acc
 import { Limits, Validator } from '../../logic/validation/types'
 import { anythingIsValid, isBetweenValidator } from '../../logic/validation/validators'
 import { initialState, State } from './state'
+import { isValidInterval } from '../../types/interval'
 
 
 export const LIMITS: Limits<State> = {
@@ -17,6 +18,7 @@ export const VALIDATOR: Validator<State> = {
   simpleRounds: isBetweenValidator(LIMITS.simpleRounds),
   simpleWork: isBetweenValidator(LIMITS.simpleWork),
   simplePause: isBetweenValidator(LIMITS.simplePause),
+  intervals: (arr) => arr.every((x) => isValidInterval(x)),
 }
 
 export const LS_KEYS: LSMapper<State> = {
@@ -41,5 +43,9 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
   simplePause: {
     get: () => getValidatedNumberFromLS(LS_KEYS.simplePause, VALIDATOR.simplePause, initialState.simplePause),
     set: (value) => saveToLS(LS_KEYS.simplePause, value),
+  },
+  intervals: {
+    get: () => initialState.intervals,
+    set: emptyFunc,
   },
 }

@@ -53,7 +53,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(true)
-  const [timeoutObj] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
+  const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -83,19 +83,17 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
     if (isPaused) {
       setIsPaused(false)
-      timeoutObj.resume()
+      clock.resume()
     } else {
       setIsPaused(true)
-      timeoutObj.pause()
+      clock.pause()
     }
-  }, [phase, isPaused, setIsPaused, timeoutObj])
+  }, [phase, isPaused, setIsPaused, clock])
 
   const handleStart = useCallback(() => {
     setPhase('fight')
     setIsPaused(false)
-    timeoutObj.restart(() => {
-      setTime(prev => prev - 1)
-    }, 1000)
+    clock.restart(() => setTime(prev => prev - 1), 1000)
   }, [isPaused, setIsPaused, setTime])
 
   const handleReset = useCallback(() => {
@@ -109,7 +107,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     setFoulsOneBlue(0)
     setFoulsTwoBlue(0)
     setSenchu('NONE')
-    timeoutObj.pause()
+    clock.pause()
   }, [isPaused, setIsPaused, setTime])
 
   const handleGoBack = useCallback(() => {
@@ -120,7 +118,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     preloadKumiteAudio()
     return () => {
       dispatch(setNotActualKumiteTimer())
-      timeoutObj.pause()
+      clock.pause()
     }
   }, [])
 
@@ -128,7 +126,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     if (time === 0) {
       playSignalEnd()
       setPhase('finished')
-      timeoutObj.pause()
+      clock.pause()
     } else if (time === atoshibaraku) {
       playAtoshibaraku()
     }

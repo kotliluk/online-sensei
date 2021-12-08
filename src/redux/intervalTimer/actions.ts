@@ -1,6 +1,8 @@
 import { Action } from 'redux'
 import { State } from './state'
 import { LS_ACCESS } from './utils'
+import { Interval } from '../../types/interval'
+import { range } from '../../utils/array'
 
 
 export type Actions = InitIntervalTimer | SetIntervalTimer | SetNotActualIntervalTimer
@@ -17,6 +19,7 @@ export const initIntervalTimer = (): InitIntervalTimer => {
   const simpleRounds = LS_ACCESS.simpleRounds.get()
   const simpleWork = LS_ACCESS.simpleWork.get()
   const simplePause = LS_ACCESS.simplePause.get()
+  const intervals = LS_ACCESS.intervals.get()
 
   return {
     type: INIT_INTERVAL_TIMER,
@@ -25,6 +28,7 @@ export const initIntervalTimer = (): InitIntervalTimer => {
       simpleRounds,
       simpleWork,
       simplePause,
+      intervals,
     },
   }
 }
@@ -46,6 +50,11 @@ export const setIntervalTimer = (
   LS_ACCESS.simpleWork.set(simpleWork)
   LS_ACCESS.simplePause.set(simplePause)
 
+  const intervals: Interval[] = range(simpleRounds).flatMap(() => [
+    { type: 'work', name: '', duration: simpleWork } as Interval,
+    { type: 'pause', name: '', duration: simplePause } as Interval,
+  ]).slice(0, -1)
+
   return {
     type: SET_INTERVAL_TIMER,
     payload: {
@@ -53,6 +62,7 @@ export const setIntervalTimer = (
       simpleRounds,
       simpleWork,
       simplePause,
+      intervals,
     },
   }
 }
