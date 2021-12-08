@@ -27,7 +27,6 @@ export const SettingsMenu = (): JSX.Element => {
   }, [dispatch])
 
   const handleThemeChange = useCallback((isDark: boolean) => {
-    console.log(isDark)
     dispatch(setTheme(isDark ? 'dark' : 'light'))
   }, [dispatch])
 

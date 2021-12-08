@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback } from 'react'
-import './KumiteTimerSetUpScreen.scss'
+import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { useHistory } from 'react-router-dom'
 import { NumberInput } from '../../atoms/input/NumberInput'
@@ -14,7 +14,7 @@ import { selectKumiteTimerAtoshibaraku, selectKumiteTimerDuration } from '../../
 import { setKumiteTimer } from '../../../redux/kumiteTimer/actions'
 
 
-export const KumiteTimerSetUpScreen = (): JSX.Element => {
+export const SetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
   const initDuration = useSelector(selectKumiteTimerDuration)

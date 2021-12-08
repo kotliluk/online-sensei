@@ -7,6 +7,7 @@ import { ReactionsPage } from './pages/reactions/ReactionsPage'
 import { KumiteTimerPage } from './pages/kumiteTimer/KumiteTimerPage'
 import { useSelector } from './redux/useSelector'
 import { selectTheme } from './redux/page/selector'
+import { IntervalTimerPage } from './pages/intervalTimer/IntervalTimerPage'
 
 
 const App = (): JSX.Element => {
@@ -21,6 +22,9 @@ const App = (): JSX.Element => {
         </Route>
         <Route path='/kumite-timer'>
           <KumiteTimerPage />
+        </Route>
+        <Route path='/interval-timer'>
+          <IntervalTimerPage />
         </Route>
         <Route path='/' exact>
           <MainPage />

@@ -31,6 +31,10 @@ export const EN: Translation = {
       annotation: 'Take your friend for kumite fight with easy-to-use kumite timer',
       link: 'Kumite timer',
     },
+    intervalTimer: {
+      annotation: 'Prepare interval training with intervals as you need',
+      link: 'Interval timer',
+    },
   },
   reactions: {
     setUpScreen: {
@@ -90,6 +94,29 @@ export const EN: Translation = {
     playScreen: {
       heading: 'Kumite Timer',
       switchSides: 'Switch sides',
+    },
+  },
+  intervalTimer: {
+    setUpScreen: {
+      heading: 'Interval timer',
+      rounds: {
+        label: 'Rounds',
+        // 2 params
+        error: 'Rounds must be set between __{1}__ and __{2}__.',
+      },
+      workInterval: {
+        label: 'Work interval (s)',
+        // 2 params
+        error: 'Work interval must be set between __{1}__ and __{2}__.',
+      },
+      pauseInterval: {
+        label: 'Pause interval (s)',
+        // 2 params
+        error: 'Pause interval must be set between __{1}__ and __{2}__.',
+      },
+    },
+    playScreen: {
+      heading: 'Interval timer',
     },
   },
 }

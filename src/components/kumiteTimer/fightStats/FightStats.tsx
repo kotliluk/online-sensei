@@ -40,7 +40,6 @@ export const FightStats = ({
 }: FightStatsProps): JSX.Element | null => {
 
   const openMirrorWindow = useCallback(() => {
-    console.log(window.location.origin)
     window.open(window.location.origin + config.basename + '?mirror=true', '_blank')
   }, [])
 

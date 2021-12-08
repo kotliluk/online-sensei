@@ -34,6 +34,10 @@ export interface Translation {
       annotation: string,
       link: string,
     },
+    intervalTimer: {
+      annotation: string,
+      link: string,
+    },
   }
   reactions: {
     setUpScreen: {
@@ -93,6 +97,29 @@ export interface Translation {
     playScreen: {
       heading: string,
       switchSides: string,
+    },
+  }
+  intervalTimer: {
+    setUpScreen: {
+      heading: string,
+      rounds: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      workInterval: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      pauseInterval: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+    },
+    playScreen: {
+      heading: string,
     },
   }
 }

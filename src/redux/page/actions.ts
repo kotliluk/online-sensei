@@ -3,6 +3,7 @@ import { Theme } from '../../types/theme'
 import { LS_ACCESS } from './utils'
 import { getTranslation, Language } from '../../logic/translation'
 import { Translation } from '../../logic/translation/translation'
+import { State } from './state'
 
 
 export type Actions = InitPage | SetTheme | SetTranslation
@@ -12,11 +13,7 @@ export type Actions = InitPage | SetTheme | SetTranslation
 export const INIT_PAGE = 'page/INIT_PAGE'
 
 interface InitPage extends Action<typeof INIT_PAGE> {
-  payload: {
-    theme: Theme,
-    language: Language,
-    translation: Translation,
-  }
+  payload: State
 }
 
 export const initPage = (): InitPage => {

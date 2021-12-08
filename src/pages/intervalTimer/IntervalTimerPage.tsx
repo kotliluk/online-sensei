@@ -1,13 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import { ReactionsScreen } from '../../components/reactions/reactionsScreen/ReactionsScreen'
-import { SetUpScreen } from '../../components/reactions/setUpScreen/SetUpScreen'
+import { SetUpScreen } from '../../components/intervalTimer/setUpScreen/SetUpScreen'
+import { IntervalTimerScreen } from '../../components/intervalTimer/intervalTimerScreen/IntervalTimerScreen'
 
 
-const PAGE_PATH = 'reactions'
+const PAGE_PATH = 'interval-timer'
 
-export const ReactionsPage = (): JSX.Element => {
+export const IntervalTimerPage = (): JSX.Element => {
   return (
     <Switch>
       <Route path={`/${PAGE_PATH}/set-up`} exact>
@@ -17,7 +17,7 @@ export const ReactionsPage = (): JSX.Element => {
         <Redirect to={`/${PAGE_PATH}/set-up`} />
       </Route>
       <Route path={`/${PAGE_PATH}`} exact>
-        <ReactionsScreen />
+        <IntervalTimerScreen />
       </Route>
       <Route path={`/${PAGE_PATH}/*`}>
         <Redirect to={`/${PAGE_PATH}`} />

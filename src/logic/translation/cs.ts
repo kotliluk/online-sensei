@@ -31,6 +31,10 @@ export const CS: Translation = {
       annotation: 'Dej si s kamarádem kumite zápas díky jednoduché kumite časomíře',
       link: 'Kumite časomíra',
     },
+    intervalTimer: {
+      annotation: 'Připrav si kruhový nebo intervalový trénink s přesně takovými intervaly, jak potřebuješ',
+      link: 'Intervalové stopky',
+    },
   },
   reactions: {
     setUpScreen: {
@@ -90,6 +94,29 @@ export const CS: Translation = {
     playScreen: {
       heading: 'Kumite Časomíra',
       switchSides: 'Změnit strany',
+    },
+  },
+  intervalTimer: {
+    setUpScreen: {
+      heading: 'Intervalové stopky',
+      rounds: {
+        label: 'Kola',
+        // 2 params
+        error: 'Kol musí být mezi __{1}__ a __{2}__.',
+      },
+      workInterval: {
+        label: 'Zátěž (s)',
+        // 2 params
+        error: 'Zátěž musí být mezi __{1}__ a __{2}__.',
+      },
+      pauseInterval: {
+        label: 'Pauza (s)',
+        // 2 params
+        error: 'Pauza musí být mezi __{1}__ a __{2}__.',
+      },
+    },
+    playScreen: {
+      heading: 'Intervalové stopky',
     },
   },
 }
