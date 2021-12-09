@@ -1,4 +1,4 @@
-import { parseTime, TimeUnit as TU } from '../time'
+import { parseMinTime, parseTime, TimeUnit as TU } from '../time'
 
 
 describe('parseTimeFromSeconds - default options', () => {
@@ -31,6 +31,24 @@ describe('parseTimeFromSeconds - given options', () => {
   ])('%s', ({ input, unit, maxUnit, minUnit, expected }) => {
     // act
     const actual = parseTime(input, unit, maxUnit, minUnit)
+    // assert
+    expect(actual).toBe(expected)
+  })
+})
+
+describe('parseMinTime', () => {
+  test.each([
+    { sec: 0, expected: '0' },
+    { sec: 1, expected: '1' },
+    { sec: 10, expected: '10' },
+    { sec: 60, expected: '1:00' },
+    { sec: 75, expected: '1:15' },
+    { sec: 143, expected: '2:23' },
+    { sec: 3600, expected: '1:00:00' },
+    { sec: 3675, expected: '1:01:15' },
+  ])('%s', ({ sec, expected }) => {
+    // act
+    const actual = parseMinTime(sec)
     // assert
     expect(actual).toBe(expected)
   })

@@ -10,10 +10,10 @@ export enum TimeUnit {
 
 // [from][to]
 const castTable = [
-  [1,                    60,              60 * 60,  60 * 60 * 10],
-  [1 / 60,               1,               60,       60 * 10     ],
-  [1 / (60 * 60),        1 / 60,          1,        10          ],
-  [1 / (60 * 60 * 10), 1 / (60 * 10), 1 / 10, 1             ],
+  [1,                  60,            60 * 60, 60 * 60 * 10],
+  [1 / 60,             1,             60,      60 * 10     ],
+  [1 / (60 * 60),      1 / 60,        1,       10          ],
+  [1 / (60 * 60 * 10), 1 / (60 * 10), 1 / 10,  1             ],
 ]
 
 export const castUnits = (amount: number, inUnit: TimeUnit, outUnit: TimeUnit): number => {
@@ -73,5 +73,22 @@ export const parseTime = (
     }
   }
 
+  return ret
+}
+
+export const parseMinTime = (sec: number): string => {
+  let ret = ''
+  let cur = sec
+  if (sec >= 3600) {
+    const hours = Math.floor(cur / 3600)
+    cur -= hours * 3600
+    ret += `${hours.toString()}:`
+  }
+  if (sec >= 60) {
+    const minutes = Math.floor(cur / 60)
+    cur -= minutes * 60
+    ret += `${minutes.toString().padStart(ret.length > 0 ? 2 : 1, '0')}:`
+  }
+  ret += `${cur.toString().padStart(ret.length > 0 ? 2 : 1, '0')}`
   return ret
 }

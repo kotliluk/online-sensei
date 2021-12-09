@@ -10,6 +10,7 @@ import { selectTranslation } from '../../../redux/page/selector'
 import { selectIntervalTimerIntervals, selectIntervalTimerIsActual } from '../../../redux/intervalTimer/selector'
 import { setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
 import { PausableInterval } from '../../../logic/timing/pausableInterval'
+import { parseMinTime } from '../../../utils/time'
 
 
 type PlayPhase = 'init' | 'start' | 'intervals' | 'finished'
@@ -96,6 +97,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
     setIsPaused(true)
     setCurrTime(intervals[0].duration)
     setCurrentInterval(0)
+    setCurrentIntervalType(intervals[0].type)
     setCurrRound(intervals[0].type === 'work' ? 1 : 0)
   }, [isPaused, setIsPaused, setCurrRound])
 
@@ -130,8 +132,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
         {currInterval === totalIntervals && `${ct.finished}!`}
       </p>
 
-      <h1>{currTime}</h1>
-      <h1>{currIntervalType}</h1>
+      <span className={`time ${currIntervalType}`}>{parseMinTime(currTime)}</span>
 
       <div className='buttons'>
         <Button

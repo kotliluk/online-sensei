@@ -10,46 +10,15 @@
     font-weight: bold;
   }
 
-  .signal-boxes {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
+  .time {
+    font-size: 40vmin;
 
-    .signal-box {
-      @include center-content();
-      font-size: $text-huge;
-      font-weight: bold;
-
-      border: 2px solid $black;
-      border-radius: 50%;
-      background-color: transparent;
+    &.work {
+      color: $red;
     }
 
-    &.boxes-1 {
-      .signal-box {
-        margin: 4vmin;
-        width: 80vmin;
-        height: 80vmin;
-      }
-    }
-
-    &.boxes-2 {
-      .signal-box {
-        margin: 2vmax;
-        width: 40vmax;
-        height: 40vmax;
-        max-width: 80vmin;
-        max-height: 80vmin;
-      }
-    }
-
-    &.boxes-3, &.boxes-4 {
-      .signal-box {
-        margin: 2vmin;
-        width: 40vmin;
-        height: 40vmin;
-      }
+    &.pause {
+      color: $green;
     }
   }
 
