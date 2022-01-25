@@ -178,13 +178,13 @@ export const SetUpScreen = (): JSX.Element => {
         ))}
 
         <li className='set-up-item'>
-          <label>{t.sound.label}:</label>
+          <label>{translation.common.sound}:</label>
           <div className='set-up-volume'>
             <Select
               className='set-up-volume-select'
               selected={audioSound}
               values={[
-                { value: NO_BEEP, text: t.sound.noAudio },
+                { value: NO_BEEP, text: translation.common.noSound },
                 { value: BEEP_A, text: getBeepName(BEEP_A) },
               ]}
               onChange={handleAudioChange}

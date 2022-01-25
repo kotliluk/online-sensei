@@ -56,7 +56,7 @@ export const SettingsMenu = (): JSX.Element => {
 
         <div className='info'>
           <span className='author'>
-            Lukáš Kotlík, © 2021
+            Lukáš Kotlík, © {new Date().getFullYear()}
           </span>
           <a
             className='github-link'

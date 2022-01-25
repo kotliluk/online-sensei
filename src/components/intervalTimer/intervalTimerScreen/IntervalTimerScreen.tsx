@@ -7,10 +7,16 @@ import { useDispatch } from '../../../redux/useDispatch'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
-import { selectIntervalTimerIntervals, selectIntervalTimerIsActual } from '../../../redux/intervalTimer/selector'
+import {
+  selectIntervalTimerAudioSound,
+  selectIntervalTimerAudioVolume,
+  selectIntervalTimerIntervals,
+  selectIntervalTimerIsActual,
+} from '../../../redux/intervalTimer/selector'
 import { setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
 import { PausableInterval } from '../../../logic/timing/pausableInterval'
 import { parseMinTime } from '../../../utils/time'
+import { playBeep } from '../../../logic/audio/beep'
 
 
 type PlayPhase = 'init' | 'start' | 'intervals' | 'finished'
@@ -20,6 +26,8 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
 
   const isActual = useSelector(selectIntervalTimerIsActual)
   const intervals = useSelector(selectIntervalTimerIntervals)
+  const audioSound = useSelector(selectIntervalTimerAudioSound)
+  const audioVolume = useSelector(selectIntervalTimerAudioVolume)
 
   // remaining time in current interval
   const [currTime, setCurrTime] = useState(intervals[0].duration)
@@ -47,6 +55,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
       return
     }
 
+    playBeep(audioSound, 500, audioVolume)
     clock.pause()
     if (currInterval === totalIntervals) {
       setPhase('finished')

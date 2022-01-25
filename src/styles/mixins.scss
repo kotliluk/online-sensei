@@ -103,6 +103,34 @@
   }
 }
 
+@mixin set-up-audio-div {
+  .set-up-volume {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .set-up-volume-select {
+      margin-right: 1rem;
+    }
+
+    .set-up-volume-input {
+      width: 12ch;
+    }
+
+    .set-up-volume-mute {
+      @include button-color($orange);
+    }
+
+    .set-up-volume-try {
+      @include button-color($orange);
+      @include center-content;
+      height: 2rem;
+      width: 4rem;
+      margin-left: 0.5rem;
+    }
+  }
+}
+
 @mixin center-content {
   display: flex;
   flex-direction: column;

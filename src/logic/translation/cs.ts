@@ -10,6 +10,8 @@ export const CS: Translation = {
     language: 'Jazyk',
     time: 'Čas',
     fight: 'Zápas',
+    sound: 'Zvuk',
+    noSound: 'Žádný zvuk',
     // user actions
     back: 'Zpět',
     finished: 'Hotovo',
@@ -67,10 +69,6 @@ export const CS: Translation = {
       signalColor: {
         label: 'Barva signálu',
       },
-      sound: {
-        label: 'Zvuk',
-        noAudio: 'Žádný zvuk',
-      },
     },
     playScreen: {
       heading: 'Reakce',
@@ -113,6 +111,9 @@ export const CS: Translation = {
         label: 'Pauza (s)',
         // 2 params
         error: 'Pauza musí být mezi __{1}__ a __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Přeskočit poslední pauzu',
       },
     },
     playScreen: {

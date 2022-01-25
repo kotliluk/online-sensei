@@ -13,6 +13,8 @@ export interface Translation {
     language: string,
     time: string,
     fight: string,
+    sound: string,
+    noSound: string,
     // user actions
     back: string,
     finished: string,
@@ -70,10 +72,6 @@ export interface Translation {
       signalColor: {
         label: string,
       },
-      sound: {
-        label: string,
-        noAudio: string,
-      },
     },
     playScreen: {
       heading: string,
@@ -116,6 +114,9 @@ export interface Translation {
         label: string,
         // 2 params
         error: string,
+      },
+      skipLastPause: {
+        label: string,
       },
     },
     playScreen: {

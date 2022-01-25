@@ -10,6 +10,8 @@ export const EN: Translation = {
     language: 'Language',
     time: 'Time',
     fight: 'Fight',
+    sound: 'Sound',
+    noSound: 'No sound',
     // user actions
     back: 'Back',
     finished: 'Finished',
@@ -67,10 +69,6 @@ export const EN: Translation = {
       signalColor: {
         label: 'Signal color',
       },
-      sound: {
-        label: 'Sound',
-        noAudio: 'No audio',
-      },
     },
     playScreen: {
       heading: 'Reactions',
@@ -113,6 +111,9 @@ export const EN: Translation = {
         label: 'Pause interval (s)',
         // 2 params
         error: 'Pause interval must be set between __{1}__ and __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Skip last pause',
       },
     },
     playScreen: {

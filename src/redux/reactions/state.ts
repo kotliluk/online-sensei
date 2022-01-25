@@ -1,4 +1,4 @@
-import { BeepType, NO_BEEP } from '../../types/beepType'
+import { BEEP_A, BeepType } from '../../types/beepType'
 
 
 export interface State {
@@ -21,6 +21,6 @@ export const initialState: State = {
   maxInterval: 4000,
   signalCount: 2,
   signalColors: ['#ff0000', '#0000ff', '#35d600', '#ffc800'],
-  audioSound: NO_BEEP,
+  audioSound: BEEP_A,
   audioVolume: 1,
 }
