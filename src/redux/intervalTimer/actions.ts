@@ -1,12 +1,12 @@
 import { Action } from 'redux'
-import { State } from './state'
+import { AdvancedState, SimpleState, State } from './state'
 import { LS_ACCESS } from './utils'
 import { Interval } from '../../types/interval'
 import { range } from '../../utils/array'
 import { BeepType } from '../../types/beepType'
 
 
-export type Actions = InitIntervalTimer | SetIntervalTimer | SetNotActualIntervalTimer
+export type Actions = InitIntervalTimer | SetIntervalTimerSimple | SetIntervalTimerAdvanced | SetNotActualIntervalTimer
 
 /** ******************* Init interval timer state from local storage *********************/
 
@@ -21,6 +21,10 @@ export const initIntervalTimer = (): InitIntervalTimer => {
   const simpleWork = LS_ACCESS.simpleWork.get()
   const simplePause = LS_ACCESS.simplePause.get()
   const skipLastPause = LS_ACCESS.skipLastPause.get()
+
+  const advancedRoundIntervals = LS_ACCESS.advancedRoundIntervals.get()
+  const advancedRounds = LS_ACCESS.advancedRounds.get()
+
   const audioSound = LS_ACCESS.audioSound.get()
   const audioVolume = LS_ACCESS.audioVolume.get()
   const intervals = LS_ACCESS.intervals.get()
@@ -28,10 +32,14 @@ export const initIntervalTimer = (): InitIntervalTimer => {
   return {
     type: INIT_INTERVAL_TIMER,
     payload: {
-      isActual: false,
       simpleRounds,
       simpleWork,
       simplePause,
+
+      advancedRoundIntervals,
+      advancedRounds,
+
+      isActual: false,
       skipLastPause,
       audioSound,
       audioVolume,
@@ -40,22 +48,22 @@ export const initIntervalTimer = (): InitIntervalTimer => {
   }
 }
 
-/** ******************* Set interval timer state *********************/
+/** ******************* Set interval timer simple state *********************/
 
-export const SET_INTERVAL_TIMER = 'intervalTimer/SET_INTERVAL_TIMER'
+export const SET_INTERVAL_TIMER_SIMPLE = 'intervalTimer/SET_INTERVAL_TIMER_SIMPLE'
 
-interface SetIntervalTimer extends Action<typeof SET_INTERVAL_TIMER> {
-  payload: State
+interface SetIntervalTimerSimple extends Action<typeof SET_INTERVAL_TIMER_SIMPLE> {
+  payload: SimpleState
 }
 
-export const setIntervalTimer = (
+export const setIntervalTimerSimple = (
   simpleRounds: number,
   simpleWork: number,
   simplePause: number,
   skipLastPause: boolean,
   audioSound: BeepType,
   audioVolume: number,
-): SetIntervalTimer => {
+): SetIntervalTimerSimple => {
   LS_ACCESS.simpleRounds.set(simpleRounds)
   LS_ACCESS.simpleWork.set(simpleWork)
   LS_ACCESS.simplePause.set(simplePause)
@@ -69,7 +77,7 @@ export const setIntervalTimer = (
   ]).slice(0, skipLastPause ? -1 : undefined)
 
   return {
-    type: SET_INTERVAL_TIMER,
+    type: SET_INTERVAL_TIMER_SIMPLE,
     payload: {
       isActual: true,
       simpleRounds,
@@ -82,6 +90,47 @@ export const setIntervalTimer = (
     },
   }
 }
+
+/** ******************* Set interval timer advanced state *********************/
+
+export const SET_INTERVAL_TIMER_ADVANCED = 'intervalTimer/SET_INTERVAL_TIMER_ADVANCED'
+
+interface SetIntervalTimerAdvanced extends Action<typeof SET_INTERVAL_TIMER_ADVANCED> {
+  payload: AdvancedState
+}
+
+export const setIntervalTimerAdvanced = (
+  advancedRoundIntervals: Interval[],
+  advancedRounds: number,
+  skipLastPause: boolean,
+  audioSound: BeepType,
+  audioVolume: number,
+): SetIntervalTimerAdvanced => {
+  LS_ACCESS.advancedRoundIntervals.set(advancedRoundIntervals)
+  LS_ACCESS.advancedRounds.set(advancedRounds)
+  LS_ACCESS.skipLastPause.set(skipLastPause)
+  LS_ACCESS.audioSound.set(audioSound)
+  LS_ACCESS.audioVolume.set(audioVolume)
+
+  const intervals: Interval[] = range(advancedRounds)
+    .flatMap(() => advancedRoundIntervals)
+    .slice(0, skipLastPause ? -1 : undefined)
+
+  return {
+    type: SET_INTERVAL_TIMER_ADVANCED,
+    payload: {
+      advancedRoundIntervals,
+      advancedRounds,
+
+      isActual: true,
+      skipLastPause,
+      audioSound,
+      audioVolume,
+      intervals,
+    },
+  }
+}
+
 
 /** ******************* Set interval timer as not actual *********************/
 

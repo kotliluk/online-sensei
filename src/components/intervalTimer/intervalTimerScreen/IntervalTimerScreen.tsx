@@ -24,6 +24,8 @@ type PlayPhase = 'init' | 'start' | 'intervals' | 'finished'
 export const IntervalTimerScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
 
+  // TODO - show current interval name
+
   const isActual = useSelector(selectIntervalTimerIsActual)
   const intervals = useSelector(selectIntervalTimerIntervals)
   const audioSound = useSelector(selectIntervalTimerAudioSound)

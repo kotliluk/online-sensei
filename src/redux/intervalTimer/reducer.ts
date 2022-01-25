@@ -1,5 +1,11 @@
 import { initialState, State } from './state'
-import { Actions, INIT_INTERVAL_TIMER, SET_INTERVAL_TIMER, SET_NOT_ACTUAL_INTERVAL_TIMER } from './actions'
+import {
+  Actions,
+  INIT_INTERVAL_TIMER,
+  SET_INTERVAL_TIMER_SIMPLE,
+  SET_INTERVAL_TIMER_ADVANCED,
+  SET_NOT_ACTUAL_INTERVAL_TIMER,
+} from './actions'
 
 
 // eslint-disable-next-line @typescript-eslint/default-param-last
@@ -10,7 +16,13 @@ export function reducer (state = initialState, action: Actions): State {
         ...action.payload,
       }
 
-    case SET_INTERVAL_TIMER:
+    case SET_INTERVAL_TIMER_SIMPLE:
+      return {
+        ...state,
+        ...action.payload,
+      }
+
+    case SET_INTERVAL_TIMER_ADVANCED:
       return {
         ...state,
         ...action.payload,

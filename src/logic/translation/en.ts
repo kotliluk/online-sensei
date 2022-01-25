@@ -95,7 +95,7 @@ export const EN: Translation = {
     },
   },
   intervalTimer: {
-    setUpScreen: {
+    setUpScreenSimple: {
       heading: 'Interval timer',
       rounds: {
         label: 'Rounds',
@@ -115,6 +115,19 @@ export const EN: Translation = {
       skipLastPause: {
         label: 'Skip last pause',
       },
+      advancedSettingsBtn: 'Advanced settings',
+    },
+    setUpScreenAdvanced: {
+      heading: 'Interval timer',
+      series: {
+        label: 'Series',
+        // 2 params
+        error: 'Series must be set between __{1}__ and __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Skip last pause',
+      },
+      basicSettingsBtn: 'Basic settings',
     },
     playScreen: {
       heading: 'Interval timer',

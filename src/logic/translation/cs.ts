@@ -95,7 +95,7 @@ export const CS: Translation = {
     },
   },
   intervalTimer: {
-    setUpScreen: {
+    setUpScreenSimple: {
       heading: 'Intervalové stopky',
       rounds: {
         label: 'Kola',
@@ -115,6 +115,19 @@ export const CS: Translation = {
       skipLastPause: {
         label: 'Přeskočit poslední pauzu',
       },
+      advancedSettingsBtn: 'Pokročilé nastavení',
+    },
+    setUpScreenAdvanced: {
+      heading: 'Intervalové stopky',
+      series: {
+        label: 'Série',
+        // 2 params
+        error: 'Série musí být mezi __{1}__ a __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Přeskočit poslední pauzu',
+      },
+      basicSettingsBtn: 'Základní nastavení',
     },
     playScreen: {
       heading: 'Intervalové stopky',

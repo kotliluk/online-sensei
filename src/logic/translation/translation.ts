@@ -98,7 +98,7 @@ export interface Translation {
     },
   }
   intervalTimer: {
-    setUpScreen: {
+    setUpScreenSimple: {
       heading: string,
       rounds: {
         label: string,
@@ -118,6 +118,19 @@ export interface Translation {
       skipLastPause: {
         label: string,
       },
+      advancedSettingsBtn: string,
+    },
+    setUpScreenAdvanced: {
+      heading: string,
+      series: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      skipLastPause: {
+        label: string,
+      },
+      basicSettingsBtn: string,
     },
     playScreen: {
       heading: string,

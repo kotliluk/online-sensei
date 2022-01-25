@@ -16,5 +16,5 @@ export const isValidInterval = (x: any): boolean => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return isValidInterval(x.type) && typeof x.name === 'string' && typeof x.duration === 'number' && x.duration >= 0
+  return isValidIntervalType(x.type) && typeof x.name === 'string' && typeof x.duration === 'number' && x.duration >= 0
 }

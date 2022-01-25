@@ -3,12 +3,12 @@
 @import "src/styles/media";
 
 
-.set-up-reactions {
+.set-up-interval-timer-advanced {
   @include set-up-screen();
 
   @include set-up-audio-div();
 
-  .set-up-signal-count-cnt-btn {
+  .basic-settings-btn {
     @include button-color($orange);
   }
 }

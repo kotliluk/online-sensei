@@ -3,10 +3,6 @@ import { Interval } from '../../types/interval'
 import { BeepType } from '../../types/beepType'
 
 
-export const selectIntervalTimerIsActual = (state: RootState): boolean => {
-  return state.intervalTimer.isActual
-}
-
 export const selectIntervalTimerIntervals = (state: RootState): Interval[] => {
   return state.intervalTimer.intervals
 }
@@ -21,6 +17,18 @@ export const selectIntervalTimerSimpleWork = (state: RootState): number => {
 
 export const selectIntervalTimerSimplePause = (state: RootState): number => {
   return state.intervalTimer.simplePause
+}
+
+export const selectIntervalTimerAdvancedRoundIntervals = (state: RootState): Interval[] => {
+  return state.intervalTimer.advancedRoundIntervals
+}
+
+export const selectIntervalTimerAdvancedRounds = (state: RootState): number => {
+  return state.intervalTimer.advancedRounds
+}
+
+export const selectIntervalTimerIsActual = (state: RootState): boolean => {
+  return state.intervalTimer.isActual
 }
 
 export const selectIntervalTimerAudioSound = (state: RootState): BeepType => {
