@@ -119,6 +119,17 @@ export const EN: Translation = {
     },
     setUpScreenAdvanced: {
       heading: 'Interval timer',
+      intervalInSeriesSubheading: 'Intervals in series',
+      intervalInSeries: {
+        type: {
+          label: 'Type',
+          work: 'Work',
+          pause: 'Pause',
+        },
+        name: 'Name',
+        duration: 'Duration (s)',
+      },
+      addIntervalInSeriesBtn: 'Add',
       series: {
         label: 'Series',
         // 2 params

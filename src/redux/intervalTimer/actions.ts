@@ -114,7 +114,10 @@ export const setIntervalTimerAdvanced = (
 
   const intervals: Interval[] = range(advancedRounds)
     .flatMap(() => advancedRoundIntervals)
-    .slice(0, skipLastPause ? -1 : undefined)
+    .slice(
+      0,
+      (skipLastPause && advancedRoundIntervals[advancedRoundIntervals.length - 1].type === 'pause') ? -1 : undefined,
+    )
 
   return {
     type: SET_INTERVAL_TIMER_ADVANCED,

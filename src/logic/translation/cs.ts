@@ -119,6 +119,17 @@ export const CS: Translation = {
     },
     setUpScreenAdvanced: {
       heading: 'Intervalové stopky',
+      intervalInSeriesSubheading: 'Intervaly v sérii',
+      intervalInSeries: {
+        type: {
+          label: 'Typ',
+          work: 'Zátěž',
+          pause: 'Pauza',
+        },
+        name: 'Název',
+        duration: 'Délka (s)',
+      },
+      addIntervalInSeriesBtn: 'Přidat',
       series: {
         label: 'Série',
         // 2 params

@@ -24,8 +24,6 @@ type PlayPhase = 'init' | 'start' | 'intervals' | 'finished'
 export const IntervalTimerScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
 
-  // TODO - show current interval name
-
   const isActual = useSelector(selectIntervalTimerIsActual)
   const intervals = useSelector(selectIntervalTimerIntervals)
   const audioSound = useSelector(selectIntervalTimerAudioSound)
@@ -142,6 +140,8 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
         {currInterval < totalIntervals && `${t.round}: ${currRound}/${totalRounds}`}
         {currInterval === totalIntervals && `${ct.finished}!`}
       </p>
+
+      <h1>{intervals[currInterval].name}</h1>
 
       <span className={`time ${currIntervalType}`}>{parseMinTime(currTime)}</span>
 

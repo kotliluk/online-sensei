@@ -8,6 +8,12 @@
 
   @include set-up-audio-div();
 
+  .add-interval-btn {
+    margin-bottom: 2rem;
+
+    @include button-color($orange);
+  }
+
   .basic-settings-btn {
     @include button-color($orange);
   }

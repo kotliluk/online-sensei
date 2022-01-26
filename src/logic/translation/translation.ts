@@ -122,6 +122,17 @@ export interface Translation {
     },
     setUpScreenAdvanced: {
       heading: string,
+      intervalInSeriesSubheading: string,
+      intervalInSeries: {
+        type: {
+          label: string,
+          work: string,
+          pause: string,
+        },
+        name: string,
+        duration: string,
+      },
+      addIntervalInSeriesBtn: string,
       series: {
         label: string,
         // 2 params

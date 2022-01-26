@@ -23,6 +23,8 @@ import { LIMITS, VALIDATOR } from '../../../redux/intervalTimer/utils'
 import { setIntervalTimerAdvanced } from '../../../redux/intervalTimer/actions'
 import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
 import { preloadBeep } from '../../../logic/audio/beep'
+import { SetUpAdvancedInterval } from '../setUpAdvancedInterval/SetUpAdvancedInterval'
+import { Interval, IntervalType } from '../../../types/interval'
 
 
 export const SetUpScreenAdvanced = (): JSX.Element => {
@@ -42,6 +44,25 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
 
   const dispatch = useDispatch()
   const history = useHistory()
+
+  const handleIntervalChange = useCallback((newValue: Interval, index: number) => {
+    const newIntervals = [...intervals]
+    newIntervals[index] = newValue
+    setIntervals(newIntervals)
+  }, [intervals, setIntervals])
+
+  const handleIntervalDelete = useCallback((index: number) => {
+    if (intervals.length > 1) {
+      const newIntervals = [...intervals]
+      newIntervals.splice(index, 1)
+      setIntervals(newIntervals)
+    }
+  }, [intervals, setIntervals])
+
+  const handleIntervalAdd = useCallback(() => {
+    const newIntervals = [...intervals, { type: 'work' as IntervalType, name: 'Work', duration: 20 }]
+    setIntervals(newIntervals)
+  }, [intervals, setIntervals])
 
   const handleAudioChange = useCallback((newValue: string) => {
     preloadBeep(newValue as BeepType)
@@ -67,6 +88,36 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   return (
     <main className='set-up-interval-timer-advanced'>
       <h1>{t.heading}</h1>
+
+      <h3>{t.intervalInSeriesSubheading}:</h3>
+
+      <ul className='set-up-items'>
+        {intervals.map((interval, index) => (
+          // TODO - drag-n-drop
+          <li
+            key={index}
+            className='set-up-item'
+          >
+            <SetUpAdvancedInterval
+              index={index}
+              interval={interval}
+              onChange={(interval) => handleIntervalChange(interval, index)}
+              onDelete={() => handleIntervalDelete(index)}
+              disabledDelete={intervals.length === 1}
+              translation={t.intervalInSeries}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <div className='buttons'>
+        <Button
+          className='add-interval-btn'
+          onClick={handleIntervalAdd}
+        >
+          {t.addIntervalInSeriesBtn}
+        </Button>
+      </div>
 
       <ul className='set-up-items'>
         <li className='set-up-item'>
