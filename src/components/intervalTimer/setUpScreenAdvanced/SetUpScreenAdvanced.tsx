@@ -27,8 +27,11 @@ import { SetUpAdvancedInterval } from '../setUpAdvancedInterval/SetUpAdvancedInt
 import { Interval, IntervalType } from '../../../types/interval'
 
 
+// TODO - save and load of advanced set-up from LS
+
 export const SetUpScreenAdvanced = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
+  const { intervalTimer: { setUpScreenAdvanced: t } } = translation
 
   const initIntervals = useSelector(selectIntervalTimerAdvancedRoundIntervals)
   const initRounds = useSelector(selectIntervalTimerAdvancedRounds)
@@ -41,6 +44,8 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   const [audioSound, setAudioSound] = useState(initAudioSound)
   const [audioVolume, setAudioVolume] = useState(initAudioVolume)
   const [skipLastPause, setSkipLastPause] = useState(initSkipLastPause)
+
+  const [isDragging, setIsDragging] = useState(-1)
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -59,8 +64,20 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
     }
   }, [intervals, setIntervals])
 
+  const handleIntervalMove = useCallback((from: number, to: number) => {
+    if (from !== to && from !== (to - 1)) {
+      const newIntervals = [...intervals]
+      newIntervals.splice(from, 1)
+      newIntervals.splice((from > to) ? to : (to - 1), 0, intervals[from])
+      setIntervals(newIntervals)
+    }
+  }, [intervals, setIntervals])
+
   const handleIntervalAdd = useCallback(() => {
-    const newIntervals = [...intervals, { type: 'work' as IntervalType, name: 'Work', duration: 20 }]
+    const newIntervals = [
+      ...intervals,
+      { type: 'work' as IntervalType, name: t.intervalInSeries.type.work, duration: 20 },
+    ]
     setIntervals(newIntervals)
   }, [intervals, setIntervals])
 
@@ -83,8 +100,6 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
     history.push('/')
   }, [dispatch])
 
-  const { intervalTimer: { setUpScreenAdvanced: t } } = translation
-
   return (
     <main className='set-up-interval-timer-advanced'>
       <h1>{t.heading}</h1>
@@ -93,16 +108,19 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
 
       <ul className='set-up-items'>
         {intervals.map((interval, index) => (
-          // TODO - drag-n-drop
           <li
             key={index}
-            className='set-up-item'
+            className='set-up-item advanced-interval-li'
           >
             <SetUpAdvancedInterval
               index={index}
               interval={interval}
               onChange={(interval) => handleIntervalChange(interval, index)}
               onDelete={() => handleIntervalDelete(index)}
+              onMove={handleIntervalMove}
+              onDragStart={() => setIsDragging(index)}
+              onDragEnd={() => setIsDragging(-1)}
+              isDragging={isDragging}
               disabledDelete={intervals.length === 1}
               translation={t.intervalInSeries}
             />

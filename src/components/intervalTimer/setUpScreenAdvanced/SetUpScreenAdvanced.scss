@@ -8,6 +8,13 @@
 
   @include set-up-audio-div();
 
+  .advanced-interval-li {
+    padding-top: 0;
+    padding-bottom: 0;
+
+    flex-direction: column;
+  }
+
   .add-interval-btn {
     margin-bottom: 2rem;
 

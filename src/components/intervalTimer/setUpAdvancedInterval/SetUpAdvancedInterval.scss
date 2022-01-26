@@ -3,6 +3,17 @@
 @import "src/styles/media";
 
 
+.advanced-interval-dnd-end {
+  width: 100%;
+  height: 1rem;
+  border-radius: $border-radius;
+
+  &.active {
+    background-color: $orange;
+    opacity: 0.3;
+  }
+}
+
 .set-up-advanced-interval {
   display: flex;
   flex-direction: row;
@@ -10,6 +21,10 @@
   justify-content: space-between;
 
   width: 100%;
+
+  &, label {
+    cursor: grab;
+  }
 
   .advanced-interval-index {
     font-size: $text-large;
@@ -23,6 +38,7 @@
     height: 2rem;
 
     margin-left: 1rem;
+    overflow: hidden;
 
     @include button-color($red);
   }
