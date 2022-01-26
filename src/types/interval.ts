@@ -1,3 +1,6 @@
+import { VALIDATOR } from '../redux/intervalTimer/utils'
+
+
 export type IntervalType = 'work' | 'pause'
 
 export interface Interval {
@@ -15,6 +18,6 @@ export const isValidInterval = (x: any): boolean => {
     return false
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return isValidIntervalType(x.type) && typeof x.name === 'string' && typeof x.duration === 'number' && x.duration >= 0
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,max-len
+  return isValidIntervalType(x.type) && typeof x.name === 'string' && typeof x.duration === 'number' && VALIDATOR.simpleWork(x.duration)
 }

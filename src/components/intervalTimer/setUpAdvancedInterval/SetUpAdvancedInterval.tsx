@@ -8,6 +8,8 @@ import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { Translation } from '../../../logic/translation/translation'
 import { Cross } from '../../icons/Cross'
+import { LIMITS, VALIDATOR } from '../../../redux/intervalTimer/utils'
+import { insertWords } from '../../../logic/translation'
 
 
 const DND_TYPE = 'DND_ADVANCED_INTERVAL'
@@ -70,7 +72,7 @@ export const SetUpAdvancedInterval = (props: SetUpAdvancedIntervalProps): JSX.El
     })
   }, [interval, onChange])
 
-  // TODO - validation
+  const isValidDuration = VALIDATOR.simpleWork(interval.duration)
 
   const activeBeforeDndEnd = isDragging > -1 && isDragging !== index && isDragging !== (index - 1)
   const activeAfterDndEnd = isDragging > -1 && isDragging !== index && isDragging !== (index + 1)
@@ -123,7 +125,7 @@ export const SetUpAdvancedInterval = (props: SetUpAdvancedIntervalProps): JSX.El
           </li>
 
           <li className='advanced-interval-item'>
-            <label>{translation.duration}:</label>
+            <label>{translation.duration.label}:</label>
             <div
               className='set-up-div set-up-duration'
               draggable={true}
@@ -133,6 +135,8 @@ export const SetUpAdvancedInterval = (props: SetUpAdvancedIntervalProps): JSX.El
                 className='set-up-duration-input'
                 value={interval.duration}
                 onChange={handleDurationChange}
+                invalid={!isValidDuration}
+                errorMessage={insertWords(translation.duration.error, LIMITS.simpleWork.min, LIMITS.simpleWork.max)}
               />
             </div>
           </li>

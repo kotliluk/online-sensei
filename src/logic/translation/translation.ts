@@ -130,7 +130,11 @@ export interface Translation {
           pause: string,
         },
         name: string,
-        duration: string,
+        duration: {
+          label: string,
+          // 2 params
+          error: string,
+        },
       },
       addIntervalInSeriesBtn: string,
       series: {

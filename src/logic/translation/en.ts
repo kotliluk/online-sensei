@@ -127,7 +127,11 @@ export const EN: Translation = {
           pause: 'Pause',
         },
         name: 'Name',
-        duration: 'Duration (s)',
+        duration: {
+          label: 'Duration (s)',
+          // 2 params
+          error: 'Duration must be set between __{1}__ and __{2}__.',
+        },
       },
       addIntervalInSeriesBtn: 'Add',
       series: {

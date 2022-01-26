@@ -127,7 +127,11 @@ export const CS: Translation = {
           pause: 'Pauza',
         },
         name: 'Název',
-        duration: 'Délka (s)',
+        duration: {
+          label: 'Délka (s)',
+          // 2 params
+          error: 'Délka musí být mezi __{1}__ a __{2}__.',
+        },
       },
       addIntervalInSeriesBtn: 'Přidat',
       series: {
