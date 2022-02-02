@@ -21,7 +21,7 @@ import {
   selectIntervalTimerSkipLastPause,
 } from '../../../redux/intervalTimer/selector'
 import { LIMITS, VALIDATOR } from '../../../redux/intervalTimer/utils'
-import { setIntervalTimerAdvanced } from '../../../redux/intervalTimer/actions'
+import { setIntervalTimerAdvanced, setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
 import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
 import { preloadBeep } from '../../../logic/audio/beep'
 import { SetUpAdvancedInterval } from '../setUpAdvancedInterval/SetUpAdvancedInterval'
@@ -107,6 +107,7 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   }, [dispatch, intervals, rounds, skipLastPause, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
+    dispatch(setNotActualIntervalTimer())
     history.push('/')
   }, [dispatch])
 

@@ -11,7 +11,7 @@ import { LIMITS, VALIDATOR } from '../../../redux/kumiteTimer/utils'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
 import { selectKumiteTimerAtoshibaraku, selectKumiteTimerDuration } from '../../../redux/kumiteTimer/selector'
-import { setKumiteTimer } from '../../../redux/kumiteTimer/actions'
+import { setKumiteTimer, setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
 
 
 export const SetUpScreen = (): JSX.Element => {
@@ -35,6 +35,7 @@ export const SetUpScreen = (): JSX.Element => {
   }, [dispatch, duration, atoshibaraku])
 
   const handleBack = useCallback(() => {
+    dispatch(setNotActualKumiteTimer())
     history.push('/')
   }, [dispatch])
 

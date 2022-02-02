@@ -20,7 +20,7 @@ import {
   selectIntervalTimerSimpleWork, selectIntervalTimerSkipLastPause,
 } from '../../../redux/intervalTimer/selector'
 import { LIMITS, VALIDATOR } from '../../../redux/intervalTimer/utils'
-import { setIntervalTimerSimple } from '../../../redux/intervalTimer/actions'
+import { setIntervalTimerSimple, setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
 import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
 import { preloadBeep } from '../../../logic/audio/beep'
 
@@ -61,6 +61,7 @@ export const SetUpScreenSimple = (): JSX.Element => {
   }, [dispatch, rounds, work, pause, skipLastPause, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
+    dispatch(setNotActualIntervalTimer())
     history.push('/')
   }, [dispatch])
 

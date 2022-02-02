@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { setReactions } from '../../../redux/reactions/actions'
+import { setNotActualReactions, setReactions } from '../../../redux/reactions/actions'
 import { useHistory } from 'react-router-dom'
 import { Input } from '../../atoms/input/Input'
 import { NumberInput } from '../../atoms/input/NumberInput'
@@ -89,6 +89,7 @@ export const SetUpScreen = (): JSX.Element => {
   }, [dispatch, rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
+    dispatch(setNotActualReactions())
     history.push('/')
   }, [dispatch])
 

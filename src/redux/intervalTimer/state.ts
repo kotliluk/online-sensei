@@ -38,51 +38,7 @@ export const initialState: State = {
     { type: 'pause', name: 'Pause', duration: 5 },
   ],
   advancedRounds: 5,
-  advancedSavedSeries: [
-    {
-      name: '10/20/30',
-      rounds: 5,
-      intervals: [
-        {
-          type: 'work',
-          name: 'Vyklus',
-          duration: 30,
-        },
-        {
-          type: 'work',
-          name: 'Beh',
-          duration: 20,
-        },
-        {
-          type: 'work',
-          name: 'Sprint',
-          duration: 10,
-        },
-      ],
-      skipLastPause: false,
-      audioSound: BEEP_A,
-      audioVolume: 1,
-    },
-    {
-      name: 'Basic',
-      rounds: 5,
-      intervals: [
-        {
-          type: 'work',
-          name: 'Work',
-          duration: 30,
-        },
-        {
-          type: 'pause',
-          name: 'Pause',
-          duration: 20,
-        },
-      ],
-      skipLastPause: true,
-      audioSound: BEEP_A,
-      audioVolume: 0.5,
-    },
-  ],
+  advancedSavedSeries: [],
   advancedLastLoadTime: new Date(),
 
   isActual: false,
