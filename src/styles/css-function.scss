@@ -13,3 +13,7 @@
 @function css-clamp( $values... ) {
   @return css-function( clamp, $values );
 }
+
+@function css-calc( $values... ) {
+  @return css-function( calc, $values );
+}

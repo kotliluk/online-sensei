@@ -10,6 +10,8 @@ export const EN: Translation = {
     language: 'Language',
     time: 'Time',
     fight: 'Fight',
+    sound: 'Sound',
+    noSound: 'No sound',
     // user actions
     back: 'Back',
     finished: 'Finished',
@@ -30,6 +32,10 @@ export const EN: Translation = {
     kumiteTimer: {
       annotation: 'Take your friend for kumite fight with easy-to-use kumite timer',
       link: 'Kumite timer',
+    },
+    intervalTimer: {
+      annotation: 'Prepare interval training with intervals as you need',
+      link: 'Interval timer',
     },
   },
   reactions: {
@@ -63,10 +69,6 @@ export const EN: Translation = {
       signalColor: {
         label: 'Signal color',
       },
-      sound: {
-        label: 'Sound',
-        noAudio: 'No audio',
-      },
     },
     playScreen: {
       heading: 'Reactions',
@@ -90,6 +92,66 @@ export const EN: Translation = {
     playScreen: {
       heading: 'Kumite Timer',
       switchSides: 'Switch sides',
+    },
+  },
+  intervalTimer: {
+    setUpScreenSimple: {
+      heading: 'Interval timer',
+      rounds: {
+        label: 'Rounds',
+        // 2 params
+        error: 'Rounds must be set between __{1}__ and __{2}__.',
+      },
+      workInterval: {
+        label: 'Work interval (s)',
+        // 2 params
+        error: 'Work interval must be set between __{1}__ and __{2}__.',
+      },
+      pauseInterval: {
+        label: 'Pause interval (s)',
+        // 2 params
+        error: 'Pause interval must be set between __{1}__ and __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Skip last pause',
+      },
+      advancedSettingsBtn: 'Advanced settings',
+    },
+    setUpScreenAdvanced: {
+      heading: 'Interval timer',
+      intervalInSeriesSubheading: 'Intervals in series',
+      intervalInSeries: {
+        type: {
+          label: 'Type',
+          work: 'Work',
+          pause: 'Pause',
+        },
+        name: 'Name',
+        duration: {
+          label: 'Duration (s)',
+          // 2 params
+          error: 'Duration must be set between __{1}__ and __{2}__.',
+        },
+      },
+      addIntervalInSeriesBtn: 'Add interval',
+      loadSeries: 'Load series',
+      noSeries: 'No saved series',
+      saveSeries: 'Save series',
+      seriesName: 'Name',
+      duplicateSeriesNameError: 'Another series already has this name',
+      series: {
+        label: 'Series',
+        // 2 params
+        error: 'Series must be set between __{1}__ and __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Skip last pause',
+      },
+      basicSettingsBtn: 'Basic settings',
+    },
+    playScreen: {
+      heading: 'Interval timer',
+      work: 'Work',
     },
   },
 }

@@ -13,6 +13,8 @@ export interface Translation {
     language: string,
     time: string,
     fight: string,
+    sound: string,
+    noSound: string,
     // user actions
     back: string,
     finished: string,
@@ -31,6 +33,10 @@ export interface Translation {
       link: string,
     },
     kumiteTimer: {
+      annotation: string,
+      link: string,
+    },
+    intervalTimer: {
       annotation: string,
       link: string,
     },
@@ -66,10 +72,6 @@ export interface Translation {
       signalColor: {
         label: string,
       },
-      sound: {
-        label: string,
-        noAudio: string,
-      },
     },
     playScreen: {
       heading: string,
@@ -93,6 +95,66 @@ export interface Translation {
     playScreen: {
       heading: string,
       switchSides: string,
+    },
+  }
+  intervalTimer: {
+    setUpScreenSimple: {
+      heading: string,
+      rounds: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      workInterval: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      pauseInterval: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      skipLastPause: {
+        label: string,
+      },
+      advancedSettingsBtn: string,
+    },
+    setUpScreenAdvanced: {
+      heading: string,
+      intervalInSeriesSubheading: string,
+      intervalInSeries: {
+        type: {
+          label: string,
+          work: string,
+          pause: string,
+        },
+        name: string,
+        duration: {
+          label: string,
+          // 2 params
+          error: string,
+        },
+      },
+      addIntervalInSeriesBtn: string,
+      loadSeries: string,
+      noSeries: string,
+      saveSeries: string,
+      seriesName: string,
+      duplicateSeriesNameError: string,
+      series: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      skipLastPause: {
+        label: string,
+      },
+      basicSettingsBtn: string,
+    },
+    playScreen: {
+      heading: string,
+      work: string,
     },
   }
 }

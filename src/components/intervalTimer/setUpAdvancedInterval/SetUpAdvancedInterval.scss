@@ -1,0 +1,76 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.advanced-interval-dnd-end {
+  width: 100%;
+  height: 1rem;
+  border-radius: $border-radius;
+
+  &.active {
+    background-color: $orange;
+    opacity: 0.3;
+  }
+}
+
+.set-up-advanced-interval {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  &, label {
+    cursor: grab;
+  }
+
+  .advanced-interval-index {
+    font-size: $text-large;
+    margin-right: 1rem;
+  }
+
+  .advanced-interval-del-btn {
+    @include center-content();
+
+    width: 2rem;
+    height: 2rem;
+
+    margin-left: 1rem;
+    overflow: hidden;
+
+    @include button-color($red);
+  }
+
+  .advanced-interval-items {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    list-style-type: none;
+
+    @include L-device() {
+      flex-direction: row;
+    }
+  }
+
+  .advanced-interval-item {
+    .set-up-div {
+      margin: 0.25rem 0;
+    }
+
+    .set-up-name-input {
+      width: 12rem;
+    }
+
+    .set-up-duration-input {
+      width: 6rem;
+    }
+  }
+}

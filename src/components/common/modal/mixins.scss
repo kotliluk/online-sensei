@@ -1,0 +1,22 @@
+@import "./variables";
+@import "src/styles/variables";
+
+@mixin modal-window {
+  height: $modal-height;
+  min-height: $min-modal-height;
+  width: 700px;
+  max-width: 80vw;
+  border-radius: $border-radius;
+
+  @media (max-width: $fullWidthContentToDevice) {
+    width: 80vw;
+  }
+}
+
+@mixin modal-footer-btn {
+  width: $button-long-width;
+
+  @media (max-width: $fullWidthContentToDevice) {
+    width: 100%;
+  }
+}

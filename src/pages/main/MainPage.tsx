@@ -33,6 +33,11 @@ export const MainPage = (): JSX.Element => {
         <p className='feature-text'>{t.kumiteTimer.annotation}</p>
         <Link className='feature-link' to='/kumite-timer'>{t.kumiteTimer.link}</Link>
       </div>
+
+      <div className='feature-card'>
+        <p className='feature-text'>{t.intervalTimer.annotation}</p>
+        <Link className='feature-link' to='/interval-timer'>{t.intervalTimer.link}</Link>
+      </div>
     </main>
   )
 }

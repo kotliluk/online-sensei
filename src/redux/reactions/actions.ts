@@ -1,8 +1,7 @@
 import { Action } from 'redux'
-import { getValidatedNumberFromLS } from '../../logic/localStorage/access'
-import { initialState } from './state'
+import { State } from './state'
 import { BeepType } from '../../types/beepType'
-import { LS_ACCESS, LS_KEYS, VALIDATOR } from './utils'
+import { LS_ACCESS } from './utils'
 
 
 export type Actions = InitReactions | SetReactions | SetNotActualReactions
@@ -12,24 +11,12 @@ export type Actions = InitReactions | SetReactions | SetNotActualReactions
 export const INIT_REACTIONS = 'reactions/INIT_REACTIONS'
 
 interface InitReactions extends Action<typeof INIT_REACTIONS> {
-  payload: {
-    isActual: boolean,
-    rounds: number,
-    signalDuration: number,
-    minInterval: number,
-    maxInterval: number,
-    signalCount: number,
-    signalColors: string[],
-    audioSound: BeepType,
-    audioVolume: number,
-  }
+  payload: State
 }
 
 export const initReactions = (): InitReactions => {
-  const rounds = getValidatedNumberFromLS(LS_KEYS.rounds, VALIDATOR.rounds, initialState.rounds)
-  const signalDuration = getValidatedNumberFromLS(
-    LS_KEYS.signalDuration, VALIDATOR.signalDuration, initialState.signalDuration,
-  )
+  const rounds = LS_ACCESS.rounds.get()
+  const signalDuration = LS_ACCESS.signalDuration.get()
   const minInterval = LS_ACCESS.minInterval.get()
   const maxInterval = LS_ACCESS.maxInterval.get()
   const signalCount = LS_ACCESS.signalCount.get()
@@ -58,16 +45,7 @@ export const initReactions = (): InitReactions => {
 export const SET_REACTIONS = 'reactions/SET_REACTIONS'
 
 interface SetReactions extends Action<typeof SET_REACTIONS> {
-  payload: {
-    rounds: number,
-    signalDuration: number,
-    minInterval: number,
-    maxInterval: number,
-    signalCount: number,
-    signalColors: string[],
-    audioSound: BeepType,
-    audioVolume: number,
-  }
+  payload: State
 }
 
 export const setReactions = (
@@ -92,6 +70,7 @@ export const setReactions = (
   return {
     type: SET_REACTIONS,
     payload: {
+      isActual: true,
       rounds,
       signalDuration,
       minInterval,

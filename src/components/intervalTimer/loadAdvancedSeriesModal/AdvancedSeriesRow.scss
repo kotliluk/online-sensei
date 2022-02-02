@@ -1,0 +1,51 @@
+@import "../../../styles/variables";
+@import "../../../styles/mixins";
+
+.advanced-series-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  padding: 0.5rem;
+  font-weight: bold;
+
+  &:not(:first-of-type) {
+    @include themed {
+      border-top: 1px solid t($secondary-color);
+    }
+  }
+
+  .red {
+    color: $red;
+  }
+
+  .green {
+    color: $green;
+  }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  button {
+    @include center-content();
+
+    width: 2rem;
+    height: 2rem;
+
+    margin-left: 1rem;
+    overflow: hidden;
+  }
+
+  .load-button {
+    @include button-color($orange);
+  }
+
+  .delete-button {
+    @include button-color($red);
+  }
+}

@@ -1,0 +1,14 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.set-up-reactions {
+  @include set-up-screen();
+
+  @include set-up-audio-div();
+
+  .set-up-signal-count-cnt-btn {
+    @include button-color($orange);
+  }
+}

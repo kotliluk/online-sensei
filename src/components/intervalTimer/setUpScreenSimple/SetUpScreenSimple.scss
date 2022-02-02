@@ -1,0 +1,14 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.set-up-interval-timer-simple {
+  @include set-up-screen();
+
+  @include set-up-audio-div();
+
+  .advanced-settings-btn {
+    @include button-color($orange);
+  }
+}

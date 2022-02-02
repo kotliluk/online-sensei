@@ -1,0 +1,29 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.set-up-interval-timer-advanced {
+  @include set-up-screen();
+
+  @include set-up-audio-div();
+
+  .advanced-interval-li {
+    padding-top: 0;
+    padding-bottom: 0;
+
+    flex-direction: column;
+  }
+
+  .middle-buttons {
+    margin-bottom: 2rem;
+
+    button {
+      @include button-color($orange);
+    }
+  }
+
+  .basic-settings-btn {
+    @include button-color($orange);
+  }
+}

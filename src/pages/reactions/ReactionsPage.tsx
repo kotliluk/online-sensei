@@ -2,23 +2,25 @@
 import React from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { ReactionsScreen } from '../../components/reactions/reactionsScreen/ReactionsScreen'
-import { ReactionsSetUpScreen } from '../../components/reactions/reactionsSetUpScreen/ReactionsSetUpScreen'
+import { SetUpScreen } from '../../components/reactions/setUpScreen/SetUpScreen'
 
+
+const PAGE_PATH = 'reactions'
 
 export const ReactionsPage = (): JSX.Element => {
   return (
     <Switch>
-      <Route path='/reactions/set-up' exact>
-        <ReactionsSetUpScreen />
+      <Route path={`/${PAGE_PATH}/set-up`} exact>
+        <SetUpScreen />
       </Route>
-      <Route path='/reactions/set-up/*'>
-        <Redirect to='/reactions/set-up' />
+      <Route path={`/${PAGE_PATH}/set-up/*`}>
+        <Redirect to={`/${PAGE_PATH}/set-up`} />
       </Route>
-      <Route path='/reactions/' exact>
+      <Route path={`/${PAGE_PATH}`} exact>
         <ReactionsScreen />
       </Route>
-      <Route path='/reactions/*'>
-        <Redirect to='/reactions/' />
+      <Route path={`/${PAGE_PATH}/*`}>
+        <Redirect to={`/${PAGE_PATH}`} />
       </Route>
     </Switch>
   )

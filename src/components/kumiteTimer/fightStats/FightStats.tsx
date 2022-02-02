@@ -4,7 +4,7 @@ import './FightStats.scss'
 import { Senchu } from '../utils'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 import { Button } from '../../atoms/button/Button'
-import { parseTimeFromSeconds } from '../../../utils/time'
+import { parseTime } from '../../../utils/time'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
 import { config } from '../../../config'
@@ -40,7 +40,6 @@ export const FightStats = ({
 }: FightStatsProps): JSX.Element | null => {
 
   const openMirrorWindow = useCallback(() => {
-    console.log(window.location.origin)
     window.open(window.location.origin + config.basename + '?mirror=true', '_blank')
   }, [])
 
@@ -56,7 +55,7 @@ export const FightStats = ({
 
   return (
     <div className={`__fight-stats ${className ?? ''}`}>
-      <span className='__fight-stats__time'>{parseTimeFromSeconds(time)}</span>
+      <span className='__fight-stats__time'>{parseTime(time)}</span>
 
       {!isMirror && (
         <div className='__fight-stats__time-btns'>

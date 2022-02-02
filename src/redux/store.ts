@@ -1,16 +1,20 @@
 import { configureStore, getDefaultMiddleware, combineReducers } from '@reduxjs/toolkit'
-import { reducer as pageReducer } from './page/reducer'
-import { reducer as reactionsReducer } from './reactions/reducer'
-import { reducer as kumiteTimerReducer } from './kumiteTimer/reducer'
 import { Dispatch, Store } from '@reduxjs/toolkit'
 import { RootState } from './state'
 import { Actions } from './actions'
-import { initReactions } from './reactions/actions'
+import { reducer as kumiteTimerReducer } from './kumiteTimer/reducer'
+import { reducer as intervalTimerReducer } from './intervalTimer/reducer'
+import { reducer as pageReducer } from './page/reducer'
+import { reducer as reactionsReducer } from './reactions/reducer'
+import { initIntervalTimer } from './intervalTimer/actions'
+import { initKumiteTimer } from './kumiteTimer/actions'
 import { initPage } from './page/actions'
+import { initReactions } from './reactions/actions'
 
 
 export const store: Store<RootState, Actions> = configureStore({
   reducer: combineReducers({
+    intervalTimer: intervalTimerReducer,
     kumiteTimer: kumiteTimerReducer,
     page: pageReducer,
     reactions: reactionsReducer,
@@ -21,6 +25,8 @@ export const store: Store<RootState, Actions> = configureStore({
   }),
 })
 
+store.dispatch(initIntervalTimer())
+store.dispatch(initKumiteTimer())
 store.dispatch(initReactions())
 store.dispatch(initPage())
 

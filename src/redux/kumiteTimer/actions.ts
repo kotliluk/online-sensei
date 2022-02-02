@@ -1,5 +1,6 @@
 import { Action } from 'redux'
 import { LS_ACCESS } from './utils'
+import { State } from './state'
 
 
 export type Actions = InitKumiteTimer | SetKumiteTimer | SetNotActualKumiteTimer
@@ -9,11 +10,7 @@ export type Actions = InitKumiteTimer | SetKumiteTimer | SetNotActualKumiteTimer
 export const INIT_KUMITE_TIMER = 'kumiteTimer/INIT_KUMITE_TIMER'
 
 interface InitKumiteTimer extends Action<typeof INIT_KUMITE_TIMER> {
-  payload: {
-    isActual: boolean,
-    duration: number,
-    atoshibaraku: number,
-  }
+  payload: State
 }
 
 export const initKumiteTimer = (): InitKumiteTimer => {
@@ -35,10 +32,7 @@ export const initKumiteTimer = (): InitKumiteTimer => {
 export const SET_KUMITE_TIMER = 'kumiteTimer/SET_KUMITE_TIMER'
 
 interface SetKumiteTimer extends Action<typeof SET_KUMITE_TIMER> {
-  payload: {
-    duration: number,
-    atoshibaraku: number,
-  }
+  payload: State
 }
 
 export const setKumiteTimer = (duration: number, atoshibaraku: number): SetKumiteTimer => {
@@ -48,6 +42,7 @@ export const setKumiteTimer = (duration: number, atoshibaraku: number): SetKumit
   return {
     type: SET_KUMITE_TIMER,
     payload: {
+      isActual: true,
       duration,
       atoshibaraku,
     },

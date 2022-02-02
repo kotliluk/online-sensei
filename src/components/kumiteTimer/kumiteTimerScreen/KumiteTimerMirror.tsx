@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback, useState } from 'react'
-import '../kumiteTimerScreen/KumiteTimerScreen.scss'
+import './KumiteTimerScreen.scss'
 import { FighterStats } from '../fighterStats/FighterStats'
 import { LS_KEYS, Senchu } from '../utils'
 import { FightStats } from '../fightStats/FightStats'

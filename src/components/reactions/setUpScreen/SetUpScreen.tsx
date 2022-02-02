@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback, useEffect, useState } from 'react'
-import './ReactionsSetUpScreen.scss'
+import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { setReactions } from '../../../redux/reactions/actions'
+import { setNotActualReactions, setReactions } from '../../../redux/reactions/actions'
 import { useHistory } from 'react-router-dom'
 import { Input } from '../../atoms/input/Input'
 import { NumberInput } from '../../atoms/input/NumberInput'
@@ -29,7 +29,7 @@ import { insertWords } from '../../../logic/translation'
 import { CounterInput } from '../../atoms/input/CounterInput'
 
 
-export const ReactionsSetUpScreen = (): JSX.Element => {
+export const SetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
   const initRounds = useSelector(selectReactionsRounds)
@@ -89,6 +89,7 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
   }, [dispatch, rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
+    dispatch(setNotActualReactions())
     history.push('/')
   }, [dispatch])
 
@@ -178,13 +179,13 @@ export const ReactionsSetUpScreen = (): JSX.Element => {
         ))}
 
         <li className='set-up-item'>
-          <label>{t.sound.label}:</label>
+          <label>{translation.common.sound}:</label>
           <div className='set-up-volume'>
             <Select
               className='set-up-volume-select'
               selected={audioSound}
               values={[
-                { value: NO_BEEP, text: t.sound.noAudio },
+                { value: NO_BEEP, text: translation.common.noSound },
                 { value: BEEP_A, text: getBeepName(BEEP_A) },
               ]}
               onChange={handleAudioChange}

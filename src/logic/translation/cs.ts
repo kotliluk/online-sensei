@@ -10,6 +10,8 @@ export const CS: Translation = {
     language: 'Jazyk',
     time: 'Čas',
     fight: 'Zápas',
+    sound: 'Zvuk',
+    noSound: 'Žádný zvuk',
     // user actions
     back: 'Zpět',
     finished: 'Hotovo',
@@ -30,6 +32,10 @@ export const CS: Translation = {
     kumiteTimer: {
       annotation: 'Dej si s kamarádem kumite zápas díky jednoduché kumite časomíře',
       link: 'Kumite časomíra',
+    },
+    intervalTimer: {
+      annotation: 'Připrav si kruhový nebo intervalový trénink s přesně takovými intervaly, jak potřebuješ',
+      link: 'Intervalové stopky',
     },
   },
   reactions: {
@@ -63,10 +69,6 @@ export const CS: Translation = {
       signalColor: {
         label: 'Barva signálu',
       },
-      sound: {
-        label: 'Zvuk',
-        noAudio: 'Žádný zvuk',
-      },
     },
     playScreen: {
       heading: 'Reakce',
@@ -90,6 +92,66 @@ export const CS: Translation = {
     playScreen: {
       heading: 'Kumite Časomíra',
       switchSides: 'Změnit strany',
+    },
+  },
+  intervalTimer: {
+    setUpScreenSimple: {
+      heading: 'Intervalové stopky',
+      rounds: {
+        label: 'Počet kol',
+        // 2 params
+        error: 'Počet kol musí být mezi __{1}__ a __{2}__.',
+      },
+      workInterval: {
+        label: 'Zátěž (s)',
+        // 2 params
+        error: 'Zátěž musí být mezi __{1}__ a __{2}__.',
+      },
+      pauseInterval: {
+        label: 'Pauza (s)',
+        // 2 params
+        error: 'Pauza musí být mezi __{1}__ a __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Přeskočit poslední pauzu',
+      },
+      advancedSettingsBtn: 'Pokročilé nastavení',
+    },
+    setUpScreenAdvanced: {
+      heading: 'Intervalové stopky',
+      intervalInSeriesSubheading: 'Intervaly v sérii',
+      intervalInSeries: {
+        type: {
+          label: 'Typ',
+          work: 'Zátěž',
+          pause: 'Pauza',
+        },
+        name: 'Název',
+        duration: {
+          label: 'Délka (s)',
+          // 2 params
+          error: 'Délka musí být mezi __{1}__ a __{2}__.',
+        },
+      },
+      addIntervalInSeriesBtn: 'Přidat interval',
+      loadSeries: 'Nahrát sérii',
+      noSeries: 'Žádné uložené série',
+      saveSeries: 'Uložit sérii',
+      seriesName: 'Název',
+      duplicateSeriesNameError: 'Dané jméno již má jiná série',
+      series: {
+        label: 'Počet sérií',
+        // 2 params
+        error: 'Počet sérií musí být mezi __{1}__ a __{2}__.',
+      },
+      skipLastPause: {
+        label: 'Přeskočit poslední pauzu',
+      },
+      basicSettingsBtn: 'Základní nastavení',
+    },
+    playScreen: {
+      heading: 'Intervalové stopky',
+      work: 'Zátěž',
     },
   },
 }

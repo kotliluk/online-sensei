@@ -12,8 +12,6 @@ export function reducer (state = initialState, action: Actions): State {
 
     case SET_KUMITE_TIMER:
       return {
-        ...state,
-        isActual: true,
         ...action.payload,
       }
 
