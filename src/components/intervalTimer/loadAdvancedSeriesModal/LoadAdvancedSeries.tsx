@@ -31,14 +31,13 @@ export const LoadAdvancedSeries = (): JSX.Element | null => {
     dispatch(deleteSavedAdvancedSeries(i))
   }, [dispatch])
 
-  // TODO - scroll when too many
   return (
     <div className='load-advanced-series'>
       <ModalHeader heading={t.loadSeries} />
       <div className='body'>
         {(savedSeries.length === 0)
           ? <span className='no-series-span'>{t.noSeries}</span>
-          : <ul className='series-rows'>{
+          : <ul className='series-rows with-scrollbar'>{
             savedSeries.map((series, i) => (
               <AdvancedSeriesRow
                 key={i}

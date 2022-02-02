@@ -15,10 +15,12 @@
     flex-direction: column;
   }
 
-  .add-interval-btn {
+  .middle-buttons {
     margin-bottom: 2rem;
 
-    @include button-color($orange);
+    button {
+      @include button-color($orange);
+    }
   }
 
   .basic-settings-btn {

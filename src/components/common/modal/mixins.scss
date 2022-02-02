@@ -8,7 +8,7 @@
   max-width: 80vw;
   border-radius: $border-radius;
 
-  @media (max-width: 720px) {
+  @media (max-width: $fullWidthContentToDevice) {
     width: 80vw;
   }
 }
@@ -16,7 +16,7 @@
 @mixin modal-footer-btn {
   width: $button-long-width;
 
-  @media (max-width: 720px) {
+  @media (max-width: $fullWidthContentToDevice) {
     width: 100%;
   }
 }

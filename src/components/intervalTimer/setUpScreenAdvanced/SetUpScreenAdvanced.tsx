@@ -147,7 +147,7 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
         ))}
       </ul>
 
-      <div className='buttons'>
+      <div className='buttons middle-buttons'>
         <Button
           className='add-interval-btn'
           onClick={handleIntervalAdd}

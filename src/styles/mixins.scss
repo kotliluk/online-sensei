@@ -87,6 +87,12 @@
   }
 
   .buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
     .confirm-btn {
       @include button-color($green);
       width: $button-middle-width;
@@ -97,8 +103,8 @@
       width: $button-middle-width;
     }
 
-    & > :not(:first-child) {
-      margin-left: 1rem;
+    button {
+      margin: 0.5rem;
     }
   }
 }

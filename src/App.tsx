@@ -18,7 +18,7 @@ const App = (): JSX.Element => {
   })
 
   return (
-    <div className='app'>
+    <div className='app with-scrollbar'>
       <PageHeader />
       <Switch>
         <Route path='/reactions'>
