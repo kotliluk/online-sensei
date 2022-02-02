@@ -11,6 +11,7 @@ import { anythingIsValid, isBetweenValidator } from '../../logic/validation/vali
 import { initialState, State } from './state'
 import { isValidInterval } from '../../types/interval'
 import { isBeepType } from '../../types/beepType'
+import { isValidSeries } from '../../types/series'
 
 
 export const LIMITS: Limits<State> = {
@@ -26,14 +27,15 @@ export const VALIDATOR: Validator<State> = {
   simpleWork: isBetweenValidator(LIMITS.simpleWork),
   simplePause: isBetweenValidator(LIMITS.simplePause),
 
-  advancedRoundIntervals: (arr) => arr.every((x) => isValidInterval(x)),
+  advancedRoundIntervals: (arr) => arr.every(isValidInterval),
   advancedRounds: isBetweenValidator(LIMITS.advancedRounds),
+  advancedSavedSeries: (arr) => arr.every(isValidSeries),
 
   isActual: anythingIsValid,
   skipLastPause: anythingIsValid,
   audioSound: isBeepType,
   audioVolume: isBetweenValidator(LIMITS.audioVolume),
-  intervals: (arr) => arr.every((x) => isValidInterval(x)),
+  intervals: (arr) => arr.every(isValidInterval),
 }
 
 export const LS_KEYS: LSMapper<State> = {
@@ -43,6 +45,7 @@ export const LS_KEYS: LSMapper<State> = {
 
   advancedRoundIntervals: 'INTERVAL_TIMER__ADVANCED__ROUND_INTERVALS',
   advancedRounds: 'INTERVAL_TIMER__ADVANCED__ROUNDS',
+  advancedSavedSeries: 'INTERVAL_TIMER__ADVANCED__SAVED_SERIES',
 
   skipLastPause: 'INTERVAL_TIMER__SKIP_LAST_PAUSE',
   audioSound: 'INTERVAL_TIMER__AUDIO_SOUND',
@@ -74,6 +77,12 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
   advancedRounds: {
     get: () => getValidatedNumberFromLS(LS_KEYS.advancedRounds, VALIDATOR.advancedRounds, initialState.advancedRounds),
     set: (value) => saveToLS(LS_KEYS.advancedRounds, value),
+  },
+  advancedSavedSeries: {
+    get: () => getValidatedObjectFromLS(
+      LS_KEYS.advancedSavedSeries, VALIDATOR.advancedSavedSeries, initialState.advancedSavedSeries,
+    ),
+    set: (value) => saveToLS(LS_KEYS.advancedSavedSeries, JSON.stringify(value)),
   },
 
   isActual: {

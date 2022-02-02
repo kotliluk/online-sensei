@@ -98,9 +98,9 @@ export const CS: Translation = {
     setUpScreenSimple: {
       heading: 'Intervalové stopky',
       rounds: {
-        label: 'Kola',
+        label: 'Počet kol',
         // 2 params
-        error: 'Kol musí být mezi __{1}__ a __{2}__.',
+        error: 'Počet kol musí být mezi __{1}__ a __{2}__.',
       },
       workInterval: {
         label: 'Zátěž (s)',
@@ -134,10 +134,12 @@ export const CS: Translation = {
         },
       },
       addIntervalInSeriesBtn: 'Přidat',
+      loadSeries: 'Nahrát sérii',
+      saveSeries: 'Uložit sérii',
       series: {
-        label: 'Série',
+        label: 'Počet sérií',
         // 2 params
-        error: 'Série musí být mezi __{1}__ a __{2}__.',
+        error: 'Počet sérií musí být mezi __{1}__ a __{2}__.',
       },
       skipLastPause: {
         label: 'Přeskočit poslední pauzu',

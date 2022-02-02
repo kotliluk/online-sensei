@@ -24,6 +24,7 @@ export const initIntervalTimer = (): InitIntervalTimer => {
 
   const advancedRoundIntervals = LS_ACCESS.advancedRoundIntervals.get()
   const advancedRounds = LS_ACCESS.advancedRounds.get()
+  const advancedSavedSeries = LS_ACCESS.advancedSavedSeries.get()
 
   const audioSound = LS_ACCESS.audioSound.get()
   const audioVolume = LS_ACCESS.audioVolume.get()
@@ -38,6 +39,7 @@ export const initIntervalTimer = (): InitIntervalTimer => {
 
       advancedRoundIntervals,
       advancedRounds,
+      advancedSavedSeries,
 
       isActual: false,
       skipLastPause,

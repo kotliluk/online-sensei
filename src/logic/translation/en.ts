@@ -134,6 +134,8 @@ export const EN: Translation = {
         },
       },
       addIntervalInSeriesBtn: 'Add',
+      loadSeries: 'Load series',
+      saveSeries: 'Save series',
       series: {
         label: 'Series',
         // 2 params

@@ -137,6 +137,8 @@ export interface Translation {
         },
       },
       addIntervalInSeriesBtn: string,
+      loadSeries: string,
+      saveSeries: string,
       series: {
         label: string,
         // 2 params

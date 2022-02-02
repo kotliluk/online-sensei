@@ -1,5 +1,6 @@
 import { Interval } from '../../types/interval'
 import { BEEP_A, BeepType } from '../../types/beepType'
+import { Series } from '../../types/series'
 
 
 export type State = {
@@ -10,6 +11,7 @@ export type State = {
   // advanced set up
   advancedRoundIntervals: Interval[],
   advancedRounds: number,
+  advancedSavedSeries: Series[],
   // common
   isActual: boolean,
   skipLastPause: boolean,
@@ -35,6 +37,7 @@ export const initialState: State = {
     { type: 'pause', name: 'Pause', duration: 5 },
   ],
   advancedRounds: 5,
+  advancedSavedSeries: [],
 
   isActual: false,
   skipLastPause: true,

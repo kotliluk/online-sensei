@@ -81,6 +81,14 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
     setIntervals(newIntervals)
   }, [intervals, setIntervals])
 
+  const handleLoadSeries = useCallback(() => {
+
+  }, [])
+
+  const handleSaveSeries = useCallback(() => {
+
+  }, [])
+
   const handleAudioChange = useCallback((newValue: string) => {
     preloadBeep(newValue as BeepType)
     setAudioSound(newValue as BeepType)
@@ -134,6 +142,18 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
           onClick={handleIntervalAdd}
         >
           {t.addIntervalInSeriesBtn}
+        </Button>
+        <Button
+          className='add-interval-btn'
+          onClick={handleLoadSeries}
+        >
+          {t.loadSeries}
+        </Button>
+        <Button
+          className='add-interval-btn'
+          onClick={handleSaveSeries}
+        >
+          {t.saveSeries}
         </Button>
       </div>
 
