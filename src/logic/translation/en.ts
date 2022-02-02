@@ -135,6 +135,10 @@ export const EN: Translation = {
       },
       addIntervalInSeriesBtn: 'Add interval',
       loadSeries: 'Load series',
+      loadSeriesModal: {
+        heading: 'Load series',
+        noSeries: 'No saved series',
+      },
       saveSeries: 'Save series',
       series: {
         label: 'Series',

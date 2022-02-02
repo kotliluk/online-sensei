@@ -2,10 +2,11 @@ import { initialState, State } from './state'
 import {
   Actions,
   INIT_INTERVAL_TIMER,
-  LOAD_ADVANCED_SERIES,
   SET_INTERVAL_TIMER_SIMPLE,
   SET_INTERVAL_TIMER_ADVANCED,
-  SET_NOT_ACTUAL_INTERVAL_TIMER,
+  LOAD_ADVANCED_SERIES,
+  SAVE_ADVANCED_SERIES,
+  SET_NOT_ACTUAL_INTERVAL_TIMER, DELETE_SAVED_ADVANCED_SERIES,
 } from './actions'
 
 
@@ -33,6 +34,18 @@ export function reducer (state = initialState, action: Actions): State {
       return {
         ...state,
         ...action.payload,
+      }
+
+    case SAVE_ADVANCED_SERIES:
+      return {
+        ...state,
+        advancedSavedSeries: state.advancedSavedSeries.concat(action.payload.series),
+      }
+
+    case DELETE_SAVED_ADVANCED_SERIES:
+      return {
+        ...state,
+        advancedSavedSeries: state.advancedSavedSeries.filter((_, i) => i !== action.payload.index),
       }
 
     case SET_NOT_ACTUAL_INTERVAL_TIMER:

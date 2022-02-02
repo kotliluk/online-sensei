@@ -138,6 +138,10 @@ export interface Translation {
       },
       addIntervalInSeriesBtn: string,
       loadSeries: string,
+      loadSeriesModal: {
+        heading: string,
+        noSeries: string,
+      },
       saveSeries: string,
       series: {
         label: string,

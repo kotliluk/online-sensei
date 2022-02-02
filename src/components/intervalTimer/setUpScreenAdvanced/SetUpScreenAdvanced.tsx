@@ -29,8 +29,6 @@ import { Interval, IntervalType } from '../../../types/interval'
 import { setModalWindow } from '../../../redux/page/actions'
 
 
-// TODO - save and load of advanced set-up from LS
-
 export const SetUpScreenAdvanced = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
   const { intervalTimer: { setUpScreenAdvanced: t } } = translation

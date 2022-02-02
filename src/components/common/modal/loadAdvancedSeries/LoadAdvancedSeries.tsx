@@ -9,10 +9,14 @@ import { useDispatch } from '../../../../redux/useDispatch'
 import { selectIntervalTimerAdvancedSavedSeries } from '../../../../redux/intervalTimer/selector'
 import { AdvancedSeriesRow } from './AdvancedSeriesRow'
 import { Series } from '../../../../types/series'
-import { loadAdvancedSeries } from '../../../../redux/intervalTimer/actions'
+import { deleteSavedAdvancedSeries, loadAdvancedSeries } from '../../../../redux/intervalTimer/actions'
+import { selectTranslation } from '../../../../redux/page/selector'
 
 
 export const LoadAdvancedSeries = (): JSX.Element | null => {
+  const translation = useSelector(selectTranslation)
+  const { intervalTimer: { setUpScreenAdvanced: { loadSeriesModal: t } } } = translation
+
   const dispatch = useDispatch()
   const close = useCloseModal()
 
@@ -24,15 +28,15 @@ export const LoadAdvancedSeries = (): JSX.Element | null => {
   }, [dispatch])
 
   const handleSeriesDelete = useCallback((i: number) => {
-    // TODO
+    dispatch(deleteSavedAdvancedSeries(i))
   }, [dispatch])
 
   return (
     <div className='load-advanced-series'>
-      <ModalHeader heading={'Load'/* TODO */} />
+      <ModalHeader heading={t.heading} />
       <div className='body'>
         {(savedSeries.length === 0)
-          ? <span className='no-series-span'>NO SERIES{/* TODO */}</span>
+          ? <span className='no-series-span'>{t.noSeries}</span>
           : <ul className='series-rows'>{savedSeries.map((series, i) => (
             <AdvancedSeriesRow
               key={i}
@@ -42,7 +46,7 @@ export const LoadAdvancedSeries = (): JSX.Element | null => {
             />
           ))}</ul>
         }
-        <Button className='cancel-button' onClick={close}>Zrušit{/* TODO */}</Button>
+        <Button className='cancel-button' onClick={close}>{translation.common.back}</Button>
       </div>
     </div>
   )

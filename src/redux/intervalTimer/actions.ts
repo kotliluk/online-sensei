@@ -12,6 +12,8 @@ export type Actions = InitIntervalTimer
 | SetIntervalTimerAdvanced
 | SetNotActualIntervalTimer
 | LoadAdvancedSeries
+| SaveAdvancedSeries
+| DeleteSavedAdvancedSeries
 
 /** ******************* Init interval timer state from local storage *********************/
 
@@ -148,12 +150,12 @@ export const setIntervalTimerAdvanced = (
 export const LOAD_ADVANCED_SERIES = 'intervalTimer/LOAD_ADVANCED_SERIES'
 
 interface LoadAdvancedSeries extends Action<typeof LOAD_ADVANCED_SERIES> {
-  payload: AdvancedState & { advancedLastLoadTime: Date }
+  payload: AdvancedState & {
+    advancedLastLoadTime: Date,
+  }
 }
 
-export const loadAdvancedSeries = (
-  series: Series,
-): LoadAdvancedSeries => {
+export const loadAdvancedSeries = (series: Series): LoadAdvancedSeries => {
   const { intervals, rounds, skipLastPause, audioSound, audioVolume } = series
 
   const setIntervalPayload = setIntervalTimerAdvanced(intervals, rounds, skipLastPause, audioSound, audioVolume).payload
@@ -163,6 +165,44 @@ export const loadAdvancedSeries = (
     payload: {
       ...setIntervalPayload,
       advancedLastLoadTime: new Date(),
+    },
+  }
+}
+
+/** ******************* Save new series *********************/
+
+export const SAVE_ADVANCED_SERIES = 'intervalTimer/SAVE_ADVANCED_SERIES'
+
+interface SaveAdvancedSeries extends Action<typeof SAVE_ADVANCED_SERIES> {
+  payload: {
+    series: Series,
+  }
+}
+
+export const saveAdvancedSeries = (series: Series): SaveAdvancedSeries => {
+  return {
+    type: SAVE_ADVANCED_SERIES,
+    payload: {
+      series,
+    },
+  }
+}
+
+/** ******************* Delete saved series *********************/
+
+export const DELETE_SAVED_ADVANCED_SERIES = 'intervalTimer/DELETE_SAVED_ADVANCED_SERIES'
+
+interface DeleteSavedAdvancedSeries extends Action<typeof DELETE_SAVED_ADVANCED_SERIES> {
+  payload: {
+    index: number,
+  }
+}
+
+export const deleteSavedAdvancedSeries = (index: number): DeleteSavedAdvancedSeries => {
+  return {
+    type: DELETE_SAVED_ADVANCED_SERIES,
+    payload: {
+      index,
     },
   }
 }
