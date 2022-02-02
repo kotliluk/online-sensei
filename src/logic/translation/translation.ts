@@ -154,7 +154,7 @@ export interface Translation {
     },
     playScreen: {
       heading: string,
-      round: string,
+      work: string,
     },
   }
 }

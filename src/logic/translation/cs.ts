@@ -151,7 +151,7 @@ export const CS: Translation = {
     },
     playScreen: {
       heading: 'Intervalové stopky',
-      round: 'Kolo',
+      work: 'Zátěž',
     },
   },
 }

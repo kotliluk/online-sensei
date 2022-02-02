@@ -137,7 +137,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
     <main className='play-reactions'>
       <h1>{t.heading}</h1>
       <p>
-        {currInterval < totalIntervals && `${t.round}: ${currRound}/${totalRounds}`}
+        {currInterval < totalIntervals && `${t.work}: ${currRound}/${totalRounds}`}
         {currInterval === totalIntervals && `${ct.finished}!`}
       </p>
 
