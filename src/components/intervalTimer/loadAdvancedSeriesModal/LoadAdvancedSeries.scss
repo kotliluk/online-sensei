@@ -1,7 +1,7 @@
-@import "src/styles/variables";
-@import "src/styles/theme";
-@import "src/styles/mixins";
-@import "../mixins";
+@import "../../../styles/variables";
+@import "../../../styles/theme";
+@import "../../../styles/mixins";
+@import "../../common/modal/mixins";
 
 .load-advanced-series {
   @include modal-window-size();

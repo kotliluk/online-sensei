@@ -175,15 +175,20 @@ export const SAVE_ADVANCED_SERIES = 'intervalTimer/SAVE_ADVANCED_SERIES'
 
 interface SaveAdvancedSeries extends Action<typeof SAVE_ADVANCED_SERIES> {
   payload: {
-    series: Series,
+    advancedSavedSeries: Series[],
   }
 }
 
 export const saveAdvancedSeries = (series: Series): SaveAdvancedSeries => {
+  console.log(series)
+  const advancedSavedSeries = LS_ACCESS.advancedSavedSeries.get()
+  advancedSavedSeries.push(series)
+  LS_ACCESS.advancedSavedSeries.set(advancedSavedSeries)
+
   return {
     type: SAVE_ADVANCED_SERIES,
     payload: {
-      series,
+      advancedSavedSeries,
     },
   }
 }
@@ -194,15 +199,19 @@ export const DELETE_SAVED_ADVANCED_SERIES = 'intervalTimer/DELETE_SAVED_ADVANCED
 
 interface DeleteSavedAdvancedSeries extends Action<typeof DELETE_SAVED_ADVANCED_SERIES> {
   payload: {
-    index: number,
+    advancedSavedSeries: Series[],
   }
 }
 
 export const deleteSavedAdvancedSeries = (index: number): DeleteSavedAdvancedSeries => {
+  const advancedSavedSeries = LS_ACCESS.advancedSavedSeries.get()
+  advancedSavedSeries.splice(index, 1)
+  LS_ACCESS.advancedSavedSeries.set(advancedSavedSeries)
+
   return {
     type: DELETE_SAVED_ADVANCED_SERIES,
     payload: {
-      index,
+      advancedSavedSeries,
     },
   }
 }

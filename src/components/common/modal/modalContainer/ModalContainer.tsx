@@ -4,8 +4,9 @@ import ReactDOM from 'react-dom'
 import { useSelector } from 'react-redux'
 import './ModalContainer.scss'
 import { selectModalWindowType } from '../../../../redux/page/selector'
-import { LoadAdvancedSeries } from '../loadAdvancedSeries/LoadAdvancedSeries'
+import { LoadAdvancedSeries } from '../../../intervalTimer/loadAdvancedSeriesModal/LoadAdvancedSeries'
 import { useCloseModal } from '../../../../hooks/useCloseModal'
+import { SaveAdvancedSeries } from '../../../intervalTimer/saveAdvancedSeriesModal/SaveAdvancedSeries'
 
 
 export const ModalContainer = (): JSX.Element | null => {
@@ -32,7 +33,7 @@ export const ModalContainer = (): JSX.Element | null => {
   if (modalType === 'LOAD_ADVANCED_SERIES') {
     modalWindow = <LoadAdvancedSeries />
   } else if (modalType === 'SAVE_ADVANCED_SERIES') {
-    // modalWindow = <RegisterTransportationForm />
+    modalWindow = <SaveAdvancedSeries />
   }
 
   return ReactDOM.createPortal((

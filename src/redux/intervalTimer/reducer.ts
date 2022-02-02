@@ -39,13 +39,13 @@ export function reducer (state = initialState, action: Actions): State {
     case SAVE_ADVANCED_SERIES:
       return {
         ...state,
-        advancedSavedSeries: state.advancedSavedSeries.concat(action.payload.series),
+        ...action.payload,
       }
 
     case DELETE_SAVED_ADVANCED_SERIES:
       return {
         ...state,
-        advancedSavedSeries: state.advancedSavedSeries.filter((_, i) => i !== action.payload.index),
+        ...action.payload,
       }
 
     case SET_NOT_ACTUAL_INTERVAL_TIMER:

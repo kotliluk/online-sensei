@@ -1,10 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React from 'react'
 import './AdvancedSeriesRow.scss'
-import { Series } from '../../../../types/series'
-import { Button } from '../../../atoms/button/Button'
-import { Cross } from '../../../icons/Cross'
-import { Upload } from '../../../icons/Upload'
+import { Series } from '../../../types/series'
+import { Button } from '../../atoms/button/Button'
+import { Cross } from '../../icons/Cross'
+import { Upload } from '../../icons/Upload'
 
 
 interface AdvancedSeriesRowProps {

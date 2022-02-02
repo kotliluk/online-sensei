@@ -87,8 +87,9 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   }, [dispatch])
 
   const handleSaveSeries = useCallback(() => {
+    dispatch(setIntervalTimerAdvanced(intervals, rounds, skipLastPause, audioSound, audioVolume))
     dispatch(setModalWindow('SAVE_ADVANCED_SERIES'))
-  }, [])
+  }, [dispatch, intervals, rounds, skipLastPause, audioSound, audioVolume])
 
   const handleAudioChange = useCallback((newValue: string) => {
     preloadBeep(newValue as BeepType)

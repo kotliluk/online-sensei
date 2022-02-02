@@ -14,11 +14,11 @@ html, body, #root {
   font-size: 1rem;
 }
 
-.theme--light.app {
+.theme--light .app {
   @include with-scrollbar($grey-light, $white, darken($grey-light, 10%));
 }
 
-.theme--dark.app {
+.theme--dark .app {
   @include with-scrollbar($grey-dark, $grey, lighten($grey-dark, 5%));
 }
 

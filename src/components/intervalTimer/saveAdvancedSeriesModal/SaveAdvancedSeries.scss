@@ -1,0 +1,46 @@
+@import "../../../styles/variables";
+@import "../../../styles/theme";
+@import "../../../styles/mixins";
+@import "../../common/modal/mixins";
+
+.load-advanced-series {
+  @include modal-window-size();
+
+  @media (max-width: 720px) {
+    width: 80vw;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 30px;
+
+    @include themed() {
+      background-color: t($primary-color);
+    }
+
+    .no-series-span {
+      margin-bottom: 1rem;
+    }
+
+    .series-rows {
+      width: 100%;
+      padding: 0;
+    }
+
+    .cancel-button {
+      width: 240px;
+      height: 40px;
+
+      align-self: flex-end;
+
+      @include button-color($orange);
+
+      @media (max-width: 720px) {
+        width: 100%;
+      }
+    }
+  }
+}
