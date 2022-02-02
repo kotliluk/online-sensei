@@ -138,11 +138,9 @@ export interface Translation {
       },
       addIntervalInSeriesBtn: string,
       loadSeries: string,
-      loadSeriesModal: {
-        heading: string,
-        noSeries: string,
-      },
+      noSeries: string,
       saveSeries: string,
+      duplicateSeriesNameError: string,
       series: {
         label: string,
         // 2 params

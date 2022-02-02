@@ -135,11 +135,9 @@ export const CS: Translation = {
       },
       addIntervalInSeriesBtn: 'Přidat interval',
       loadSeries: 'Nahrát sérii',
-      loadSeriesModal: {
-        heading: 'Nahrát sérii',
-        noSeries: 'Žádné uložené série',
-      },
+      noSeries: 'Žádné uložené série',
       saveSeries: 'Uložit sérii',
+      duplicateSeriesNameError: 'Dané jméno již má jiná série',
       series: {
         label: 'Počet sérií',
         // 2 params

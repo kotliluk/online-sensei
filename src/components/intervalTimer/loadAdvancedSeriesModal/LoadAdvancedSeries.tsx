@@ -15,7 +15,7 @@ import { selectTranslation } from '../../../redux/page/selector'
 
 export const LoadAdvancedSeries = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
-  const { intervalTimer: { setUpScreenAdvanced: { loadSeriesModal: t } } } = translation
+  const { intervalTimer: { setUpScreenAdvanced: t } } = translation
 
   const dispatch = useDispatch()
   const close = useCloseModal()
@@ -34,7 +34,7 @@ export const LoadAdvancedSeries = (): JSX.Element | null => {
   // TODO - scroll when too many
   return (
     <div className='load-advanced-series'>
-      <ModalHeader heading={t.heading} />
+      <ModalHeader heading={t.loadSeries} />
       <div className='body'>
         {(savedSeries.length === 0)
           ? <span className='no-series-span'>{t.noSeries}</span>
