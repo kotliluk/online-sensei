@@ -4,9 +4,14 @@ import { LS_ACCESS } from './utils'
 import { Interval } from '../../types/interval'
 import { range } from '../../utils/array'
 import { BeepType } from '../../types/beepType'
+import { Series } from '../../types/series'
 
 
-export type Actions = InitIntervalTimer | SetIntervalTimerSimple | SetIntervalTimerAdvanced | SetNotActualIntervalTimer
+export type Actions = InitIntervalTimer
+| SetIntervalTimerSimple
+| SetIntervalTimerAdvanced
+| SetNotActualIntervalTimer
+| LoadAdvancedSeries
 
 /** ******************* Init interval timer state from local storage *********************/
 
@@ -25,6 +30,7 @@ export const initIntervalTimer = (): InitIntervalTimer => {
   const advancedRoundIntervals = LS_ACCESS.advancedRoundIntervals.get()
   const advancedRounds = LS_ACCESS.advancedRounds.get()
   const advancedSavedSeries = LS_ACCESS.advancedSavedSeries.get()
+  const advancedLastLoadTime = LS_ACCESS.advancedLastLoadTime.get()
 
   const audioSound = LS_ACCESS.audioSound.get()
   const audioVolume = LS_ACCESS.audioVolume.get()
@@ -40,6 +46,7 @@ export const initIntervalTimer = (): InitIntervalTimer => {
       advancedRoundIntervals,
       advancedRounds,
       advancedSavedSeries,
+      advancedLastLoadTime,
 
       isActual: false,
       skipLastPause,
@@ -136,6 +143,29 @@ export const setIntervalTimerAdvanced = (
   }
 }
 
+/** ******************* Load interval timer advanced state from saved series *********************/
+
+export const LOAD_ADVANCED_SERIES = 'intervalTimer/LOAD_ADVANCED_SERIES'
+
+interface LoadAdvancedSeries extends Action<typeof LOAD_ADVANCED_SERIES> {
+  payload: AdvancedState & { advancedLastLoadTime: Date }
+}
+
+export const loadAdvancedSeries = (
+  series: Series,
+): LoadAdvancedSeries => {
+  const { intervals, rounds, skipLastPause, audioSound, audioVolume } = series
+
+  const setIntervalPayload = setIntervalTimerAdvanced(intervals, rounds, skipLastPause, audioSound, audioVolume).payload
+
+  return {
+    type: LOAD_ADVANCED_SERIES,
+    payload: {
+      ...setIntervalPayload,
+      advancedLastLoadTime: new Date(),
+    },
+  }
+}
 
 /** ******************* Set interval timer as not actual *********************/
 

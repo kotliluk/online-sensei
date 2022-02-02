@@ -32,6 +32,10 @@ export const selectIntervalTimerAdvancedSavedSeries = (state: RootState): Series
   return state.intervalTimer.advancedSavedSeries
 }
 
+export const selectIntervalTimerAdvancedLastLoadTime = (state: RootState): Date => {
+  return state.intervalTimer.advancedLastLoadTime
+}
+
 // common
 
 export const selectIntervalTimerIsActual = (state: RootState): boolean => {

@@ -1,0 +1,10 @@
+@import "./variables";
+@import "src/styles/variables";
+
+@mixin modal-window-size {
+  height: $modal-height;
+  min-height: $min-modal-height;
+  width: 700px;
+  max-width: 80vw;
+  border-radius: $border-radius;
+}

@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import { PageHeader } from './components/common/pageHeader/PageHeader'
 import { MainPage } from './pages/main/MainPage'
@@ -13,8 +13,12 @@ import { IntervalTimerPage } from './pages/intervalTimer/IntervalTimerPage'
 const App = (): JSX.Element => {
   const theme = useSelector(selectTheme)
 
+  useEffect(() => {
+    document.body.className = `theme--${theme}`
+  })
+
   return (
-    <div className={`app theme--${theme}`}>
+    <div className='app'>
       <PageHeader />
       <Switch>
         <Route path='/reactions'>

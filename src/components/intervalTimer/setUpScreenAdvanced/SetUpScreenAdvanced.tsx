@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import './SetUpScreenAdvanced.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { useHistory } from 'react-router-dom'
@@ -13,6 +13,7 @@ import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
 import {
+  selectIntervalTimerAdvancedLastLoadTime,
   selectIntervalTimerAdvancedRoundIntervals,
   selectIntervalTimerAdvancedRounds,
   selectIntervalTimerAudioSound,
@@ -25,6 +26,7 @@ import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
 import { preloadBeep } from '../../../logic/audio/beep'
 import { SetUpAdvancedInterval } from '../setUpAdvancedInterval/SetUpAdvancedInterval'
 import { Interval, IntervalType } from '../../../types/interval'
+import { setModalWindow } from '../../../redux/page/actions'
 
 
 // TODO - save and load of advanced set-up from LS
@@ -38,6 +40,7 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   const initAudioSound = useSelector(selectIntervalTimerAudioSound)
   const initAudioVolume = useSelector(selectIntervalTimerAudioVolume)
   const initSkipLastPause = useSelector(selectIntervalTimerSkipLastPause)
+  const lastLoadTime = useSelector(selectIntervalTimerAdvancedLastLoadTime)
 
   const [intervals, setIntervals, isValidIntervals] = useValidatedState(initIntervals, VALIDATOR.advancedRoundIntervals)
   const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATOR.advancedRounds)
@@ -82,11 +85,11 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   }, [intervals, setIntervals])
 
   const handleLoadSeries = useCallback(() => {
-
-  }, [])
+    dispatch(setModalWindow('LOAD_ADVANCED_SERIES'))
+  }, [dispatch])
 
   const handleSaveSeries = useCallback(() => {
-
+    dispatch(setModalWindow('SAVE_ADVANCED_SERIES'))
   }, [])
 
   const handleAudioChange = useCallback((newValue: string) => {
@@ -107,6 +110,15 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   const handleBack = useCallback(() => {
     history.push('/')
   }, [dispatch])
+
+  // handles change of init values when lastLoadTime has changes
+  useEffect(() => {
+    setIntervals(initIntervals)
+    setRounds(initRounds)
+    setAudioSound(initAudioSound)
+    setAudioVolume(initAudioVolume)
+    setSkipLastPause(initSkipLastPause)
+  }, [lastLoadTime])
 
   return (
     <main className='set-up-interval-timer-advanced'>

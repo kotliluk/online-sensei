@@ -133,7 +133,7 @@ export const EN: Translation = {
           error: 'Duration must be set between __{1}__ and __{2}__.',
         },
       },
-      addIntervalInSeriesBtn: 'Add',
+      addIntervalInSeriesBtn: 'Add interval',
       loadSeries: 'Load series',
       saveSeries: 'Save series',
       series: {

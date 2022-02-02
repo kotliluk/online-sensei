@@ -1,0 +1,39 @@
+@import "src/styles/variables";
+@import "src/styles/theme";
+
+.modal-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  height: $modal-header-height;
+  padding: 20px;
+
+  @include themed() {
+    background-color: t($secondary-color);
+    color: t($primary-text);
+  }
+
+  & > h1 {
+    font-size: $text-middle;
+  }
+
+  & > button {
+    background-color: transparent;
+
+    @include themed() {
+      color: t($primary-text);
+    }
+
+    padding: 0;
+    width: 18px;
+    height: 18px;
+
+    & > * {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}

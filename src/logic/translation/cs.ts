@@ -133,7 +133,7 @@ export const CS: Translation = {
           error: 'Délka musí být mezi __{1}__ a __{2}__.',
         },
       },
-      addIntervalInSeriesBtn: 'Přidat',
+      addIntervalInSeriesBtn: 'Přidat interval',
       loadSeries: 'Nahrát sérii',
       saveSeries: 'Uložit sérii',
       series: {

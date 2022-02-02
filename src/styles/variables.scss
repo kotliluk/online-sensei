@@ -9,6 +9,8 @@ $screen-content-width-small-device: calc(100vw - 2 * #{$screen-side-padding-smal
 $screen-content-width-medium-device: calc(100vw - 2 * #{$screen-side-padding-medium-device});
 $screen-content-width-large-device: calc(100vw - 2 * #{$screen-side-padding-large-device});
 
+$modal-header-height: 70px;
+
 // element sizes
 $button-short-width: 4rem;
 $button-middle-width: 6rem;

@@ -2,6 +2,7 @@ import { initialState, State } from './state'
 import {
   Actions,
   INIT_INTERVAL_TIMER,
+  LOAD_ADVANCED_SERIES,
   SET_INTERVAL_TIMER_SIMPLE,
   SET_INTERVAL_TIMER_ADVANCED,
   SET_NOT_ACTUAL_INTERVAL_TIMER,
@@ -23,6 +24,12 @@ export function reducer (state = initialState, action: Actions): State {
       }
 
     case SET_INTERVAL_TIMER_ADVANCED:
+      return {
+        ...state,
+        ...action.payload,
+      }
+
+    case LOAD_ADVANCED_SERIES:
       return {
         ...state,
         ...action.payload,

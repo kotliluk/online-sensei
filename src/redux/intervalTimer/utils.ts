@@ -30,6 +30,7 @@ export const VALIDATOR: Validator<State> = {
   advancedRoundIntervals: (arr) => arr.every(isValidInterval),
   advancedRounds: isBetweenValidator(LIMITS.advancedRounds),
   advancedSavedSeries: (arr) => arr.every(isValidSeries),
+  advancedLastLoadTime: anythingIsValid,
 
   isActual: anythingIsValid,
   skipLastPause: anythingIsValid,
@@ -83,6 +84,10 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
       LS_KEYS.advancedSavedSeries, VALIDATOR.advancedSavedSeries, initialState.advancedSavedSeries,
     ),
     set: (value) => saveToLS(LS_KEYS.advancedSavedSeries, JSON.stringify(value)),
+  },
+  advancedLastLoadTime: {
+    get: () => initialState.advancedLastLoadTime,
+    set: emptyFunc,
   },
 
   isActual: {
