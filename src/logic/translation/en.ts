@@ -137,6 +137,7 @@ export const EN: Translation = {
       loadSeries: 'Load series',
       noSeries: 'No saved series',
       saveSeries: 'Save series',
+      seriesName: 'Name',
       duplicateSeriesNameError: 'Another series already has this name',
       series: {
         label: 'Series',

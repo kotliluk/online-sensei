@@ -1,14 +1,10 @@
-@import "../../../styles/variables";
-@import "../../../styles/theme";
-@import "../../../styles/mixins";
+@import "src/styles/variables";
+@import "src/styles/theme";
+@import "src/styles/mixins";
 @import "../../common/modal/mixins";
 
 .load-advanced-series {
-  @include modal-window-size();
-
-  @media (max-width: 720px) {
-    width: 80vw;
-  }
+  @include modal-window();
 
   .body {
     display: flex;
@@ -30,17 +26,11 @@
       padding: 0;
     }
 
-    .cancel-button {
-      width: 240px;
-      height: 40px;
-
-      align-self: flex-end;
-
+    .cancel-btn {
+      @include modal-footer-btn();
       @include button-color($orange);
 
-      @media (max-width: 720px) {
-        width: 100%;
-      }
+      align-self: flex-end;
     }
   }
 }

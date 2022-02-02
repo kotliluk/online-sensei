@@ -140,6 +140,7 @@ export interface Translation {
       loadSeries: string,
       noSeries: string,
       saveSeries: string,
+      seriesName: string,
       duplicateSeriesNameError: string,
       series: {
         label: string,

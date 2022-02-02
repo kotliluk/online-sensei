@@ -1,14 +1,10 @@
-@import "../../../styles/variables";
-@import "../../../styles/theme";
-@import "../../../styles/mixins";
+@import "src/styles/variables";
+@import "src/styles/theme";
+@import "src/styles/mixins";
 @import "../../common/modal/mixins";
 
-.load-advanced-series {
-  @include modal-window-size();
-
-  @media (max-width: 720px) {
-    width: 80vw;
-  }
+.save-advanced-series {
+  @include modal-window();
 
   .body {
     display: flex;
@@ -21,26 +17,39 @@
       background-color: t($primary-color);
     }
 
-    .no-series-span {
-      margin-bottom: 1rem;
-    }
+    .input-row, .buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
 
-    .series-rows {
+      margin: 1rem 0;
       width: 100%;
-      padding: 0;
     }
 
-    .cancel-button {
-      width: 240px;
-      height: 40px;
+    .input-row {
+      justify-content: center;
 
-      align-self: flex-end;
+      label {
+        margin-right: 1rem;
 
-      @include button-color($orange);
-
-      @media (max-width: 720px) {
-        width: 100%;
+        @include themed() {
+          color: t($primary-text);
+        }
       }
+    }
+
+    .buttons {
+      justify-content: space-between;
+    }
+
+    .save-btn {
+      @include modal-footer-btn();
+      @include button-color($green);
+    }
+
+    .cancel-btn {
+      @include modal-footer-btn();
+      @include button-color($orange);
     }
   }
 }

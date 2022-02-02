@@ -40,31 +40,36 @@ export const SaveAdvancedSeries = (): JSX.Element | null => {
     close()
   }, [dispatch, name, intervals, rounds, audioSound, audioVolume, skipLastPause])
 
-  // TODO - styling
   return (
-    <div className='load-advanced-series'>
+    <div className='save-advanced-series'>
       <ModalHeader heading={t.saveSeries} />
       <div className='body'>
-        <Input
-          type='text'
-          value={name}
-          onChange={setName}
-          invalid={!isValidName}
-          errorMessage={t.duplicateSeriesNameError}
-        />
-        <Button
-          className='save-button'
-          onClick={handleSeriesSave}
-          disabled={!isValidName}
-        >
-          {t.saveSeries}
-        </Button>
-        <Button
-          className='cancel-button'
-          onClick={close}
-        >
-          {translation.common.back}
-        </Button>
+        <div className='input-row'>
+          <label>{t.seriesName}:</label>
+          <Input
+            type='text'
+            value={name}
+            onChange={setName}
+            invalid={!isValidName}
+            errorMessage={t.duplicateSeriesNameError}
+          />
+        </div>
+
+        <div className='buttons'>
+          <Button
+            className='footer-btn save-btn'
+            onClick={handleSeriesSave}
+            disabled={!isValidName}
+          >
+            {t.saveSeries}
+          </Button>
+          <Button
+            className='footer-btn cancel-btn'
+            onClick={close}
+          >
+            {translation.common.back}
+          </Button>
+        </div>
       </div>
     </div>
   )

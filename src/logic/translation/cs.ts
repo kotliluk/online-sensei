@@ -137,6 +137,7 @@ export const CS: Translation = {
       loadSeries: 'Nahrát sérii',
       noSeries: 'Žádné uložené série',
       saveSeries: 'Uložit sérii',
+      seriesName: 'Název',
       duplicateSeriesNameError: 'Dané jméno již má jiná série',
       series: {
         label: 'Počet sérií',

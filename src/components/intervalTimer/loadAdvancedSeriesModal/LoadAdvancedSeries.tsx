@@ -38,16 +38,23 @@ export const LoadAdvancedSeries = (): JSX.Element | null => {
       <div className='body'>
         {(savedSeries.length === 0)
           ? <span className='no-series-span'>{t.noSeries}</span>
-          : <ul className='series-rows'>{savedSeries.map((series, i) => (
-            <AdvancedSeriesRow
-              key={i}
-              series={series}
-              onLoad={() => handleSeriesLoad(series)}
-              onDelete={() => handleSeriesDelete(i)}
-            />
-          ))}</ul>
+          : <ul className='series-rows'>{
+            savedSeries.map((series, i) => (
+              <AdvancedSeriesRow
+                key={i}
+                series={series}
+                onLoad={() => handleSeriesLoad(series)}
+                onDelete={() => handleSeriesDelete(i)}
+              />
+            ))
+          }</ul>
         }
-        <Button className='cancel-button' onClick={close}>{translation.common.back}</Button>
+        <Button
+          className='footer-btn cancel-btn'
+          onClick={close}
+        >
+          {translation.common.back}
+        </Button>
       </div>
     </div>
   )
