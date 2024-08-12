@@ -7,5 +7,5 @@ export interface State {
 export const initialState: State = {
   isActual: false,
   duration: 120,
-  atoshibaraku: 30,
+  atoshibaraku: 15,
 }

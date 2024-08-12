@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import './ModalContainer.scss'
 import { selectModalWindowType } from '../../../../redux/page/selector'
 import { LoadAdvancedSeries } from '../../../intervalTimer/loadAdvancedSeriesModal/LoadAdvancedSeries'
-import { useCloseModal } from '../../../../hooks/useCloseModal'
+import { useCloseModal } from '../../../../logic/hooks/useCloseModal'
 import { SaveAdvancedSeries } from '../../../intervalTimer/saveAdvancedSeriesModal/SaveAdvancedSeries'
 
 

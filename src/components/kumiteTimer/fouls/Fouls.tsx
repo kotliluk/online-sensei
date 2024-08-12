@@ -27,6 +27,7 @@ export const Fouls = (props: FoulsProps): JSX.Element | null => {
       <div className={`foul-circle ${fouls >= 2 ? 'checked' : ''}`} onClick={() => handleChange(2)} />
       <div className={`foul-circle ${fouls >= 3 ? 'checked' : ''}`} onClick={() => handleChange(3)} />
       <div className={`foul-circle ${fouls >= 4 ? 'checked' : ''}`} onClick={() => handleChange(4)} />
+      <div className={`foul-circle ${fouls >= 5 ? 'checked' : ''}`} onClick={() => handleChange(5)} />
     </div>
   )
 }

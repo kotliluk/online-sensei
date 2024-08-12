@@ -10,31 +10,26 @@ interface FighterStatsProps {
   className?: string
   isRed: boolean
   score: number
-  foulsOne: number
-  foulsTwo: number
+  fouls: number
   isMirror: boolean
   onScoreChange?: (score: number) => void
-  onFoulsOneChange?: (fouls: number) => void
-  onFoulsTwoChange?: (fouls: number) => void
+  onFoulsChange?: (fouls: number) => void
 }
 
 export const FighterStats = ({
   className,
   isRed,
   score,
-  foulsOne,
-  foulsTwo,
+  fouls,
   isMirror,
   onScoreChange = emptyFunc,
-  onFoulsOneChange = emptyFunc,
-  onFoulsTwoChange = emptyFunc,
+  onFoulsChange = emptyFunc,
 }: FighterStatsProps): JSX.Element | null => {
 
   return (
     <section className={`__fighter-stats ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <Score isRed={isRed} score={score} isMirror={isMirror} onChange={onScoreChange} />
-      <Fouls isRed={isRed} fouls={foulsOne} onChange={onFoulsOneChange} />
-      <Fouls isRed={isRed} fouls={foulsTwo} onChange={onFoulsTwoChange} />
+      <Fouls isRed={isRed} fouls={fouls} onChange={onFoulsChange} />
     </section>
   )
 }

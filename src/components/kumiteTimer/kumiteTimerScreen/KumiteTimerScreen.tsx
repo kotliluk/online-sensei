@@ -35,20 +35,16 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [time, setTime] = useState(duration)
   const [redOnLeft, setRedOnLeft] = useState(true)
   const [scoreRed, setScoreRed] = useControlledState(0, (value) => value >= 0 && value <= 99)
-  const [foulsOneRed, setFoulsOneRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
-  const [foulsTwoRed, setFoulsTwoRed] = useControlledState(0, (value) => value >= 0 && value <= 4)
+  const [foulsRed, setFoulsRed] = useControlledState(0, (value) => value >= 0 && value <= 5)
   const [scoreBlue, setScoreBlue] = useControlledState(0, (value) => value >= 0 && value <= 99)
-  const [foulsOneBlue, setFoulsOneBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
-  const [foulsTwoBlue, setFoulsTwoBlue] = useControlledState(0, (value) => value >= 0 && value <= 4)
+  const [foulsBlue, setFoulsBlue] = useControlledState(0, (value) => value >= 0 && value <= 5)
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
   useLSSyncProvider(time, LS_KEYS.time)
   useLSSyncProvider(scoreRed, LS_KEYS.scoreRed)
-  useLSSyncProvider(foulsOneRed, LS_KEYS.foulsOneRed)
-  useLSSyncProvider(foulsTwoRed, LS_KEYS.foulsTwoRed)
+  useLSSyncProvider(foulsRed, LS_KEYS.foulsRed)
   useLSSyncProvider(scoreBlue, LS_KEYS.scoreBlue)
-  useLSSyncProvider(foulsOneBlue, LS_KEYS.foulsOneBlue)
-  useLSSyncProvider(foulsTwoBlue, LS_KEYS.foulsTwoBlue)
+  useLSSyncProvider(foulsBlue, LS_KEYS.foulsBlue)
   useLSSyncProvider(senchu, LS_KEYS.senchu)
 
   const [phase, setPhase] = useState<PlayPhase>('init')
@@ -101,11 +97,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     setIsPaused(true)
     setTime(duration)
     setScoreRed(0)
-    setFoulsOneRed(0)
-    setFoulsTwoRed(0)
+    setFoulsRed(0)
     setScoreBlue(0)
-    setFoulsOneBlue(0)
-    setFoulsTwoBlue(0)
+    setFoulsBlue(0)
     setSenchu('NONE')
     clock.pause()
   }, [isPaused, setIsPaused, setTime])
@@ -141,28 +135,24 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       className={className}
       isRed={true}
       score={scoreRed}
-      foulsOne={foulsOneRed}
-      foulsTwo={foulsTwoRed}
+      fouls={foulsRed}
       isMirror={false}
       onScoreChange={setScoreRed}
-      onFoulsOneChange={setFoulsOneRed}
-      onFoulsTwoChange={setFoulsTwoRed}
+      onFoulsChange={setFoulsRed}
     />
-  ), [scoreRed, foulsOneRed, foulsTwoRed])
+  ), [scoreRed, foulsRed])
 
   const renderBlueData = useCallback((className: string) => (
     <FighterStats
       className={className}
       isRed={false}
       score={scoreBlue}
-      foulsOne={foulsOneBlue}
-      foulsTwo={foulsTwoBlue}
+      fouls={foulsBlue}
       isMirror={false}
       onScoreChange={setScoreBlue}
-      onFoulsOneChange={setFoulsOneBlue}
-      onFoulsTwoChange={setFoulsTwoBlue}
+      onFoulsChange={setFoulsBlue}
     />
-  ), [scoreBlue, foulsOneBlue, foulsTwoBlue])
+  ), [scoreBlue, foulsBlue])
 
   if (!isActual) {
     return null

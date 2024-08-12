@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React from 'react'
 import './ModalHeader.scss'
-import { useCloseModal } from '../../../../hooks/useCloseModal'
+import { useCloseModal } from '../../../../logic/hooks/useCloseModal'
 import { Cross } from '../../../icons/Cross'
 import { Button } from '../../../atoms/button/Button'
 

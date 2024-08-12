@@ -12,11 +12,9 @@ export const KumiteTimerMirror = (): JSX.Element | null => {
   const [redOnLeft, setRedOnLeft] = useState(true)
   const time = useLSSyncConsumer(LS_KEYS.time, intOrDefaultParser(0))
   const scoreRed = useLSSyncConsumer(LS_KEYS.scoreRed, intOrDefaultParser(0))
-  const foulsOneRed = useLSSyncConsumer(LS_KEYS.foulsOneRed, intOrDefaultParser(0))
-  const foulsTwoRed = useLSSyncConsumer(LS_KEYS.foulsTwoRed, intOrDefaultParser(0))
+  const foulsRed = useLSSyncConsumer(LS_KEYS.foulsRed, intOrDefaultParser(0))
   const scoreBlue = useLSSyncConsumer(LS_KEYS.scoreBlue, intOrDefaultParser(0))
-  const foulsOneBlue = useLSSyncConsumer(LS_KEYS.foulsOneBlue, intOrDefaultParser(0))
-  const foulsTwoBlue = useLSSyncConsumer(LS_KEYS.foulsTwoBlue, intOrDefaultParser(0))
+  const foulsBlue = useLSSyncConsumer(LS_KEYS.foulsBlue, intOrDefaultParser(0))
   const senchu = useLSSyncConsumer(LS_KEYS.senchu, (value) => value ? value as Senchu : 'BLUE')
 
   const handleSwitchSides = useCallback(() => {
@@ -28,22 +26,20 @@ export const KumiteTimerMirror = (): JSX.Element | null => {
       className={className}
       isRed={true}
       score={scoreRed}
-      foulsOne={foulsOneRed}
-      foulsTwo={foulsTwoRed}
+      fouls={foulsRed}
       isMirror={true}
     />
-  ), [scoreRed, foulsOneRed, foulsTwoRed])
+  ), [scoreRed, foulsRed])
 
   const renderBlueData = useCallback((className: string) => (
     <FighterStats
       className={className}
       isRed={false}
       score={scoreBlue}
-      foulsOne={foulsOneBlue}
-      foulsTwo={foulsTwoBlue}
+      fouls={foulsBlue}
       isMirror={true}
     />
-  ), [scoreBlue, foulsOneBlue, foulsTwoBlue])
+  ), [scoreBlue, foulsBlue])
 
   return (
     <main className='kumite-timer'>
