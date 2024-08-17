@@ -24,6 +24,7 @@ export interface Translation {
     resume: string,
     start: string,
     stop: string,
+    cancel: string,
   }
   mainPage: {
     appIntroduction: string,
@@ -86,15 +87,27 @@ export interface Translation {
         // 2 params
         error: string,
       },
-      atoshibaraku: {
+      tournament: {
         label: string,
-        // 2 params
-        error: string,
+        newTournament: string,
+        name: string,
+        resumeTournament: string,
+        types: {
+          label: string,
+          tree: string,
+          group: string,
+        },
+        competitorsCount: {
+          label: string,
+          // error
+          error: string,
+        },
+        shuffleCompetitors: string,
+        competitors: string,
       },
     },
-    playScreen: {
-      heading: string,
-      switchSides: string,
+    timerScreen: {
+      saveTournamentFight: string,
     },
   }
   intervalTimer: {

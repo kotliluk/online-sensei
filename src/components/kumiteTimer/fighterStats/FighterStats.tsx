@@ -14,6 +14,7 @@ interface FighterStatsProps {
   isMirror: boolean
   onScoreChange?: (score: number) => void
   onFoulsChange?: (fouls: number) => void
+  name: string | undefined | null
 }
 
 export const FighterStats = ({
@@ -24,12 +25,13 @@ export const FighterStats = ({
   isMirror,
   onScoreChange = emptyFunc,
   onFoulsChange = emptyFunc,
+  name,
 }: FighterStatsProps): JSX.Element | null => {
-
   return (
     <section className={`__fighter-stats ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <Score isRed={isRed} score={score} isMirror={isMirror} onChange={onScoreChange} />
       <Fouls isRed={isRed} fouls={fouls} onChange={onFoulsChange} />
+      {name && <span className='__fighter-stats_name'>{name}</span>}
     </section>
   )
 }

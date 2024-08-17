@@ -29,16 +29,16 @@ export const getValidatedNumberFromLS = (
  * Returns saved item if the key exists in local storage and the item is valid.
  * If not, saves the given default value in local storage and returns it.
  */
-export const getValidatedStringFromLS = (
+export const getValidatedStringFromLS = <T extends string> (
   key: string | undefined,
-  validator: Predicate<string>,
-  defaultValue: string,
-): string => {
+  validator: Predicate<T>,
+  defaultValue: T,
+): T => {
   if (key === undefined) {
     return defaultValue
   }
 
-  const item = localStorage.getItem(key)
+  const item = localStorage.getItem(key) as T
 
   if (item === null || !validator(item)) {
     localStorage.setItem(key, defaultValue)
@@ -74,7 +74,7 @@ export const getBooleanFromLS = (
  * Returns saved item typed as given type if the key exists in local storage and the item is valid.
  * If not, saves the given default value in local storage and returns it.
  */
-export const getValidatedTypeFromLS = <T extends string>(
+export const getValidatedTypeFromLS = <T>(
   key: string | undefined,
   validator: Predicate<T>,
   defaultValue: T,
@@ -85,12 +85,19 @@ export const getValidatedTypeFromLS = <T extends string>(
 
   const item = localStorage.getItem(key)
 
-  if (item === null || !validator(item as T)) {
-    localStorage.setItem(key, defaultValue)
+  if (item === null) {
+    localStorage.setItem(key, JSON.stringify(defaultValue))
     return defaultValue
   }
 
-  return item as T
+  const parsed = JSON.parse(item) as T
+
+  if (parsed === null || !validator(parsed)) {
+    localStorage.setItem(key, JSON.stringify(defaultValue))
+    return defaultValue
+  }
+
+  return parsed
 }
 
 /**

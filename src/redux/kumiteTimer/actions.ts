@@ -1,9 +1,21 @@
 import { Action } from 'redux'
 import { LS_ACCESS } from './utils'
 import { State } from './state'
+import {
+  Competitor,
+  createGroup,
+  createTournamentTree,
+  Fight,
+  FightResult,
+  switchResultSides, TournamentTreeNode,
+  TournamentType,
+  updateTournamentTree,
+} from '../../types/tournament'
+import { ThunkAction } from '../thunk'
 
 
-export type Actions = InitKumiteTimer | SetKumiteTimer | SetNotActualKumiteTimer
+export type Actions = InitKumiteTimer | SetKumiteTimer | SetKumiteTimerTournament | SetNotActualKumiteTimer
+| CancelTournament | SetTournamentFight | SetTournamentState
 
 /** ******************* Init kumite timer state *********************/
 
@@ -15,14 +27,29 @@ interface InitKumiteTimer extends Action<typeof INIT_KUMITE_TIMER> {
 
 export const initKumiteTimer = (): InitKumiteTimer => {
   const duration = LS_ACCESS.duration.get()
-  const atoshibaraku = LS_ACCESS.atoshibaraku.get()
+  const activeTournament = LS_ACCESS.activeTournament.get()
+  const tournamentName = LS_ACCESS.tournamentName.get()
+  const tournamentType = LS_ACCESS.tournamentType.get()
+  const competitorsCount = LS_ACCESS.competitorsCount.get()
+  const competitors = LS_ACCESS.competitors.get()
+  const tournamentTree = LS_ACCESS.tournamentTree.get()
+  const tournamentDuration = LS_ACCESS.tournamentDuration.get()
+  const group = LS_ACCESS.group.get()
 
   return {
     type: INIT_KUMITE_TIMER,
     payload: {
       isActual: false,
       duration,
-      atoshibaraku,
+      tournamentFight: null,
+      activeTournament,
+      tournamentName,
+      tournamentType,
+      competitorsCount,
+      competitors,
+      tournamentTree,
+      tournamentDuration,
+      group,
     },
   }
 }
@@ -32,19 +59,71 @@ export const initKumiteTimer = (): InitKumiteTimer => {
 export const SET_KUMITE_TIMER = 'kumiteTimer/SET_KUMITE_TIMER'
 
 interface SetKumiteTimer extends Action<typeof SET_KUMITE_TIMER> {
-  payload: State
+  payload: {
+    duration: number,
+  }
 }
 
-export const setKumiteTimer = (duration: number, atoshibaraku: number): SetKumiteTimer => {
+export const setKumiteTimer = (
+  duration: number,
+): SetKumiteTimer => {
   LS_ACCESS.duration.set(duration)
-  LS_ACCESS.atoshibaraku.set(atoshibaraku)
 
   return {
     type: SET_KUMITE_TIMER,
     payload: {
-      isActual: true,
       duration,
-      atoshibaraku,
+    },
+  }
+}
+
+/** ******************* Set kumite timer tournament state *********************/
+
+export const SET_KUMITE_TIMER_TOURNAMENT = 'kumiteTimer/SET_KUMITE_TIMER_TOURNAMENT'
+
+interface SetKumiteTimerTournament extends Action<typeof SET_KUMITE_TIMER_TOURNAMENT> {
+  payload: State
+}
+
+export const setKumiteTimerTournament = (
+  duration: number,
+  tournamentName: string,
+  tournamentType: TournamentType,
+  competitorsCount: number,
+  competitors: Competitor[],
+): SetKumiteTimerTournament => {
+  let tournamentTree = null
+  let group: Fight[][] = []
+
+  if (tournamentType === 'TREE') {
+    tournamentTree = createTournamentTree(competitors, 0)
+  } else {
+    group = createGroup(competitors)
+  }
+  LS_ACCESS.duration.set(duration)
+  LS_ACCESS.activeTournament.set(true)
+  LS_ACCESS.tournamentName.set(tournamentName)
+  LS_ACCESS.tournamentType.set(tournamentType)
+  LS_ACCESS.competitorsCount.set(competitorsCount)
+  LS_ACCESS.competitors.set(competitors)
+  LS_ACCESS.tournamentTree.set(tournamentTree)
+  LS_ACCESS.tournamentDuration.set(duration)
+  LS_ACCESS.group.set(group)
+
+  return {
+    type: SET_KUMITE_TIMER_TOURNAMENT,
+    payload: {
+      isActual: false,
+      duration,
+      tournamentFight: null,
+      activeTournament: true,
+      tournamentName,
+      tournamentType,
+      competitorsCount,
+      competitors,
+      tournamentTree,
+      tournamentDuration: duration,
+      group,
     },
   }
 }
@@ -62,5 +141,97 @@ export const setNotActualKumiteTimer = (): SetNotActualKumiteTimer => {
     type: SET_NOT_ACTUAL_KUMITE_TIMER,
     payload: { },
   }
+}
+
+/** ******************* Cancels tournament *********************/
+
+export const CANCEL_TOURNAMENT = 'kumiteTimer/CANCEL_TOURNAMENT'
+
+interface CancelTournament extends Action<typeof CANCEL_TOURNAMENT> {
+  payload: { }
+}
+
+export const cancelTournament = (): CancelTournament => {
+  return {
+    type: CANCEL_TOURNAMENT,
+    payload: { },
+  }
+}
+
+/** ******************* Set tournament fight *********************/
+
+export const SET_TOURNAMENT_FIGHT = 'kumiteTimer/SET_TOURNAMENT_FIGHT'
+
+interface SetTournamentFight extends Action<typeof SET_TOURNAMENT_FIGHT> {
+  payload: {
+    tournamentFight: Fight | null,
+  }
+}
+
+export const setTournamentFight = (tournamentFight: Fight | null): SetTournamentFight => {
+  return {
+    type: SET_TOURNAMENT_FIGHT,
+    payload: {
+      tournamentFight,
+    },
+  }
+}
+
+/** ******************* Set tournament state *********************/
+
+export const SET_TOURNAMENT_STATE = 'kumiteTimer/SET_TOURNAMENT_STATE'
+
+interface SetTournamentState extends Action<typeof SET_TOURNAMENT_STATE> {
+  payload: {
+    group: Fight[][],
+    tree: TournamentTreeNode | null,
+  }
+}
+
+export const setTournamentState = (
+  group: Fight[][],
+  tree: TournamentTreeNode | null,
+): SetTournamentState => {
+  return {
+    type: SET_TOURNAMENT_STATE,
+    payload: {
+      group,
+      tree,
+    },
+  }
+}
+
+/** ******************* Save tournament fight thunk action *********************/
+
+export const saveTournamentFight = (result: FightResult): ThunkAction => (dispatch, getState) => {
+  const tournamentType = getState().kumiteTimer.tournamentType
+  const curGroup = getState().kumiteTimer.group
+  const curTree = getState().kumiteTimer.tournamentTree
+
+  const group = tournamentType === 'GROUP'
+    ? curGroup.map((row) => row.map((f) => {
+      if (f.uuid === result.uuid) {
+        return {
+          ...f,
+          ...result,
+        }
+      } else if (f.uuid === result.oppositeFight) {
+        return {
+          ...f,
+          ...switchResultSides(result),
+        }
+      } else {
+        return f
+      }
+    }))
+    : []
+  const tournamentTree = tournamentType === 'TREE'
+    ? updateTournamentTree(curTree, result)
+    : null
+
+  LS_ACCESS.group.set(group)
+  LS_ACCESS.tournamentTree.set(tournamentTree)
+
+  dispatch(setTournamentState(group, tournamentTree))
 }
 

@@ -1,7 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React, { useCallback } from 'react'
 import './FightStats.scss'
-import { Senchu } from '../utils'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 import { Button } from '../../atoms/button/Button'
 import { parseTime } from '../../../utils/time'
@@ -11,6 +10,7 @@ import { config } from '../../../config'
 import { emptyFunc } from '../../../utils/function'
 import { Switch } from '../../icons/Switch'
 import { TwoMonitors } from '../../icons/TwoMonitors'
+import { Senchu } from '../../../types/senchu'
 
 
 interface FightStatsProps {

@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { useHistory } from 'react-router-dom'
@@ -10,29 +10,64 @@ import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { LIMITS, VALIDATOR } from '../../../redux/kumiteTimer/utils'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
-import { selectKumiteTimerAtoshibaraku, selectKumiteTimerDuration } from '../../../redux/kumiteTimer/selector'
-import { setKumiteTimer, setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
+import {
+  selectKumiteTimerCompetitorsCount, selectKumiteTimerDuration, selectKumiteTimerIsTournament,
+} from '../../../redux/kumiteTimer/selector'
+import { setKumiteTimer, setKumiteTimerTournament, setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
+import { Select } from '../../atoms/select/Select'
+import { Input } from '../../atoms/input/Input'
+import { Competitor, newCompetitor, TournamentType } from '../../../types/tournament'
+import { range } from '../../../utils/array'
+import { CheckBox } from '../../atoms/checkBox/CheckBox'
 
 
 export const SetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
   const initDuration = useSelector(selectKumiteTimerDuration)
-  const initAtoshibaraku = useSelector(selectKumiteTimerAtoshibaraku)
+  const isPreviousTournament = useSelector(selectKumiteTimerIsTournament)
+  const initCompetitorsCount = useSelector(selectKumiteTimerCompetitorsCount)
 
   const [duration, setDuration, isValidDuration] = useValidatedState(initDuration, VALIDATOR.duration)
-  const [atoshibaraku, setAtoshibaraku, isValidAtoshibaraku] = useValidatedState(
-    initAtoshibaraku,
-    VALIDATOR.atoshibaraku,
+
+  const [isTournament, setIsTournament] = useState(false)
+  const [tournamentName, setTournamentName] = useState('')
+  const [tournamentType, setTournamentType] = useState<TournamentType>('GROUP')
+  const [competitorsCount, setCompetitorsCount, isCompetitorsCountValid] = useValidatedState<number>(
+    initCompetitorsCount,
+    VALIDATOR.competitorsCount,
   )
+  const [competitors, setCompetitors] = useState<Competitor[]>(
+    range(LIMITS.competitorsCount.max).map(_ => newCompetitor('AAA'))
+  )
+  const [shuffleCompetitors, setShuffleCompetitors] = useState(false)
 
   const dispatch = useDispatch()
   const history = useHistory()
 
+  const handleCompetitorEdit = useCallback((competitors: Competitor[], index: number, value: string) => {
+    const newCompetitors = [...competitors]
+    newCompetitors[index].name = value
+    setCompetitors(newCompetitors)
+  }, [setCompetitors])
+
   const handleStart = useCallback(() => {
-    dispatch(setKumiteTimer(duration, atoshibaraku))
-    history.push('/kumite-timer')
-  }, [dispatch, duration, atoshibaraku])
+    if (!isTournament) {
+      dispatch(setKumiteTimer(duration))
+      history.push('/kumite-timer')
+    } else {
+      dispatch(setKumiteTimerTournament(
+        duration, tournamentName, tournamentType, competitorsCount, competitors.slice(0, competitorsCount),
+      ))
+      history.push('/kumite-timer/tournament')
+    }
+  }, [dispatch, duration, isTournament, tournamentName, tournamentType, competitorsCount, competitors])
+
+  const handleResumeTournament = useCallback(() => {
+    if (isPreviousTournament) {
+      history.push('/kumite-timer/tournament')
+    }
+  }, [dispatch, isPreviousTournament])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualKumiteTimer())
@@ -58,15 +93,77 @@ export const SetUpScreen = (): JSX.Element => {
         </li>
 
         <li className='set-up-item'>
-          <label>{t.atoshibaraku.label}:</label>
-          <NumberInput
-            className='set-up-input'
-            value={atoshibaraku}
-            onChange={setAtoshibaraku}
-            invalid={!isValidAtoshibaraku}
-            errorMessage={insertWords(t.atoshibaraku.error, LIMITS.atoshibaraku.min, LIMITS.atoshibaraku.max)}
+          <label>{t.tournament.newTournament}:</label>
+          <CheckBox
+            checked={isTournament}
+            onChange={setIsTournament}
           />
         </li>
+
+        {isTournament && (
+          <>
+            <li className='set-up-item'>
+              <label>{t.tournament.name}:</label>
+              <Input
+                className='set-up-input'
+                type='text'
+                value={tournamentName}
+                onChange={setTournamentName}
+              />
+            </li>
+
+            <li className='set-up-item'>
+              <label>{t.tournament.types.label}:</label>
+              <Select
+                className='set-up-input'
+                selected={tournamentType}
+                values={[
+                  { value: 'TREE', text: t.tournament.types.tree },
+                  { value: 'GROUP', text: t.tournament.types.group },
+                ]}
+                onChange={(value) => setTournamentType(value as TournamentType)}
+              />
+            </li>
+
+            <li className='set-up-item'>
+              <label>{t.tournament.competitorsCount.label}:</label>
+              <NumberInput
+                className='set-up-input'
+                value={competitorsCount}
+                onChange={setCompetitorsCount}
+                invalid={!isCompetitorsCountValid}
+                errorMessage={insertWords(
+                  t.tournament.competitorsCount.error,
+                  LIMITS.competitorsCount.min,
+                  LIMITS.competitorsCount.max,
+                )}
+              />
+            </li>
+
+            <li className='set-up-item'>
+              <label>{t.tournament.shuffleCompetitors}:</label>
+              <CheckBox
+                checked={shuffleCompetitors}
+                onChange={setShuffleCompetitors}
+              />
+            </li>
+
+            <li className='set-up-item'>
+              <label>{t.tournament.competitors}:</label>
+            </li>
+
+            {competitors.slice(0, competitorsCount).map((competitor, index) => (
+              <li className='set-up-item no-border' key={`competitor-${index}`}>
+                <label>{index + 1}:</label>
+                <Input
+                  type='text'
+                  value={competitor.name}
+                  onChange={(value) => handleCompetitorEdit(competitors, index, value)}
+                />
+              </li>
+            ))}
+          </>
+        )}
       </ul>
 
       <div className='buttons'>
@@ -76,6 +173,14 @@ export const SetUpScreen = (): JSX.Element => {
           disabled={!isValidDuration}
         >
           {translation.common.start}
+        </Button>
+
+        <Button
+          className='resume-tournament-btn'
+          onClick={handleResumeTournament}
+          disabled={!isPreviousTournament}
+        >
+          {t.tournament.resumeTournament}
         </Button>
 
         <Button

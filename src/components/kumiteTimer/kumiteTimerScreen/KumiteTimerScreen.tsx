@@ -3,24 +3,24 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import './KumiteTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
-import { useDispatch } from '../../../redux/useDispatch'
+import { useDispatch, useThunkDispatch } from '../../../redux/useDispatch'
 import { PausableInterval } from '../../../logic/timing/pausableInterval'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
 import {
-  selectKumiteTimerAtoshibaraku,
-  selectKumiteTimerDuration,
-  selectKumiteTimerIsActual,
+  selectKumiteTimerDuration, selectKumiteTimerIsActual,
+  selectKumiteTimerTournamentFight, selectKumiteTimerTournamentName,
 } from '../../../redux/kumiteTimer/selector'
-import { setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
+import { saveTournamentFight, setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
 import { FighterStats } from '../fighterStats/FighterStats'
 import useControlledState from '../../../logic/hooks/useControledState'
-import { LS_KEYS, Senchu } from '../utils'
+import { LS_KEYS } from '../utils'
 import { FightStats } from '../fightStats/FightStats'
 import { LIMITS } from '../../../redux/kumiteTimer/utils'
 import { playAtoshibaraku, playSignalEnd, preloadKumiteAudio } from '../../../logic/audio/kumite'
 import { useLSSyncProvider } from '../../../logic/hooks/useLSSyncProvider'
+import { Senchu } from '../../../types/senchu'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
@@ -30,7 +30,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   const isActual = useSelector(selectKumiteTimerIsActual)
   const duration = useSelector(selectKumiteTimerDuration)
-  const atoshibaraku = useSelector(selectKumiteTimerAtoshibaraku)
+  const tournamentFight = useSelector(selectKumiteTimerTournamentFight)
+  const tournamentName = useSelector(selectKumiteTimerTournamentName)
+  const isTournamentFight = tournamentFight !== null
 
   const [time, setTime] = useState(duration)
   const [redOnLeft, setRedOnLeft] = useState(true)
@@ -43,15 +45,19 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   useLSSyncProvider(time, LS_KEYS.time)
   useLSSyncProvider(scoreRed, LS_KEYS.scoreRed)
   useLSSyncProvider(foulsRed, LS_KEYS.foulsRed)
+  useLSSyncProvider(tournamentFight?.redName, LS_KEYS.nameRed)
   useLSSyncProvider(scoreBlue, LS_KEYS.scoreBlue)
   useLSSyncProvider(foulsBlue, LS_KEYS.foulsBlue)
+  useLSSyncProvider(tournamentFight?.blueName, LS_KEYS.nameBlue)
   useLSSyncProvider(senchu, LS_KEYS.senchu)
+  useLSSyncProvider(isTournamentFight ? tournamentName : undefined, LS_KEYS.tournamentName)
 
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(true)
   const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
+  const thunkDispatch = useThunkDispatch()
   const history = useHistory()
 
   const handleManualTimeChange = useCallback((newTime: number) => {
@@ -106,7 +112,38 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   const handleGoBack = useCallback(() => {
     dispatch(setNotActualKumiteTimer())
-  }, [dispatch])
+    if (tournamentFight) {
+      history.push('/kumite-timer/tournament')
+    } else {
+      history.push('/kumite-timer/set-up')
+    }
+  }, [dispatch, history, tournamentFight])
+
+  const handleSaveTournamentFight = useCallback(() => {
+    if (tournamentFight) {
+      thunkDispatch(saveTournamentFight({
+        uuid: tournamentFight.uuid,
+        oppositeFight: tournamentFight.oppositeFight,
+        winnerGoesTo: tournamentFight.winnerGoesTo,
+        winner: 'RED',
+        redPoints: scoreRed,
+        redFouls: foulsRed,
+        bluePoints: scoreBlue,
+        blueFouls: foulsBlue,
+        senchu: senchu,
+      }))
+    }
+  }, [dispatch, tournamentFight, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu])
+
+  useEffect(() => {
+    if (tournamentFight) {
+      setScoreRed(tournamentFight.redPoints)
+      setFoulsRed(tournamentFight.redFouls)
+      setScoreBlue(tournamentFight.bluePoints)
+      setFoulsBlue(tournamentFight.blueFouls)
+      setSenchu(tournamentFight.senchu)
+    }
+  }, [tournamentFight])
 
   useEffect(() => {
     preloadKumiteAudio()
@@ -121,10 +158,10 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       playSignalEnd()
       setPhase('finished')
       clock.pause()
-    } else if (time === atoshibaraku) {
+    } else if (time === 15) {
       playAtoshibaraku()
     }
-  }, [time, atoshibaraku])
+  }, [time])
 
   useEffect(() => {
     !isActual && history.push('/kumite-timer/set-up')
@@ -139,8 +176,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       isMirror={false}
       onScoreChange={setScoreRed}
       onFoulsChange={setFoulsRed}
+      name={tournamentFight?.redName}
     />
-  ), [scoreRed, foulsRed])
+  ), [scoreRed, foulsRed, tournamentFight])
 
   const renderBlueData = useCallback((className: string) => (
     <FighterStats
@@ -151,20 +189,21 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       isMirror={false}
       onScoreChange={setScoreBlue}
       onFoulsChange={setFoulsBlue}
+      name={tournamentFight?.blueName}
     />
-  ), [scoreBlue, foulsBlue])
+  ), [scoreBlue, foulsBlue, tournamentFight])
 
   if (!isActual) {
     return null
   }
 
-  const { kumiteTimer: { playScreen: t }, common: ct } = translation
+  const { common: ct, kumiteTimer: { timerScreen: t } } = translation
 
   const dangerousButtonsDisabled = phase === 'fight' && !isPaused
 
   return (
     <main className='kumite-timer'>
-      <h1>{t.heading}</h1>
+      {isTournamentFight && <h1>{tournamentName}</h1>}
 
       <div className='timer'>
         {redOnLeft ? renderRedData('left-fighter') : renderBlueData('left-fighter')}
@@ -198,6 +237,15 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
         >
           {phase === 'init' ? ct.start : `${ct.reset} ${ct.fight.toLowerCase()}`}
         </Button>
+        {isTournamentFight && (
+          <Button
+            className='orange'
+            onClick={handleSaveTournamentFight}
+            disabled={dangerousButtonsDisabled}
+          >
+            {t.saveTournamentFight}
+          </Button>
+        )}
         <Button
           className='orange'
           onClick={handleGoBack}

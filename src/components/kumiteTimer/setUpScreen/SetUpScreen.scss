@@ -5,4 +5,9 @@
 
 .set-up-kumite-timer {
   @include set-up-screen();
+
+  .resume-tournament-btn {
+    @include button-color($orange);
+    width: $button-long-width;
+  }
 }

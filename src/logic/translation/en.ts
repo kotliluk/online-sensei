@@ -21,6 +21,7 @@ export const EN: Translation = {
     resume: 'Resume',
     start: 'Start',
     stop: 'Stop',
+    cancel: 'Cancel',
   },
   mainPage: {
     appIntroduction: 'Train alone or with friends with OnlineSensei!',
@@ -83,15 +84,27 @@ export const EN: Translation = {
         // 2 params
         error: 'Duration must be set between __{1}__ and __{2}__.',
       },
-      atoshibaraku: {
-        label: 'Atoshibaraku (s)',
-        // 2 params
-        error: 'Atoshibaraku must be set between __{1}__ and __{2}__.',
+      tournament: {
+        label: 'Tournament',
+        newTournament: 'New tournament',
+        name: 'Name',
+        resumeTournament: 'Resume tournament',
+        types: {
+          label: 'System',
+          tree: 'Tree',
+          group: 'Skupina',
+        },
+        competitorsCount: {
+          label: 'Competitors count',
+          // 2 params
+          error: 'Competitors count must be set between __{1}__ and __{2}__.',
+        },
+        shuffleCompetitors: 'Random draw',
+        competitors: 'Competitors',
       },
     },
-    playScreen: {
-      heading: 'Kumite Timer',
-      switchSides: 'Switch sides',
+    timerScreen: {
+      saveTournamentFight: 'Save fight',
     },
   },
   intervalTimer: {

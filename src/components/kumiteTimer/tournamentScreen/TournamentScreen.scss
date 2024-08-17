@@ -1,0 +1,36 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+
+.tournament-screen {
+  @include set-up-screen();
+}
+
+.group-table {
+  border-collapse: collapse;
+}
+
+.group-table-cell {
+  width: 5rem;
+  height: 3rem;
+  border: 1px solid $black;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  &.upper {
+    cursor: pointer;
+  }
+
+  &.diagonal {
+    background: $black;
+  }
+
+  &.lower {
+    @include themed {
+      background: t($secondary-color);
+    }
+  }
+}

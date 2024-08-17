@@ -7,3 +7,13 @@ export const unquote = (str: string): string => {
   }
   return str
 }
+
+/**
+ * Parses string (removes quotes) from JSON string or returns undefined.
+ */
+export const parseStringOrUndefined = (str: string | null): string | null => {
+  if (str === null || str === 'undefined') {
+    return null
+  }
+  return unquote(str)
+}

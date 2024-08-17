@@ -60,7 +60,7 @@
 
     padding: 1rem;
 
-    &:not(:first-of-type) {
+    &:not(:first-of-type):not(.no-border) {
       @include themed {
         border-top: 1px solid t($secondary-color);
       }
@@ -95,6 +95,11 @@
 
     .confirm-btn {
       @include button-color($green);
+      width: $button-middle-width;
+    }
+
+    .cancel-btn {
+      @include button-color($red);
       width: $button-middle-width;
     }
 

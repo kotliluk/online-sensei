@@ -1,10 +1,7 @@
 import { LSAccessWrapper, LSMapper } from '../../logic/localStorage/types'
 import { emptyFunc } from '../../utils/function'
 import {
-  getBooleanFromLS,
-  getValidatedNumberFromLS, getValidatedObjectFromLS,
-  getValidatedTypeFromLS,
-  saveToLS,
+  getBooleanFromLS, getValidatedNumberFromLS, getValidatedObjectFromLS, getValidatedStringFromLS, saveToLS,
 } from '../../logic/localStorage/access'
 import { Limits, Validator } from '../../logic/validation/types'
 import { anythingIsValid, isBetweenValidator } from '../../logic/validation/validators'
@@ -99,7 +96,7 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
     set: (value) => saveToLS(LS_KEYS.skipLastPause, value),
   },
   audioSound: {
-    get: () => getValidatedTypeFromLS(LS_KEYS.audioSound, VALIDATOR.audioSound, initialState.audioSound),
+    get: () => getValidatedStringFromLS(LS_KEYS.audioSound, VALIDATOR.audioSound, initialState.audioSound),
     set: (value) => saveToLS(LS_KEYS.audioSound, value),
   },
   audioVolume: {

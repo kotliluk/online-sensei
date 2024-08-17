@@ -21,6 +21,7 @@ export const CS: Translation = {
     resume: 'Pokračovat',
     start: 'Start',
     stop: 'Stop',
+    cancel: 'Zrušit',
   },
   mainPage: {
     appIntroduction: 'Trénuj sám a nebo s přáteli s OnlineSensei!',
@@ -81,17 +82,29 @@ export const CS: Translation = {
       duration: {
         label: 'Délka zápasu (s)',
         // 2 params
-        error: 'Délka zápasu musí být mezi __{1}__ a __{2}__ ms.',
+        error: 'Délka zápasu musí být mezi __{1}__ a __{2}__.',
       },
-      atoshibaraku: {
-        label: 'Atoshibaraku (s)',
-        // 2 params
-        error: 'Atoshibaraku musí být mezi __{1}__ a __{2}__ ms.',
+      tournament: {
+        label: 'Turnaj',
+        newTournament: 'Nový turnaj',
+        name: 'Název',
+        resumeTournament: 'Pokračovat turnaj',
+        types: {
+          label: 'Systém',
+          tree: 'Pavouk',
+          group: 'Skupina',
+        },
+        competitorsCount: {
+          label: 'Počet závodníků',
+          // 2 params
+          error: 'Počet účastníků musí být mezi __{1}__ a __{2}__.',
+        },
+        shuffleCompetitors: 'Náhodně rozlosovat',
+        competitors: 'Závodníci',
       },
     },
-    playScreen: {
-      heading: 'Kumite Časomíra',
-      switchSides: 'Změnit strany',
+    timerScreen: {
+      saveTournamentFight: 'Uložit zápas',
     },
   },
   intervalTimer: {

@@ -4,6 +4,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import { SetUpScreen } from '../../components/kumiteTimer/setUpScreen/SetUpScreen'
 import { KumiteTimerScreen } from '../../components/kumiteTimer/kumiteTimerScreen/KumiteTimerScreen'
 import { KumiteTimerMirror } from '../../components/kumiteTimer/kumiteTimerScreen/KumiteTimerMirror'
+import { TournamentScreen } from '../../components/kumiteTimer/tournamentScreen/TournamentScreen'
 
 
 const PAGE_PATH = 'kumite-timer'
@@ -22,6 +23,12 @@ export const KumiteTimerPage = (): JSX.Element => {
       </Route>
       <Route path={`/${PAGE_PATH}/mirror/*`}>
         <Redirect to={`/${PAGE_PATH}/mirror`} />
+      </Route>
+      <Route path={`/${PAGE_PATH}/tournament`} exact>
+        <TournamentScreen />
+      </Route>
+      <Route path={`/${PAGE_PATH}/tournament/*`}>
+        <Redirect to={`/${PAGE_PATH}/tournament`} />
       </Route>
       <Route path={`/${PAGE_PATH}`} exact>
         <KumiteTimerScreen />
