@@ -7,6 +7,7 @@ import { selectModalWindowType } from '../../../../redux/page/selector'
 import { LoadAdvancedSeries } from '../../../intervalTimer/loadAdvancedSeriesModal/LoadAdvancedSeries'
 import { useCloseModal } from '../../../../logic/hooks/useCloseModal'
 import { SaveAdvancedSeries } from '../../../intervalTimer/saveAdvancedSeriesModal/SaveAdvancedSeries'
+import { CancelTournamentModal } from '../../../kumiteTimer/tournamentScreen/CancelTournamentModal'
 
 
 export const ModalContainer = (): JSX.Element | null => {
@@ -34,6 +35,8 @@ export const ModalContainer = (): JSX.Element | null => {
     modalWindow = <LoadAdvancedSeries />
   } else if (modalType === 'SAVE_ADVANCED_SERIES') {
     modalWindow = <SaveAdvancedSeries />
+  } else if (modalType === 'CANCEL_TOURNAMENT') {
+    modalWindow = <CancelTournamentModal />
   }
 
   return ReactDOM.createPortal((

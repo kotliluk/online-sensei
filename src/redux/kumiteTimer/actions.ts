@@ -1,6 +1,6 @@
 import { Action } from 'redux'
 import { LS_ACCESS } from './utils'
-import { State } from './state'
+import { initialState, State } from './state'
 import {
   Competitor,
   createGroup,
@@ -152,6 +152,13 @@ interface CancelTournament extends Action<typeof CANCEL_TOURNAMENT> {
 }
 
 export const cancelTournament = (): CancelTournament => {
+  LS_ACCESS.activeTournament.set(false)
+  LS_ACCESS.tournamentFight.set(initialState.tournamentFight)
+  LS_ACCESS.competitorsCount.set(initialState.competitorsCount)
+  LS_ACCESS.competitors.set(initialState.competitors)
+  LS_ACCESS.tournamentTree.set(initialState.tournamentTree)
+  LS_ACCESS.group.set(initialState.group)
+
   return {
     type: CANCEL_TOURNAMENT,
     payload: { },

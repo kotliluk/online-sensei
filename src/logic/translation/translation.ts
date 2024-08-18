@@ -104,6 +104,10 @@ export interface Translation {
         },
         shuffleCompetitors: string,
         competitors: string,
+        cancelTournamentModal: {
+          title: string,
+          text: string,
+        },
       },
     },
     timerScreen: {

@@ -9,7 +9,7 @@ import { TreeTournamentScreen } from './TreeTournamentScreen'
 import { GroupTournamentScreen } from './GroupTournamentScreen'
 import { Button } from '../../atoms/button/Button'
 import { useDispatch } from '../../../redux/useDispatch'
-import { cancelTournament } from '../../../redux/kumiteTimer/actions'
+import { setModalWindow } from '../../../redux/page/actions'
 
 
 export const TournamentScreen = (): JSX.Element => {
@@ -22,8 +22,7 @@ export const TournamentScreen = (): JSX.Element => {
   const history = useHistory()
 
   const handleCancel = useCallback(() => {
-    dispatch(cancelTournament())
-    history.push('/kumite-timer/set-up')
+    dispatch(setModalWindow('CANCEL_TOURNAMENT'))
   }, [dispatch])
 
   const handleBack = useCallback(() => {

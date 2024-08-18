@@ -43,6 +43,11 @@ export function reducer (state = initialState, action: Actions): State {
       return {
         ...state,
         activeTournament: false,
+        tournamentFight: initialState.tournamentFight,
+        competitors: initialState.competitors,
+        competitorsCount: initialState.competitorsCount,
+        tournamentTree: initialState.tournamentTree,
+        group: initialState.group,
       }
 
     case SET_TOURNAMENT_FIGHT:

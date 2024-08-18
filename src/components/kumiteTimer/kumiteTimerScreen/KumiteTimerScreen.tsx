@@ -239,6 +239,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
         </Button>
         {isTournamentFight && (
           <Button
+            // TODO - add winner confirmation
             className='orange'
             onClick={handleSaveTournamentFight}
             disabled={dangerousButtonsDisabled}

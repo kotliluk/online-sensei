@@ -101,6 +101,10 @@ export const CS: Translation = {
         },
         shuffleCompetitors: 'Náhodně rozlosovat',
         competitors: 'Závodníci',
+        cancelTournamentModal: {
+          title: 'Zrušit turnaj',
+          text: 'Opravdu si přejete zrušit turnaj? Veškeré výsledky budou ztraceny.',
+        },
       },
     },
     timerScreen: {
