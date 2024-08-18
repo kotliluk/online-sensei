@@ -22,6 +22,7 @@ export const CS: Translation = {
     start: 'Start',
     stop: 'Stop',
     cancel: 'Zrušit',
+    save: 'Uložit',
   },
   mainPage: {
     appIntroduction: 'Trénuj sám a nebo s přáteli s OnlineSensei!',
@@ -104,6 +105,11 @@ export const CS: Translation = {
         cancelTournamentModal: {
           title: 'Zrušit turnaj',
           text: 'Opravdu si přejete zrušit turnaj? Veškeré výsledky budou ztraceny.',
+        },
+        fightResultModal: {
+          title: 'Uložit zápas v turnaji',
+          text: 'Vyberte vítěze',
+          draw: 'Remíza',
         },
       },
     },

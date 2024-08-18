@@ -26,10 +26,12 @@ export const isValidCompetitor = (x: any): boolean => {
   return (typeof x.uuid === 'string') && (typeof x.name === 'string') && (typeof x.result === 'number')
 }
 
+export type FightWinner = 'BLUE' | 'RED' | 'DRAW'
+
 export type Fight = {
   uuid: string,
   depth: number,
-  winner: 'BLUE' | 'RED' | 'DRAW' | undefined,
+  winner: FightWinner | undefined,
   redUuid: string,
   redName: string,
   redPoints: number,
@@ -45,7 +47,7 @@ export type Fight = {
 
 export type FightResult = {
   uuid: string,
-  winner: 'RED' | 'BLUE' | 'DRAW',
+  winner: FightWinner,
   redPoints: number,
   redFouls: number,
   bluePoints: number,

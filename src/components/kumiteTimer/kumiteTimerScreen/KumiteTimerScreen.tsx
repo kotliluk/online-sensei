@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import './KumiteTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
-import { useDispatch, useThunkDispatch } from '../../../redux/useDispatch'
+import { useDispatch } from '../../../redux/useDispatch'
 import { PausableInterval } from '../../../logic/timing/pausableInterval'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
@@ -12,7 +12,7 @@ import {
   selectKumiteTimerDuration, selectKumiteTimerIsActual,
   selectKumiteTimerTournamentFight, selectKumiteTimerTournamentName,
 } from '../../../redux/kumiteTimer/selector'
-import { saveTournamentFight, setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
+import { setNotActualKumiteTimer, setTournamentFight } from '../../../redux/kumiteTimer/actions'
 import { FighterStats } from '../fighterStats/FighterStats'
 import useControlledState from '../../../logic/hooks/useControledState'
 import { LS_KEYS } from '../utils'
@@ -21,6 +21,7 @@ import { LIMITS } from '../../../redux/kumiteTimer/utils'
 import { playAtoshibaraku, playSignalEnd, preloadKumiteAudio } from '../../../logic/audio/kumite'
 import { useLSSyncProvider } from '../../../logic/hooks/useLSSyncProvider'
 import { Senchu } from '../../../types/senchu'
+import { setModalWindow } from '../../../redux/page/actions'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
@@ -57,7 +58,6 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
-  const thunkDispatch = useThunkDispatch()
   const history = useHistory()
 
   const handleManualTimeChange = useCallback((newTime: number) => {
@@ -121,17 +121,15 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   const handleSaveTournamentFight = useCallback(() => {
     if (tournamentFight) {
-      thunkDispatch(saveTournamentFight({
-        uuid: tournamentFight.uuid,
-        oppositeFight: tournamentFight.oppositeFight,
-        winnerGoesTo: tournamentFight.winnerGoesTo,
-        winner: 'RED',
+      dispatch(setTournamentFight({
+        ...tournamentFight,
         redPoints: scoreRed,
         redFouls: foulsRed,
         bluePoints: scoreBlue,
         blueFouls: foulsBlue,
         senchu: senchu,
       }))
+      dispatch(setModalWindow('FIGHT_RESULT_MODAL'))
     }
   }, [dispatch, tournamentFight, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu])
 
@@ -239,7 +237,6 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
         </Button>
         {isTournamentFight && (
           <Button
-            // TODO - add winner confirmation
             className='orange'
             onClick={handleSaveTournamentFight}
             disabled={dangerousButtonsDisabled}

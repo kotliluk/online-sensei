@@ -1,0 +1,53 @@
+@import "src/styles/variables";
+@import "src/styles/theme";
+@import "src/styles/mixins";
+@import "src/styles/css-function";
+@import "../../common/modal/mixins";
+
+
+$padding: 30px;
+$btnHeight: 2.5rem;
+
+.fight-result-modal {
+  @include modal-window();
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: $padding;
+
+    @include themed() {
+      background-color: t($primary-color);
+    }
+
+    .result-select {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .buttons {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+
+    .confirm-btn {
+      @include modal-footer-btn();
+      @include button-color($green);
+
+      height: $btnHeight;
+    }
+
+    .back-btn {
+      @include modal-footer-btn();
+      @include button-color($orange);
+
+      height: $btnHeight;
+    }
+  }
+}

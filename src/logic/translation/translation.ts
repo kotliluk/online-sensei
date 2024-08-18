@@ -25,6 +25,7 @@ export interface Translation {
     start: string,
     stop: string,
     cancel: string,
+    save: string,
   }
   mainPage: {
     appIntroduction: string,
@@ -107,6 +108,11 @@ export interface Translation {
         cancelTournamentModal: {
           title: string,
           text: string,
+        },
+        fightResultModal: {
+          title: string,
+          text: string,
+          draw: string,
         },
       },
     },

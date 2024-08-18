@@ -22,6 +22,7 @@ export const EN: Translation = {
     start: 'Start',
     stop: 'Stop',
     cancel: 'Cancel',
+    save: 'Save',
   },
   mainPage: {
     appIntroduction: 'Train alone or with friends with OnlineSensei!',
@@ -104,6 +105,11 @@ export const EN: Translation = {
         cancelTournamentModal: {
           title: 'Cancel tournament',
           text: 'Do you really want to cancel the tournament? All results will be lost.',
+        },
+        fightResultModal: {
+          title: 'Save fight in tournament',
+          text: 'Select the winner',
+          draw: 'Draw',
         },
       },
     },
