@@ -32,7 +32,7 @@ export const GroupTournamentScreen = (): JSX.Element => {
           <td className='group-table-cell'>+/-</td>
         </tr>
         {group.map((row, rowIndex) => (
-          <GroupTableRow row={row} rowIndex={rowIndex} />
+          <GroupTableRow key={rowIndex} row={row} rowIndex={rowIndex} />
         ))}
       </tbody>
     </table>

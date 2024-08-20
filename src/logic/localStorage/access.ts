@@ -49,7 +49,7 @@ export const getValidatedStringFromLS = <T extends string> (
 }
 
 /**
- * Returns saved item if the key exists in local storage and the item is valid.
+ * Returns saved item if the key exists in local storage and the item is valid (is "true" or "false").
  * If not, saves the given default value in local storage and returns it.
  */
 export const getBooleanFromLS = (
@@ -62,12 +62,12 @@ export const getBooleanFromLS = (
 
   const item = localStorage.getItem(key)
 
-  if (item === null) {
+  if (item === null || (item !== 'true' && item !== 'false')) {
     localStorage.setItem(key, String(defaultValue))
     return defaultValue
   }
 
-  return Boolean(item)
+  return item === 'true'
 }
 
 /**
