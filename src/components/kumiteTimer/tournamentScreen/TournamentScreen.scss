@@ -4,7 +4,8 @@
 
 
 .tournament-screen {
-  @include set-up-screen();
+  @include app-screen();
+  @include with-buttons();
 }
 
 .group-table {
@@ -12,13 +13,23 @@
 }
 
 .group-table-cell {
-  width: 5rem;
+  width: 3rem;
   height: 3rem;
   border: 1px solid $black;
   display: inline-flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+
+  &.left-name {
+    width: 9rem;
+  }
+
+  .name-span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 
   &.upper {
     cursor: pointer;
@@ -28,9 +39,13 @@
     background: $black;
   }
 
-  &.lower {
+  &.lower, &.stats-cell {
     @include themed {
       background: t($secondary-color);
     }
+  }
+
+  .winner-score {
+    text-decoration: underline;
   }
 }

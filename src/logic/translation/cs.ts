@@ -111,6 +111,11 @@ export const CS: Translation = {
           text: 'Vyberte vítěze',
           draw: 'Remíza',
         },
+        tableStatsLabels: {
+          win: 'V',
+          draw: 'R',
+          loss: 'P',
+        },
       },
     },
     timerScreen: {

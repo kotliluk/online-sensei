@@ -111,6 +111,11 @@ export const EN: Translation = {
           text: 'Select the winner',
           draw: 'Draw',
         },
+        tableStatsLabels: {
+          win: 'W',
+          draw: 'D',
+          loss: 'L',
+        },
       },
     },
     timerScreen: {

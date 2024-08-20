@@ -5,10 +5,12 @@ import { useSelector } from '../../../redux/useSelector'
 import {
   selectKumiteTimerCompetitors, selectKumiteTimerTournamentGroup,
 } from '../../../redux/kumiteTimer/selector'
-import { GroupTableCell } from './GroupTableCell'
+import { GroupTableRow } from './GroupTableRow'
+import { selectTranslation } from '../../../redux/page/selector'
 
 
 export const GroupTournamentScreen = (): JSX.Element => {
+  const { kumiteTimer: { setUpScreen: { tournament: { tableStatsLabels } } } } = useSelector(selectTranslation)
   const competitors = useSelector(selectKumiteTimerCompetitors)
   const group = useSelector(selectKumiteTimerTournamentGroup)
 
@@ -16,23 +18,21 @@ export const GroupTournamentScreen = (): JSX.Element => {
     <table className='group-table'>
       <tbody>
         <tr>
-          <td className='group-table-cell' />
+          <td className='group-table-cell left-name' />
           {competitors.map((competitor) => (
-            <td className='group-table-cell' key={`top-name-${competitor.uuid}`}>{competitor.name}</td>)
+            <td className='group-table-cell top-name' key={`top-name-${competitor.uuid}`}>
+              <span className='name-span'>{competitor.name}</span>
+            </td>)
           )}
+          <td className='group-table-cell'>{tableStatsLabels.win}</td>
+          <td className='group-table-cell'>{tableStatsLabels.draw}</td>
+          <td className='group-table-cell'>{tableStatsLabels.loss}</td>
+          <td className='group-table-cell'>+</td>
+          <td className='group-table-cell'>-</td>
+          <td className='group-table-cell'>+/-</td>
         </tr>
         {group.map((row, rowIndex) => (
-          <tr key={`row-${rowIndex}`}>
-            <td className='group-table-cell'>{row[0].redName}</td>
-            {row.map((fight, columnIndex) => (
-              <GroupTableCell
-                key={`cell-${rowIndex}-${columnIndex}`}
-                fight={fight}
-                row={rowIndex}
-                column={columnIndex}
-              />
-            ))}
-          </tr>
+          <GroupTableRow row={row} rowIndex={rowIndex} />
         ))}
       </tbody>
     </table>

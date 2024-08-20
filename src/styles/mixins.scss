@@ -37,8 +37,38 @@
   }
 }
 
+@mixin with-buttons {
+  .buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    .confirm-btn {
+      @include button-color($green);
+      width: $button-middle-width;
+    }
+
+    .cancel-btn {
+      @include button-color($red);
+      width: $button-middle-width;
+    }
+
+    .back-btn {
+      @include button-color($orange);
+      width: $button-middle-width;
+    }
+
+    button {
+      margin: 0.5rem;
+    }
+  }
+}
+
 @mixin set-up-screen {
   @include app-screen-with-padding();
+  @include with-buttons();
 
   h1 {
     text-align: center;
@@ -83,33 +113,6 @@
 
     .set-up-input {
       width: 16ch;
-    }
-  }
-
-  .buttons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-
-    .confirm-btn {
-      @include button-color($green);
-      width: $button-middle-width;
-    }
-
-    .cancel-btn {
-      @include button-color($red);
-      width: $button-middle-width;
-    }
-
-    .back-btn {
-      @include button-color($orange);
-      width: $button-middle-width;
-    }
-
-    button {
-      margin: 0.5rem;
     }
   }
 }

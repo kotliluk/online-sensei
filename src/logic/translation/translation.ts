@@ -114,6 +114,11 @@ export interface Translation {
           text: string,
           draw: string,
         },
+        tableStatsLabels: {
+          win: string,
+          draw: string,
+          loss: string,
+        },
       },
     },
     timerScreen: {

@@ -46,9 +46,9 @@ export const GroupTableCell = (props: GroupTableCellProps): JSX.Element | null =
       className={`group-table-cell ${row < column ? 'upper' : 'lower'}`}
       onClick={handleClick}
     >
-      <span>{fight.redPoints}</span>
+      <span className={fight.winner === 'RED' ? 'winner-score' : ''}>{fight.redPoints}</span>
       &nbsp;:&nbsp;
-      <span>{fight.bluePoints}</span>
+      <span className={fight.winner === 'BLUE' ? 'winner-score' : ''}>{fight.bluePoints}</span>
     </td>
   )
 }
