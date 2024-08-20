@@ -176,7 +176,6 @@ export const SetUpScreen = (): JSX.Element => {
         </Button>
 
         <Button
-          // TODO - fix saving tournament between page reload
           // TODO - fix disabled when cancelled tournament
           className='resume-tournament-btn'
           onClick={handleResumeTournament}

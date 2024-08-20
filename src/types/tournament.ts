@@ -8,13 +8,11 @@ export type TournamentType = 'TREE' | 'GROUP'
 export type Competitor = {
   uuid: string,
   name: string,
-  result: number,
 }
 
 export const newCompetitor = (name = ''): Competitor => ({
   uuid: uuidV4(),
   name,
-  result: -1,
 })
 
 export const isValidCompetitor = (x: any): boolean => {
@@ -23,7 +21,7 @@ export const isValidCompetitor = (x: any): boolean => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return (typeof x.uuid === 'string') && (typeof x.name === 'string') && (typeof x.result === 'number')
+  return (typeof x.uuid === 'string') && (typeof x.name === 'string')
 }
 
 export type FightWinner = 'BLUE' | 'RED' | 'DRAW'
@@ -98,9 +96,11 @@ export const isValidFight = (x: any): boolean => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.winner === 'undefined' || typeof x.winner === 'string')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,max-len
-    && (typeof x.redUuid === 'string') && (typeof x.redName === 'string') && (typeof x.redPoints === 'number') && (typeof x.redSenchu === 'boolean') && (typeof x.redFouls === 'number')
+    && (typeof x.redUuid === 'string') && (typeof x.redName === 'string') && (typeof x.redPoints === 'number') && (typeof x.redFouls === 'number')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,max-len
-    && (typeof x.blueUuid === 'string') && (typeof x.blueName === 'string') && (typeof x.bluePoints === 'number') && (typeof x.blueSenchu === 'boolean') && (typeof x.blueFouls === 'number')
+    && (typeof x.blueUuid === 'string') && (typeof x.blueName === 'string') && (typeof x.bluePoints === 'number') && (typeof x.blueFouls === 'number')
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    && (typeof x.senchu === 'string') && (x.senchu === 'RED' || x.senchu === 'BLUE' || x.senchu === 'NONE')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.winnerGoesTo === 'undefined' || typeof x.winnerGoesTo === 'string')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
