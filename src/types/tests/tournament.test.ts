@@ -8,7 +8,7 @@ const competitor = (name: string) => ({
   name,
 })
 
-const fight = (red: string, blue: string) => ({
+const fight = (red: string, blue: string, winnerGoesTo: string | undefined = undefined) => ({
   uuid: 'mocked-uuid-v4',
   depth: 0,
   winner: undefined,
@@ -21,11 +21,11 @@ const fight = (red: string, blue: string) => ({
   bluePoints: 0,
   blueFouls: 0,
   senchu: 'NONE',
-  winnerGoesTo: undefined,
+  winnerGoesTo: winnerGoesTo,
   oppositeFight: undefined,
 })
 
-describe('createTree', () => {
+describe('createTournamentTree', () => {
   test.each([
     {
       competitors: [competitor('1')],
@@ -44,7 +44,7 @@ describe('createTree', () => {
       expected: {
         fight: fight('', '3'),
         left: {
-          fight: fight('1', '2'), left: null, right: null,
+          fight: fight('1', '2', 'mocked-uuid-v4'), left: null, right: null,
         },
         right: null,
       },
@@ -54,10 +54,10 @@ describe('createTree', () => {
       expected: {
         fight: fight('', ''),
         left: {
-          fight: fight('1', '2'), left: null, right: null,
+          fight: fight('1', '2', 'mocked-uuid-v4'), left: null, right: null,
         },
         right: {
-          fight: fight('3', '4'), left: null, right: null,
+          fight: fight('3', '4', 'mocked-uuid-v4'), left: null, right: null,
         },
       },
     },
@@ -66,14 +66,14 @@ describe('createTree', () => {
       expected: {
         fight: fight('', ''),
         left: {
-          fight: fight('', '3'),
+          fight: fight('', '3', 'mocked-uuid-v4'),
           left: {
-            fight: fight('1', '2'), left: null, right: null,
+            fight: fight('1', '2', 'mocked-uuid-v4'), left: null, right: null,
           },
           right: null,
         },
         right: {
-          fight: fight('4', '5'), left: null, right: null,
+          fight: fight('4', '5', 'mocked-uuid-v4'), left: null, right: null,
         },
       },
     },
