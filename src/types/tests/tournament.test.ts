@@ -6,7 +6,6 @@ jest.mock('uuid', () => ({ v4: () => 'mocked-uuid-v4' }))
 const competitor = (name: string) => ({
   uuid: name,
   name,
-  result: -1,
 })
 
 const fight = (red: string, blue: string) => ({
@@ -16,14 +15,14 @@ const fight = (red: string, blue: string) => ({
   redUuid: red,
   redName: red,
   redPoints: 0,
-  redSenchu: false,
   redFouls: 0,
   blueUuid: blue,
   blueName: blue,
   bluePoints: 0,
-  blueSenchu: false,
   blueFouls: 0,
+  senchu: 'NONE',
   winnerGoesTo: undefined,
+  oppositeFight: undefined,
 })
 
 describe('createTree', () => {
@@ -31,13 +30,13 @@ describe('createTree', () => {
     {
       competitors: [competitor('1')],
       expected: {
-        fight: fight('1', ''), left: undefined, right: undefined,
+        fight: fight('1', ''), left: null, right: null,
       },
     },
     {
       competitors: [competitor('1'), competitor('2')],
       expected: {
-        fight: fight('1', '2'), left: undefined, right: undefined,
+        fight: fight('1', '2'), left: null, right: null,
       },
     },
     {
@@ -45,9 +44,9 @@ describe('createTree', () => {
       expected: {
         fight: fight('', '3'),
         left: {
-          fight: fight('1', '2'), left: undefined, right: undefined,
+          fight: fight('1', '2'), left: null, right: null,
         },
-        right: undefined,
+        right: null,
       },
     },
     {
@@ -55,10 +54,10 @@ describe('createTree', () => {
       expected: {
         fight: fight('', ''),
         left: {
-          fight: fight('1', '2'), left: undefined, right: undefined,
+          fight: fight('1', '2'), left: null, right: null,
         },
         right: {
-          fight: fight('3', '4'), left: undefined, right: undefined,
+          fight: fight('3', '4'), left: null, right: null,
         },
       },
     },
@@ -69,12 +68,12 @@ describe('createTree', () => {
         left: {
           fight: fight('', '3'),
           left: {
-            fight: fight('1', '2'), left: undefined, right: undefined,
+            fight: fight('1', '2'), left: null, right: null,
           },
-          right: undefined,
+          right: null,
         },
         right: {
-          fight: fight('4', '5'), left: undefined, right: undefined,
+          fight: fight('4', '5'), left: null, right: null,
         },
       },
     },
