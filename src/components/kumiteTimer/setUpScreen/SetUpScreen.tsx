@@ -118,7 +118,7 @@ export const SetUpScreen = (): JSX.Element => {
                 className='set-up-input'
                 selected={tournamentType}
                 values={[
-                  // { value: 'TREE', text: t.tournament.types.tree },
+                  { value: 'TREE', text: t.tournament.types.tree },
                   { value: 'GROUP', text: t.tournament.types.group },
                 ]}
                 onChange={(value) => setTournamentType(value as TournamentType)}
