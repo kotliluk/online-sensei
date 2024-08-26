@@ -23,7 +23,7 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ runner.os }}-v3-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-v3-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -47,7 +47,7 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ runner.os }}-v3-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-v3-${{ hashFiles('**/yarn.lock') }}
 
       - name: Run the tests
         run: yarn test
@@ -70,7 +70,7 @@ jobs:
         with:
           path: |
             **/node_modules
-          key: ${{ runner.os }}-v3-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-v3-${{ hashFiles('**/yarn.lock') }}
 
       - name: Rebuild node-sass
         run: npm rebuild node-sass
