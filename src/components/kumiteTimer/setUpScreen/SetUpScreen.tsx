@@ -32,7 +32,7 @@ export const SetUpScreen = (): JSX.Element => {
 
   const [isTournament, setIsTournament] = useState(false)
   const [tournamentName, setTournamentName] = useState('')
-  const [tournamentType, setTournamentType] = useState<TournamentType>('GROUP')
+  const [tournamentType, setTournamentType] = useState<TournamentType>('TREE')
   const [competitorsCount, setCompetitorsCount, isCompetitorsCountValid] = useValidatedState<number>(
     initCompetitorsCount,
     VALIDATOR.competitorsCount,

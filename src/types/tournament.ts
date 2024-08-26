@@ -205,7 +205,7 @@ export const updateTournamentTree = (
 
   const left = updateTournamentTree(node.children[0] ?? null, result)
   const right = updateTournamentTree(node.children[1] ?? null, result)
-  const fight = node.attributes.fight
+  const fight = { ...node.attributes.fight }
 
   if (node.children.length >= 1 && node.children[0].attributes.fight.uuid === result.uuid) {
     const childFight = node.children[0].attributes.fight
@@ -229,7 +229,7 @@ export const updateTournamentTree = (
   return {
     name: '',
     attributes: {
-      fight: { ...fight },
+      fight,
     },
     children,
   }

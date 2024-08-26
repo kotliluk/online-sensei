@@ -12,6 +12,7 @@ const NODE_WIDTH = 200
 const NODE_X_SHIFT = -(NODE_WIDTH / 2)
 const NODE_HEIGHT = 60
 const NODE_Y_SHIFT = -(NODE_HEIGHT / 2)
+const NODE_BACKGROUND = 'white'
 
 const NAME_FONT_SIZE = 16
 const NAME_PADDING_LEFT = 5
@@ -23,15 +24,19 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
   const { nodeDatum, onNodeClick } = props
   const fight = nodeDatum.attributes.fight
 
+  const ready = fight.redUuid !== '' && fight.blueUuid !== ''
   const finished = fight.winner !== undefined
   const redFontWeight = (fight.winner === 'RED' ? 'bold' : 'normal')
   const blueFontWeight = (fight.winner === 'BLUE' ? 'bold' : 'normal')
 
   return (
-    <g onClick={onNodeClick}>
+    <g
+      cursor={ready ? 'pointer' : 'not-allowed'}
+      onClick={onNodeClick}
+    >
       {/* Node background */}
       <rect
-        fill="white"
+        fill={NODE_BACKGROUND}
         strokeWidth={1}
         width={NODE_WIDTH}
         height={NODE_HEIGHT}
@@ -40,7 +45,7 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
       />
       {/* Red name and color */}
       <rect
-        fill="red"
+        fill={fight.redUuid === '' ? NODE_BACKGROUND : 'red'}
         strokeWidth={0}
         width={NODE_WIDTH}
         height={NAME_BACKGROUND_HEIGHT}
@@ -81,7 +86,7 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
       </text>
       {/* Blue name and color */}
       <rect
-        fill="blue"
+        fill={fight.blueUuid === '' ? NODE_BACKGROUND : 'blue'}
         strokeWidth={0}
         width={NODE_WIDTH}
         height={NAME_BACKGROUND_HEIGHT}
