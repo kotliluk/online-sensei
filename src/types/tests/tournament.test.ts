@@ -30,51 +30,75 @@ describe('createTournamentTree', () => {
     {
       competitors: [competitor('1')],
       expected: {
-        fight: fight('1', ''), left: null, right: null,
+        name: '',
+        attributes: { fight: fight('1', '') },
+        children: [],
       },
     },
     {
       competitors: [competitor('1'), competitor('2')],
       expected: {
-        fight: fight('1', '2'), left: null, right: null,
+        name: '',
+        attributes: { fight: fight('1', '2') },
+        children: [],
       },
     },
     {
       competitors: [competitor('1'), competitor('2'), competitor('3')],
       expected: {
-        fight: fight('', '3'),
-        left: {
-          fight: fight('1', '2', 'mocked-uuid-v4'), left: null, right: null,
-        },
-        right: null,
+        name: '',
+        attributes: { fight: fight('', '3') },
+        children: [
+          {
+            name: '',
+            attributes: { fight: fight('1', '2', 'mocked-uuid-v4') },
+            children: [],
+          },
+        ],
       },
     },
     {
       competitors: [competitor('1'), competitor('2'), competitor('3'), competitor('4')],
       expected: {
-        fight: fight('', ''),
-        left: {
-          fight: fight('1', '2', 'mocked-uuid-v4'), left: null, right: null,
-        },
-        right: {
-          fight: fight('3', '4', 'mocked-uuid-v4'), left: null, right: null,
-        },
+        name: '',
+        attributes: { fight: fight('', '') },
+        children: [
+          {
+            name: '',
+            attributes: { fight: fight('1', '2', 'mocked-uuid-v4') },
+            children: [],
+          },
+          {
+            name: '',
+            attributes: { fight: fight('3', '4', 'mocked-uuid-v4') },
+            children: [],
+          },
+        ],
       },
     },
     {
       competitors: [competitor('1'), competitor('2'), competitor('3'), competitor('4'), competitor('5')],
       expected: {
-        fight: fight('', ''),
-        left: {
-          fight: fight('', '3', 'mocked-uuid-v4'),
-          left: {
-            fight: fight('1', '2', 'mocked-uuid-v4'), left: null, right: null,
+        name: '',
+        attributes: { fight: fight('', '') },
+        children: [
+          {
+            name: '',
+            attributes: { fight: fight('', '3', 'mocked-uuid-v4') },
+            children: [
+              {
+                name: '',
+                attributes: { fight: fight('1', '2', 'mocked-uuid-v4') },
+                children: [],
+              },
+            ],
           },
-          right: null,
-        },
-        right: {
-          fight: fight('4', '5', 'mocked-uuid-v4'), left: null, right: null,
-        },
+          {
+            name: '',
+            attributes: { fight: fight('4', '5', 'mocked-uuid-v4') },
+            children: [],
+          },
+        ],
       },
     },
   ])('%s', ({ competitors, expected }) => {

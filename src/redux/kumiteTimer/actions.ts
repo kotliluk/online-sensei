@@ -7,7 +7,8 @@ import {
   createTournamentTree,
   Fight,
   FightResult,
-  switchResultSides, TournamentTreeNode,
+  switchResultSides,
+  TournamentTreeNode,
   TournamentType,
   updateTournamentTree,
 } from '../../types/tournament'

@@ -108,9 +108,11 @@ export const isValidFight = (x: any): boolean => {
 }
 
 export type TournamentTreeNode = {
-  fight: Fight,
-  left: TournamentTreeNode | null,
-  right: TournamentTreeNode | null,
+  name: string,
+  attributes: {
+    fight: Fight,
+  },
+  children: TournamentTreeNode[],
 }
 
 export const createTournamentTree = (competitors: Competitor[], depth: number): TournamentTreeNode => {
@@ -140,16 +142,24 @@ export const createTournamentTree = (competitors: Competitor[], depth: number): 
   const fight = newFight(redUuid, redName, blueUuid, blueName)
 
   if (left) {
-    left.fight.winnerGoesTo = fight.uuid
+    left.attributes.fight.winnerGoesTo = fight.uuid
   }
   if (right) {
-    right.fight.winnerGoesTo = fight.uuid
+    right.attributes.fight.winnerGoesTo = fight.uuid
+  }
+
+  const children = []
+  if (left) {
+    children.push(left)
+  }
+  if (right) {
+    children.push(right)
   }
 
   return {
-    fight,
-    left,
-    right,
+    name: '',
+    attributes: { fight },
+    children,
   }
 }
 
@@ -163,7 +173,13 @@ export const isValidTournamentTree = (x: any): boolean => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return isValidFight(x.fight) && (isValidTournamentTree(x.left)) && (isValidTournamentTree(x.right))
+  return (typeof x.name === 'string') && (typeof x.attributes === 'object') && Array.isArray(x.children)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    && isValidFight(x.attributes.fight)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    && (x.children.length < 1 || isValidTournamentTree(x.children[0]))
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    && (x.children.length < 2 || isValidTournamentTree(x.children[1]))
 }
 
 export const updateTournamentTree = (
@@ -174,34 +190,48 @@ export const updateTournamentTree = (
     return null
   }
 
-  if (node.fight.uuid === result.uuid) {
+  if (node.attributes.fight.uuid === result.uuid) {
     return {
-      fight: {
-        ...node.fight,
-        ...result,
+      name: '',
+      attributes: {
+        fight: {
+          ...node.attributes.fight,
+          ...result,
+        },
       },
-      left: node.left,
-      right: node.right,
+      children: node.children,
     }
   }
 
-  const left = updateTournamentTree(node.left, result)
-  const right = updateTournamentTree(node.right, result)
-  const fight = node.fight
+  const left = updateTournamentTree(node.children[0] ?? null, result)
+  const right = updateTournamentTree(node.children[1] ?? null, result)
+  const fight = node.attributes.fight
 
-  if (node.left !== null && node.left.fight.uuid === result.uuid) {
-    fight.redUuid = (result.winner === 'RED' ? node.left.fight.redUuid : node.left.fight.blueUuid)
-    fight.redName = (result.winner === 'RED' ? node.left.fight.redName : node.left.fight.blueName)
+  if (node.children.length >= 1 && node.children[0].attributes.fight.uuid === result.uuid) {
+    const childFight = node.children[0].attributes.fight
+    fight.redUuid = (result.winner === 'RED' ? childFight.redUuid : childFight.blueUuid)
+    fight.redName = (result.winner === 'RED' ? childFight.redName : childFight.blueName)
   }
-  if (node.right !== null && node.right.fight.uuid === result.uuid) {
-    fight.redUuid = (result.winner === 'RED' ? node.right.fight.redUuid : node.right.fight.blueUuid)
-    fight.redName = (result.winner === 'RED' ? node.right.fight.redName : node.right.fight.blueName)
+  if (node.children.length >= 2 && node.children[1].attributes.fight.uuid === result.uuid) {
+    const childFight = node.children[1].attributes.fight
+    fight.redUuid = (result.winner === 'RED' ? childFight.redUuid : childFight.blueUuid)
+    fight.redName = (result.winner === 'RED' ? childFight.redName : childFight.blueName)
+  }
+
+  const children = []
+  if (left) {
+    children.push(left)
+  }
+  if (right) {
+    children.push(right)
   }
 
   return {
-    fight: { ...fight },
-    left,
-    right,
+    name: '',
+    attributes: {
+      fight: { ...fight },
+    },
+    children,
   }
 }
 

@@ -1,11 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React from 'react'
-import { FightNodeDatum } from './TreeTournamentScreen'
+import { TournamentTreeNode } from '../../../types/tournament'
 
 
 interface TreeNodeProps {
-  nodeDatum: FightNodeDatum
-  toggleNode: () => void
+  nodeDatum: TournamentTreeNode
   onNodeClick: () => void
 }
 
