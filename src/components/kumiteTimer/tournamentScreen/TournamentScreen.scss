@@ -49,3 +49,12 @@
     text-decoration: underline;
   }
 }
+
+.tree-wrapper {
+  width: 90%;
+  height: 50vh;
+
+  @include themed {
+    border: 1px solid t($secondary-color);
+  }
+}

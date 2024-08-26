@@ -26,6 +26,7 @@ import { setModalWindow } from '../../../redux/page/actions'
 
 type PlayPhase = 'init' | 'fight' | 'finished'
 
+// TODO - update mobile phone view
 export const KumiteTimerScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
 
