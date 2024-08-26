@@ -35,7 +35,7 @@ export const VALIDATOR: Validator<State> = {
 export const LS_KEYS: LSMapper<State> = {
   duration: 'KUMITE_TIMER__DURATION',
   activeTournament: 'KUMITE_TIMER__IS_TOURNAMENT',
-  tournamentName: 'KUMITE_TIMER__TOURNAMENT_TYPE',
+  tournamentName: 'KUMITE_TIMER__TOURNAMENT_NAME',
   tournamentType: 'KUMITE_TIMER__TOURNAMENT_TYPE',
   tournamentDuration: 'KUMITE_TIMER__TOURNAMENT_DURATION',
   competitorsCount: 'KUMITE_TIMER__COMPETITORS_COUNT',
