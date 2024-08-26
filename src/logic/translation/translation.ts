@@ -105,6 +105,7 @@ export interface Translation {
         },
         shuffleCompetitors: string,
         competitors: string,
+        repechage: string,
         cancelTournamentModal: {
           title: string,
           text: string,

@@ -65,6 +65,7 @@ export function reducer (state = initialState, action: Actions): State {
         tournamentFight: null,
         group: action.payload.group,
         tournamentTree: action.payload.tree,
+        repechageTree: action.payload.repechage,
       }
 
     default:

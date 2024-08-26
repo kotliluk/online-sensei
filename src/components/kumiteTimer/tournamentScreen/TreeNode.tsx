@@ -29,6 +29,19 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
   const redFontWeight = (fight.winner === 'RED' ? 'bold' : 'normal')
   const blueFontWeight = (fight.winner === 'BLUE' ? 'bold' : 'normal')
 
+  if (fight.type === 'REPECHAGE_ROOT') {
+    return (
+      <rect
+        className="repechage-root"
+        strokeWidth={0}
+        width={400}
+        height={200}
+        x={-400}
+        y={-100}
+      />
+    )
+  }
+
   return (
     <g
       cursor={ready ? 'pointer' : 'not-allowed'}

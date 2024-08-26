@@ -15,6 +15,7 @@ export interface State {
   competitorsCount: number
   competitors: Competitor[]
   tournamentTree: TournamentTreeNode | null
+  repechageTree: TournamentTreeNode | null
   group: Fight[][]
 }
 
@@ -29,5 +30,6 @@ export const initialState: State = {
   competitorsCount: 4,
   competitors: [],
   tournamentTree: null,
+  repechageTree: null,
   group: [],
 }

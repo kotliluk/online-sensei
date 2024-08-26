@@ -51,10 +51,23 @@
 }
 
 .tree-wrapper {
-  width: 90%;
-  height: 50vh;
+  width: 80%;
+  height: 60vh;
 
   @include themed {
     border: 1px solid t($secondary-color);
+  }
+}
+
+.repechage-wrapper {
+  width: 80%;
+  height: 40vh;
+
+  @include themed {
+    border: 1px solid t($secondary-color);
+
+    .repechage-root {
+      fill: t($primary-color);
+    }
   }
 }

@@ -38,7 +38,7 @@ export const SetUpScreen = (): JSX.Element => {
     VALIDATOR.competitorsCount,
   )
   const [competitors, setCompetitors] = useState<Competitor[]>(
-    range(LIMITS.competitorsCount.max).map(_ => newCompetitor('AAA'))
+    range(LIMITS.competitorsCount.max).map((i) => newCompetitor(`${i + 1}`))
   )
   const [shuffleCompetitors, setShuffleCompetitors] = useState(false)
 

@@ -10,6 +10,7 @@ import {
   switchResultSides,
   TournamentTreeNode,
   TournamentType,
+  updateRepechageTree,
   updateTournamentTree,
 } from '../../types/tournament'
 import { ThunkAction } from '../thunk'
@@ -34,6 +35,7 @@ export const initKumiteTimer = (): InitKumiteTimer => {
   const competitorsCount = LS_ACCESS.competitorsCount.get()
   const competitors = LS_ACCESS.competitors.get()
   const tournamentTree = LS_ACCESS.tournamentTree.get()
+  const tournamentTreeRepechage = LS_ACCESS.repechageTree.get()
   const tournamentDuration = LS_ACCESS.tournamentDuration.get()
   const group = LS_ACCESS.group.get()
 
@@ -50,6 +52,7 @@ export const initKumiteTimer = (): InitKumiteTimer => {
       competitors,
       tournamentTree,
       tournamentDuration,
+      repechageTree: tournamentTreeRepechage,
       group,
     },
   }
@@ -108,6 +111,7 @@ export const setKumiteTimerTournament = (
   LS_ACCESS.competitorsCount.set(competitorsCount)
   LS_ACCESS.competitors.set(competitors)
   LS_ACCESS.tournamentTree.set(tournamentTree)
+  LS_ACCESS.repechageTree.set(null)
   LS_ACCESS.tournamentDuration.set(duration)
   LS_ACCESS.group.set(group)
 
@@ -123,6 +127,7 @@ export const setKumiteTimerTournament = (
       competitorsCount,
       competitors,
       tournamentTree,
+      repechageTree: null,
       tournamentDuration: duration,
       group,
     },
@@ -193,18 +198,25 @@ interface SetTournamentState extends Action<typeof SET_TOURNAMENT_STATE> {
   payload: {
     group: Fight[][],
     tree: TournamentTreeNode | null,
+    repechage: TournamentTreeNode | null,
   }
 }
 
 export const setTournamentState = (
   group: Fight[][],
   tree: TournamentTreeNode | null,
+  repechage: TournamentTreeNode | null,
 ): SetTournamentState => {
+  LS_ACCESS.group.set(group)
+  LS_ACCESS.tournamentTree.set(tree)
+  LS_ACCESS.repechageTree.set(repechage)
+
   return {
     type: SET_TOURNAMENT_STATE,
     payload: {
       group,
       tree,
+      repechage,
     },
   }
 }
@@ -215,6 +227,7 @@ export const saveTournamentFight = (result: FightResult): ThunkAction => (dispat
   const tournamentType = getState().kumiteTimer.tournamentType
   const curGroup = getState().kumiteTimer.group
   const curTree = getState().kumiteTimer.tournamentTree
+  const curRepechage = getState().kumiteTimer.repechageTree
 
   const group = tournamentType === 'GROUP'
     ? curGroup.map((row) => row.map((f) => {
@@ -236,10 +249,10 @@ export const saveTournamentFight = (result: FightResult): ThunkAction => (dispat
   const tournamentTree = tournamentType === 'TREE'
     ? updateTournamentTree(curTree, result)
     : null
+  const repechageTree = tournamentType === 'TREE'
+    ? updateRepechageTree(tournamentTree, curRepechage, result)
+    : null
 
-  LS_ACCESS.group.set(group)
-  LS_ACCESS.tournamentTree.set(tournamentTree)
-
-  dispatch(setTournamentState(group, tournamentTree))
+  dispatch(setTournamentState(group, tournamentTree, repechageTree))
 }
 

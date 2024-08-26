@@ -102,6 +102,7 @@ export const EN: Translation = {
         },
         shuffleCompetitors: 'Random draw',
         competitors: 'Competitors',
+        repechage: 'Repechage',
         cancelTournamentModal: {
           title: 'Cancel tournament',
           text: 'Do you really want to cancel the tournament? All results will be lost.',

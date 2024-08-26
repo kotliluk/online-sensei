@@ -41,3 +41,7 @@ export const selectKumiteTimerTournamentGroup = (state: RootState): Fight[][] =>
 export const selectKumiteTimerTournamentTree = (state: RootState): TournamentTreeNode | null => {
   return state.kumiteTimer.tournamentTree
 }
+
+export const selectKumiteTimerRepechageTree = (state: RootState): TournamentTreeNode | null => {
+  return state.kumiteTimer.repechageTree
+}
