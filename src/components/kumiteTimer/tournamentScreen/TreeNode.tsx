@@ -45,7 +45,7 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
       />
       {/* Red name and color */}
       <rect
-        fill={fight.redUuid === '' ? NODE_BACKGROUND : 'red'}
+        fill={fight.redUuid === '' ? NODE_BACKGROUND : '#fc6969'}
         strokeWidth={0}
         width={NODE_WIDTH}
         height={NAME_BACKGROUND_HEIGHT}
@@ -86,7 +86,7 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
       </text>
       {/* Blue name and color */}
       <rect
-        fill={fight.blueUuid === '' ? NODE_BACKGROUND : 'blue'}
+        fill={fight.blueUuid === '' ? NODE_BACKGROUND : '#78abfd'}
         strokeWidth={0}
         width={NODE_WIDTH}
         height={NAME_BACKGROUND_HEIGHT}
