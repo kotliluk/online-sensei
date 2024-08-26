@@ -32,7 +32,7 @@ export const SetUpScreen = (): JSX.Element => {
 
   const [isTournament, setIsTournament] = useState(false)
   const [tournamentName, setTournamentName] = useState('')
-  const [tournamentType, setTournamentType] = useState<TournamentType>('GROUP')
+  const [tournamentType, setTournamentType] = useState<TournamentType>('TREE')
   const [competitorsCount, setCompetitorsCount, isCompetitorsCountValid] = useValidatedState<number>(
     initCompetitorsCount,
     VALIDATOR.competitorsCount,
@@ -118,7 +118,7 @@ export const SetUpScreen = (): JSX.Element => {
                 className='set-up-input'
                 selected={tournamentType}
                 values={[
-                  // { value: 'TREE', text: t.tournament.types.tree },
+                  { value: 'TREE', text: t.tournament.types.tree },
                   { value: 'GROUP', text: t.tournament.types.group },
                 ]}
                 onChange={(value) => setTournamentType(value as TournamentType)}

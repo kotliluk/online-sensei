@@ -1,5 +1,5 @@
 import { RootState } from '../state'
-import { Competitor, Fight, TournamentType } from '../../types/tournament'
+import { Competitor, Fight, TournamentTreeNode, TournamentType } from '../../types/tournament'
 
 
 export const selectKumiteTimerIsActual = (state: RootState): boolean => {
@@ -36,4 +36,8 @@ export const selectKumiteTimerCompetitors = (state: RootState): Competitor[] => 
 
 export const selectKumiteTimerTournamentGroup = (state: RootState): Fight[][] => {
   return state.kumiteTimer.group
+}
+
+export const selectKumiteTimerTournamentTree = (state: RootState): TournamentTreeNode | null => {
+  return state.kumiteTimer.tournamentTree
 }
