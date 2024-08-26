@@ -214,8 +214,8 @@ export const updateTournamentTree = (
   }
   if (node.children.length >= 2 && node.children[1].attributes.fight.uuid === result.uuid) {
     const childFight = node.children[1].attributes.fight
-    fight.redUuid = (result.winner === 'RED' ? childFight.redUuid : childFight.blueUuid)
-    fight.redName = (result.winner === 'RED' ? childFight.redName : childFight.blueName)
+    fight.blueUuid = (result.winner === 'RED' ? childFight.redUuid : childFight.blueUuid)
+    fight.blueName = (result.winner === 'RED' ? childFight.redName : childFight.blueName)
   }
 
   const children = []
