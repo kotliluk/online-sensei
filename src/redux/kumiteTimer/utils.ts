@@ -12,9 +12,10 @@ import { emptyFunc } from '../../utils/function'
 import { isValidCompetitor, isValidFight, isValidTournamentTree } from '../../types/tournament'
 
 
+// TODO - competitors count for tree/group
 export const LIMITS: Limits<State> = {
   duration: { min: 30, max: 300 },
-  competitorsCount: { min: 2, max: 128 },
+  competitorsCount: { min: 2, max: 64 },
   tournamentDuration: { min: 30, max: 300 },
 }
 

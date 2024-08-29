@@ -9,6 +9,7 @@ import { GroupTableRow } from './GroupTableRow'
 import { selectTranslation } from '../../../redux/page/selector'
 
 
+// TODO - sliding table if too big
 export const GroupTournamentScreen = (): JSX.Element => {
   const { kumiteTimer: { setUpScreen: { tournament: { tableStatsLabels } } } } = useSelector(selectTranslation)
   const competitors = useSelector(selectKumiteTimerCompetitors)
