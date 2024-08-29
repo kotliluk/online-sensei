@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/online-sensei/static/css/main.452f9379.chunk.css",
-    "main.js": "/online-sensei/static/js/main.ce136900.chunk.js",
-    "main.js.map": "/online-sensei/static/js/main.ce136900.chunk.js.map",
+    "main.js": "/online-sensei/static/js/main.a2c2a935.chunk.js",
+    "main.js.map": "/online-sensei/static/js/main.a2c2a935.chunk.js.map",
     "runtime-main.js": "/online-sensei/static/js/runtime-main.eba61c75.js",
     "runtime-main.js.map": "/online-sensei/static/js/runtime-main.eba61c75.js.map",
     "static/js/2.8a19a1cb.chunk.js": "/online-sensei/static/js/2.8a19a1cb.chunk.js",
@@ -24,6 +24,6 @@
     "static/js/runtime-main.eba61c75.js",
     "static/js/2.8a19a1cb.chunk.js",
     "static/css/main.452f9379.chunk.css",
-    "static/js/main.ce136900.chunk.js"
+    "static/js/main.a2c2a935.chunk.js"
   ]
 }
