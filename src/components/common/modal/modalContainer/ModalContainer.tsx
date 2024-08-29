@@ -9,6 +9,7 @@ import { useCloseModal } from '../../../../logic/hooks/useCloseModal'
 import { SaveAdvancedSeries } from '../../../intervalTimer/saveAdvancedSeriesModal/SaveAdvancedSeries'
 import { CancelTournamentModal } from '../../../kumiteTimer/tournamentScreen/CancelTournamentModal'
 import { FightResultModal } from '../../../kumiteTimer/kumiteTimerScreen/FightResultModal'
+import { ReopenTreeFightModal } from '../../../kumiteTimer/tournamentScreen/ReopenTreeFightModal'
 
 
 export const ModalContainer = (): JSX.Element | null => {
@@ -38,8 +39,10 @@ export const ModalContainer = (): JSX.Element | null => {
     modalWindow = <SaveAdvancedSeries />
   } else if (modalType === 'CANCEL_TOURNAMENT') {
     modalWindow = <CancelTournamentModal />
-  } else if (modalType === 'FIGHT_RESULT_MODAL') {
+  } else if (modalType === 'FIGHT_RESULT') {
     modalWindow = <FightResultModal />
+  } else if (modalType === 'REOPEN_TREE_FIGHT') {
+    modalWindow = <ReopenTreeFightModal />
   }
 
   return ReactDOM.createPortal((

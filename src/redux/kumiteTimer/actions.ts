@@ -7,9 +7,9 @@ import {
   createTournamentTree,
   Fight,
   FightResult,
-  switchResultSides,
   TournamentTreeNode,
   TournamentType,
+  updateGroupTable,
   updateRepechageTree,
   updateTournamentTree,
 } from '../../types/tournament'
@@ -229,29 +229,9 @@ export const saveTournamentFight = (result: FightResult): ThunkAction => (dispat
   const curTree = getState().kumiteTimer.tournamentTree
   const curRepechage = getState().kumiteTimer.repechageTree
 
-  const group = tournamentType === 'GROUP'
-    ? curGroup.map((row) => row.map((f) => {
-      if (f.uuid === result.uuid) {
-        return {
-          ...f,
-          ...result,
-        }
-      } else if (f.uuid === result.oppositeFight) {
-        return {
-          ...f,
-          ...switchResultSides(result),
-        }
-      } else {
-        return f
-      }
-    }))
-    : []
-  const tournamentTree = tournamentType === 'TREE'
-    ? updateTournamentTree(curTree, result)
-    : null
-  const repechageTree = tournamentType === 'TREE'
-    ? updateRepechageTree(tournamentTree, curRepechage, result)
-    : null
+  const group = tournamentType === 'GROUP' ? updateGroupTable(curGroup, result) : []
+  const tournamentTree = tournamentType === 'TREE' ? updateTournamentTree(curTree, result) : null
+  const repechageTree = tournamentType === 'TREE' ? updateRepechageTree(tournamentTree, curRepechage, result) : null
 
   dispatch(setTournamentState(group, tournamentTree, repechageTree))
 }

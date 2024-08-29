@@ -120,6 +120,12 @@ export interface Translation {
           draw: string,
           loss: string,
         },
+        reopenTreeFightModal: {
+          title: string,
+          text: string,
+          textSemifinal: string,
+          textRepechage: string,
+        },
       },
     },
     timerScreen: {

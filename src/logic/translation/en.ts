@@ -117,6 +117,14 @@ export const EN: Translation = {
           draw: 'D',
           loss: 'L',
         },
+        reopenTreeFightModal: {
+          title: 'Reopen a finished fight',
+          // eslint-disable-next-line max-len
+          text: 'Are you sure to reopen a finished fight? Subsequent fights and repechage will not be updated automatically and so might become inconsistent.',
+          textSemifinal: 'Are you sure to reopen a finished semifinal fight? It will reset the repechage.',
+          // eslint-disable-next-line max-len
+          textRepechage: 'Are you sure to reopen a finished repechage fight? Subsequent fights will not be updated automatically and so might become inconsistent.',
+        },
       },
     },
     timerScreen: {
