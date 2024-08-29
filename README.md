@@ -21,7 +21,11 @@ an ongoing tournament.
 
 In tournament setting, you can fill tournament name, competitor names,
 select its type, and request a random shuffle of competitors in tree
-tournament.
+tournament. You can insert comma-separated list of competitor names
+to fill the form quickly (e.g., inserted text "Alice, Bob, Charles"
+becomes 3 competitors names "Alice", "Bob", and "Charles", it fills
+the competitor where it was inserted and 2 following) (that means
+competitor names cannot contain a comma character).
 
 ### Tree tournament
 

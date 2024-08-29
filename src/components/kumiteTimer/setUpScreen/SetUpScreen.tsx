@@ -48,7 +48,17 @@ export const SetUpScreen = (): JSX.Element => {
 
   const handleCompetitorEdit = useCallback((competitors: Competitor[], index: number, value: string) => {
     const newCompetitors = [...competitors]
-    newCompetitors[index].name = value
+    if (!value.includes(',')) {
+      newCompetitors[index].name = value
+    } else {
+      const parts = value.split(',')
+      parts.forEach((part, i) => {
+        const trimmed = part.trim()
+        if (trimmed !== '' && index + i < LIMITS.competitorsCount.max) {
+          newCompetitors[index + i].name = trimmed
+        }
+      })
+    }
     setCompetitors(newCompetitors)
   }, [setCompetitors])
 
