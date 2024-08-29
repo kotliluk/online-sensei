@@ -1,5 +1,5 @@
 import { v4 as uuidV4 } from 'uuid'
-import { split } from '../utils/array'
+import { arrayOfDefined, split } from '../utils/array'
 import { Senchu } from './senchu'
 
 
@@ -26,8 +26,11 @@ export const isValidCompetitor = (x: any): boolean => {
 
 export type FightWinner = 'BLUE' | 'RED' | 'DRAW'
 
+export type FightType = 'MAIN' | 'REPECHAGE_1' | 'REPECHAGE_2' | 'REPECHAGE_ROOT'
+
 export type Fight = {
   uuid: string,
+  type: FightType,
   depth: number,
   winner: FightWinner | undefined,
   redUuid: string,
@@ -39,39 +42,45 @@ export type Fight = {
   bluePoints: number,
   blueFouls: number,
   senchu: Senchu,
-  winnerGoesTo: string | undefined,
   oppositeFight: string | undefined,
 }
 
 export type FightResult = {
   uuid: string,
+  type: FightType,
   winner: FightWinner,
   redPoints: number,
   redFouls: number,
   bluePoints: number,
   blueFouls: number,
   senchu: Senchu,
-  winnerGoesTo: string | undefined,
   oppositeFight: string | undefined,
 }
 
 export const switchResultSides = (fight: FightResult): FightResult => {
   return {
     uuid: fight.uuid,
+    type: fight.type,
     winner: (fight.winner === 'RED' ? 'BLUE' : (fight.winner === 'BLUE' ? 'RED' : 'DRAW')),
     redPoints: fight.bluePoints,
     redFouls: fight.blueFouls,
     bluePoints: fight.redPoints,
     blueFouls: fight.redFouls,
     senchu: (fight.senchu === 'RED' ? 'BLUE' : (fight.senchu === 'BLUE' ? 'RED' : 'NONE')),
-    winnerGoesTo: fight.winnerGoesTo,
     oppositeFight: fight.oppositeFight,
   }
 }
 
-export const newFight = (redUuid: string, redName: string, blueUuid: string, blueName: string): Fight => ({
+export const newFight = (
+  redUuid: string,
+  redName: string,
+  blueUuid: string,
+  blueName: string,
+  type: FightType = 'MAIN',
+): Fight => ({
   uuid: uuidV4(),
   depth: 0,
+  type,
   winner: undefined,
   redUuid,
   redName,
@@ -82,7 +91,6 @@ export const newFight = (redUuid: string, redName: string, blueUuid: string, blu
   bluePoints: 0,
   blueFouls: 0,
   senchu: 'NONE',
-  winnerGoesTo: undefined,
   oppositeFight: undefined,
 })
 
@@ -92,7 +100,7 @@ export const isValidFight = (x: any): boolean => {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return (typeof x.uuid === 'string') && (typeof x.depth === 'number')
+  return (typeof x.uuid === 'string') && (typeof x.depth === 'number') && (typeof x.type === 'string')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.winner === 'undefined' || typeof x.winner === 'string')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,max-len
@@ -102,9 +110,29 @@ export const isValidFight = (x: any): boolean => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.senchu === 'string') && (x.senchu === 'RED' || x.senchu === 'BLUE' || x.senchu === 'NONE')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    && (typeof x.winnerGoesTo === 'undefined' || typeof x.winnerGoesTo === 'string')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.oppositeFight === 'undefined' || typeof x.oppositeFight === 'string')
+}
+
+export const isFinal = (fight: Fight): boolean => fight.depth === 0 && fight.type === 'MAIN'
+
+export const isSemifinal = (fight: Fight): boolean => fight.depth === 1 && fight.type === 'MAIN'
+
+export const updateGroupTable = (group: Fight[][], result: FightResult): Fight[][] => {
+  return group.map((row) => row.map((f) => {
+    if (f.uuid === result.uuid) {
+      return {
+        ...f,
+        ...result,
+      }
+    } else if (f.uuid === result.oppositeFight) {
+      return {
+        ...f,
+        ...switchResultSides(result),
+      }
+    } else {
+      return f
+    }
+  }))
 }
 
 export type TournamentTreeNode = {
@@ -113,6 +141,45 @@ export type TournamentTreeNode = {
     fight: Fight,
   },
   children: TournamentTreeNode[],
+}
+
+const newTree = (fight: Fight, children: TournamentTreeNode[]): TournamentTreeNode => {
+  return {
+    name: '',
+    attributes: { fight },
+    children,
+  }
+}
+
+export const getTreeDepth = (tree: TournamentTreeNode | null): number => {
+  if (!tree) {
+    return -1
+  }
+  let depth = 0
+  let cur = tree
+  while (cur.children.length > 0) {
+    depth++
+    cur = cur.children[0]
+  }
+  return depth
+}
+
+export const findParentFightFor = (uuid: string, tree: TournamentTreeNode | null, depth?: number): Fight | null => {
+  if (!tree || (!!depth && tree.attributes.fight.depth > depth)) {
+    return null
+  }
+
+  if (tree.children[0]?.attributes.fight.uuid === uuid || tree.children[1]?.attributes.fight.uuid === uuid) {
+    return tree.attributes.fight
+  }
+
+  const leftResult = findParentFightFor(uuid, tree.children[0] ?? null, depth)
+
+  if (leftResult) {
+    return leftResult
+  }
+
+  return findParentFightFor(uuid, tree.children[1] ?? null, depth)
 }
 
 export const createTournamentTree = (competitors: Competitor[], depth: number): TournamentTreeNode => {
@@ -140,13 +207,7 @@ export const createTournamentTree = (competitors: Competitor[], depth: number): 
   }
 
   const fight = newFight(redUuid, redName, blueUuid, blueName)
-
-  if (left) {
-    left.attributes.fight.winnerGoesTo = fight.uuid
-  }
-  if (right) {
-    right.attributes.fight.winnerGoesTo = fight.uuid
-  }
+  fight.depth = depth
 
   const children = []
   if (left) {
@@ -156,11 +217,7 @@ export const createTournamentTree = (competitors: Competitor[], depth: number): 
     children.push(right)
   }
 
-  return {
-    name: '',
-    attributes: { fight },
-    children,
-  }
+  return newTree(fight, children)
 }
 
 export const isValidTournamentTree = (x: any): boolean => {
@@ -185,22 +242,18 @@ export const isValidTournamentTree = (x: any): boolean => {
 export const updateTournamentTree = (
   node: TournamentTreeNode | null,
   result: FightResult,
+  expectedType: FightType = 'MAIN',
 ): TournamentTreeNode | null => {
   if (node === null) {
     return null
   }
 
+  if (result.type !== expectedType) {
+    return node
+  }
+
   if (node.attributes.fight.uuid === result.uuid) {
-    return {
-      name: '',
-      attributes: {
-        fight: {
-          ...node.attributes.fight,
-          ...result,
-        },
-      },
-      children: node.children,
-    }
+    return newTree({ ...node.attributes.fight, ...result }, node.children)
   }
 
   const left = updateTournamentTree(node.children[0] ?? null, result)
@@ -218,21 +271,124 @@ export const updateTournamentTree = (
     fight.blueName = (result.winner === 'RED' ? childFight.redName : childFight.blueName)
   }
 
-  const children = []
-  if (left) {
-    children.push(left)
+  const children = arrayOfDefined(left, right)
+
+  return newTree(fight, children)
+}
+
+export const needsConfirmationToReopen = (fight: Fight, tree: TournamentTreeNode | null): boolean => {
+  // final is the last fight and so it can be reopened
+  if (isFinal(fight)) {
+    return false
   }
-  if (right) {
-    children.push(right)
+  // semifinal influences repechage fights and it needs confirmation
+  if (isSemifinal(fight)) {
+    return true
+  }
+  const parentFight = findParentFightFor(fight.uuid, tree, fight.depth - 1)
+  // if the subsequent fight is finished it needs confirmation
+  return parentFight?.winner !== undefined
+}
+
+/**
+ * Saves opponents of the given fighter in the tree from the last one to the first one.
+ */
+const saveOpponentsOf = (fighterUuid: string, tree: TournamentTreeNode, opponents: Competitor[]): void => {
+  if (tree.attributes.fight.redUuid === fighterUuid) {
+    opponents.push({ uuid: tree.attributes.fight.blueUuid, name: tree.attributes.fight.blueName })
+    if (tree.children.length > 0) {
+      saveOpponentsOf(fighterUuid, tree.children[0], opponents)
+    }
+  }
+  if (tree.attributes.fight.blueUuid === fighterUuid) {
+    opponents.push({ uuid: tree.attributes.fight.redUuid, name: tree.attributes.fight.redName })
+    if (tree.children.length > 1) {
+      saveOpponentsOf(fighterUuid, tree.children[1], opponents)
+    }
+  }
+}
+
+const createRepechageLine = (
+  fighters: Competitor[],
+  type: 'REPECHAGE_1' | 'REPECHAGE_2',
+): TournamentTreeNode | null => {
+  if (fighters.length === 1) {
+    return null
   }
 
-  return {
-    name: '',
-    attributes: {
-      fight,
-    },
-    children,
+  if (fighters.length === 2) {
+    const red = fighters[1]
+    const blue = fighters[0]
+    return newTree(newFight(red.uuid, red.name, blue.uuid, blue.name, type), [])
   }
+
+  return newTree(
+    newFight(
+      '',
+      '',
+      fighters[0].uuid, fighters[0].name, type),
+      // recursive call cannot return null
+      [createRepechageLine(fighters.slice(1), type) as TournamentTreeNode],
+  )
+}
+
+export const updateRepechageTree = (
+  tournamentTree: TournamentTreeNode | null,
+  repechageTree: TournamentTreeNode | null,
+  result: FightResult,
+): TournamentTreeNode | null => {
+  if (!tournamentTree) {
+    return null
+  }
+
+  // result from the main tree
+  if (result.type === 'MAIN') {
+    // result of first semifinal - creates repechage 1
+    if (tournamentTree.children.length > 0 && result.uuid === tournamentTree.children[0].attributes.fight.uuid) {
+      const semifinal = tournamentTree.children[0].attributes.fight
+      const winnerUuid = result.winner === 'RED' ? semifinal.redUuid : semifinal.blueUuid
+      const opponents: Competitor[] = []
+      saveOpponentsOf(winnerUuid, tournamentTree.children[0], opponents)
+
+      const repechage1 = createRepechageLine(opponents, 'REPECHAGE_1')
+      const repechage2 = repechageTree?.children.find((c) => c.attributes.fight.type === 'REPECHAGE_2')
+      const children = arrayOfDefined(repechage1, repechage2)
+      return newTree(newFight('', '', '', '', 'REPECHAGE_ROOT'), children)
+    }
+
+    // result of second semifinal - creates repechage 2
+    if (tournamentTree.children.length > 1 && result.uuid === tournamentTree.children[1].attributes.fight.uuid) {
+      const semifinal = tournamentTree.children[1].attributes.fight
+      const winnerUuid = result.winner === 'RED' ? semifinal.redUuid : semifinal.blueUuid
+      const opponents: Competitor[] = []
+      saveOpponentsOf(winnerUuid, tournamentTree.children[1], opponents)
+
+      const repechage1 = repechageTree?.children.find((c) => c.attributes.fight.type === 'REPECHAGE_1')
+      const repechage2 = createRepechageLine(opponents, 'REPECHAGE_2')
+      const children = arrayOfDefined(repechage1, repechage2)
+      return newTree(newFight('', '', '', '', 'REPECHAGE_ROOT'), children)
+    }
+  }
+
+  // result from the repechage 1 - updates
+  if (!!repechageTree && result.type === 'REPECHAGE_1') {
+    const repechage1 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_1') ?? null
+    const repechage2 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_2')
+    const updated1 = updateTournamentTree(repechage1, result, 'REPECHAGE_1')
+    const children = arrayOfDefined(updated1, repechage2)
+    return newTree(repechageTree.attributes.fight, children)
+  }
+
+  // result from the repechage 2 - updates
+  if (!!repechageTree && result.type === 'REPECHAGE_2') {
+    const repechage1 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_1')
+    const repechage2 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_2') ?? null
+    const updated2 = updateTournamentTree(repechage2, result, 'REPECHAGE_2')
+    const children = arrayOfDefined(repechage1, updated2)
+    return newTree(repechageTree.attributes.fight, children)
+  }
+
+  return repechageTree
 }
 
 export const createGroup = (competitors: Competitor[]): Fight[][] => {

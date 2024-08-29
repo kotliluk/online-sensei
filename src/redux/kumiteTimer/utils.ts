@@ -12,9 +12,10 @@ import { emptyFunc } from '../../utils/function'
 import { isValidCompetitor, isValidFight, isValidTournamentTree } from '../../types/tournament'
 
 
+// TODO - competitors count for tree/group
 export const LIMITS: Limits<State> = {
   duration: { min: 30, max: 300 },
-  competitorsCount: { min: 2, max: 128 },
+  competitorsCount: { min: 2, max: 64 },
   tournamentDuration: { min: 30, max: 300 },
 }
 
@@ -29,6 +30,7 @@ export const VALIDATOR: Validator<State> = {
   competitorsCount: isBetweenValidator(LIMITS.competitorsCount),
   competitors: isValidArrayOf(isValidCompetitor),
   tournamentTree: isValidTournamentTree,
+  repechageTree: isValidTournamentTree,
   group: isValidArrayOf(isValidArrayOf(isValidFight)),
 }
 
@@ -41,6 +43,7 @@ export const LS_KEYS: LSMapper<State> = {
   competitorsCount: 'KUMITE_TIMER__COMPETITORS_COUNT',
   competitors: 'KUMITE_TIMER__COMPETITORS',
   tournamentTree: 'KUMITE_TIMER__TOURNAMENT_TREE',
+  repechageTree: 'KUMITE_TIMER__TOURNAMENT_TREE_REPECHAGE',
   group: 'KUMITE_TIMER__GROUP',
 }
 
@@ -92,6 +95,12 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
       LS_KEYS.tournamentTree, VALIDATOR.tournamentTree, initialState.tournamentTree,
     ),
     set: (value) => saveToLS(LS_KEYS.tournamentTree, JSON.stringify(value)),
+  },
+  repechageTree: {
+    get: () => getValidatedTypeFromLS(
+      LS_KEYS.repechageTree, VALIDATOR.repechageTree, initialState.repechageTree,
+    ),
+    set: (value) => saveToLS(LS_KEYS.repechageTree, JSON.stringify(value)),
   },
   group: {
     get: () => getValidatedTypeFromLS(LS_KEYS.group, VALIDATOR.group, initialState.group),

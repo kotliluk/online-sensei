@@ -1,24 +1,26 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
 import React from 'react'
 import { TournamentTreeNode } from '../../../types/tournament'
+import {
+  NAME_BACKGROUND_HEIGHT,
+  NAME_BACKGROUND_PADDING_VERTICAL,
+  NAME_FONT_SIZE,
+  NAME_PADDING_LEFT,
+  NODE_BACKGROUND,
+  NODE_HEIGHT,
+  NODE_WIDTH,
+  NODE_X_SHIFT,
+  NODE_Y_SHIFT,
+  POINTS_BACKGROUND_WIDTH,
+  TREE_LEVEL_X_SHIFT,
+  TREE_LEVEL_Y_SHIFT,
+} from './treeLayoutConstants'
 
 
 interface TreeNodeProps {
   nodeDatum: TournamentTreeNode
   onNodeClick: () => void
 }
-
-const NODE_WIDTH = 200
-const NODE_X_SHIFT = -(NODE_WIDTH / 2)
-const NODE_HEIGHT = 60
-const NODE_Y_SHIFT = -(NODE_HEIGHT / 2)
-const NODE_BACKGROUND = 'white'
-
-const NAME_FONT_SIZE = 16
-const NAME_PADDING_LEFT = 5
-const NAME_BACKGROUND_HEIGHT = 20
-const NAME_BACKGROUND_PADDING_VERTICAL = ((NODE_HEIGHT / 2) - NAME_BACKGROUND_HEIGHT) / 2
-const POINTS_BACKGROUND_WIDTH = 20
 
 export const TreeNode = (props: TreeNodeProps): JSX.Element => {
   const { nodeDatum, onNodeClick } = props
@@ -28,6 +30,20 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
   const finished = fight.winner !== undefined
   const redFontWeight = (fight.winner === 'RED' ? 'bold' : 'normal')
   const blueFontWeight = (fight.winner === 'BLUE' ? 'bold' : 'normal')
+
+  if (fight.type === 'REPECHAGE_ROOT') {
+    return (
+      <rect
+        cursor="grab"
+        className="repechage-root"
+        strokeWidth={0}
+        width={TREE_LEVEL_X_SHIFT}
+        height={2 * TREE_LEVEL_Y_SHIFT}
+        x={-TREE_LEVEL_X_SHIFT}
+        y={-TREE_LEVEL_Y_SHIFT}
+      />
+    )
+  }
 
   return (
     <g
@@ -45,7 +61,7 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
       />
       {/* Red name and color */}
       <rect
-        fill={fight.redUuid === '' ? NODE_BACKGROUND : 'red'}
+        fill={fight.redUuid === '' ? NODE_BACKGROUND : '#fc6969'}
         strokeWidth={0}
         width={NODE_WIDTH}
         height={NAME_BACKGROUND_HEIGHT}
@@ -86,7 +102,7 @@ export const TreeNode = (props: TreeNodeProps): JSX.Element => {
       </text>
       {/* Blue name and color */}
       <rect
-        fill={fight.blueUuid === '' ? NODE_BACKGROUND : 'blue'}
+        fill={fight.blueUuid === '' ? NODE_BACKGROUND : '#78abfd'}
         strokeWidth={0}
         width={NODE_WIDTH}
         height={NAME_BACKGROUND_HEIGHT}

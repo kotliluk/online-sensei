@@ -102,6 +102,7 @@ export const CS: Translation = {
         },
         shuffleCompetitors: 'Náhodně rozlosovat',
         competitors: 'Závodníci',
+        repechage: 'Repasáž',
         cancelTournamentModal: {
           title: 'Zrušit turnaj',
           text: 'Opravdu si přejete zrušit turnaj? Veškeré výsledky budou ztraceny.',
@@ -115,6 +116,14 @@ export const CS: Translation = {
           win: 'V',
           draw: 'R',
           loss: 'P',
+        },
+        reopenTreeFightModal: {
+          title: 'Znovu otevřít dokončený zápas',
+          // eslint-disable-next-line max-len
+          text: 'Opravdu chcete otevřít dokončený zápas? Následující zápasy a repasáž nebudou automaticky aktualizovány a tak mohou vzniknout nenávaznosti.',
+          textSemifinal: 'Opravdu chcete otevřít dokončené semifinále? Repasáž bude resetována.',
+          // eslint-disable-next-line max-len
+          textRepechage: 'Opravdu chcete otevřít dokončený zápas repasáže? Následující zápasy nebudou automaticky aktualizovány a tak mohou vzniknout nenávaznosti.',
         },
       },
     },

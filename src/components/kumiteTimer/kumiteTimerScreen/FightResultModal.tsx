@@ -59,8 +59,8 @@ export const FightResultModal = (): JSX.Element | null => {
 
     thunkDispatch(saveTournamentFight({
       uuid: tournamentFight.uuid,
+      type: tournamentFight.type,
       oppositeFight: tournamentFight.oppositeFight,
-      winnerGoesTo: tournamentFight.winnerGoesTo,
       winner: winner,
       redPoints: tournamentFight.redPoints,
       redFouls: tournamentFight.redFouls,

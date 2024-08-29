@@ -1,16 +1,17 @@
-import { createTournamentTree } from '../tournament'
+import { Competitor, createTournamentTree, Fight } from '../tournament'
 
 
 jest.mock('uuid', () => ({ v4: () => 'mocked-uuid-v4' }))
 
-const competitor = (name: string) => ({
+const competitor = (name: string): Competitor => ({
   uuid: name,
   name,
 })
 
-const fight = (red: string, blue: string, winnerGoesTo: string | undefined = undefined) => ({
+const fight = (red: string, blue: string, depth = 0): Fight => ({
   uuid: 'mocked-uuid-v4',
-  depth: 0,
+  type: 'MAIN',
+  depth,
   winner: undefined,
   redUuid: red,
   redName: red,
@@ -21,7 +22,6 @@ const fight = (red: string, blue: string, winnerGoesTo: string | undefined = und
   bluePoints: 0,
   blueFouls: 0,
   senchu: 'NONE',
-  winnerGoesTo: winnerGoesTo,
   oppositeFight: undefined,
 })
 
@@ -51,7 +51,7 @@ describe('createTournamentTree', () => {
         children: [
           {
             name: '',
-            attributes: { fight: fight('1', '2', 'mocked-uuid-v4') },
+            attributes: { fight: fight('1', '2', 1) },
             children: [],
           },
         ],
@@ -65,12 +65,12 @@ describe('createTournamentTree', () => {
         children: [
           {
             name: '',
-            attributes: { fight: fight('1', '2', 'mocked-uuid-v4') },
+            attributes: { fight: fight('1', '2', 1) },
             children: [],
           },
           {
             name: '',
-            attributes: { fight: fight('3', '4', 'mocked-uuid-v4') },
+            attributes: { fight: fight('3', '4', 1) },
             children: [],
           },
         ],
@@ -84,18 +84,18 @@ describe('createTournamentTree', () => {
         children: [
           {
             name: '',
-            attributes: { fight: fight('', '3', 'mocked-uuid-v4') },
+            attributes: { fight: fight('', '3', 1) },
             children: [
               {
                 name: '',
-                attributes: { fight: fight('1', '2', 'mocked-uuid-v4') },
+                attributes: { fight: fight('1', '2', 2) },
                 children: [],
               },
             ],
           },
           {
             name: '',
-            attributes: { fight: fight('4', '5', 'mocked-uuid-v4') },
+            attributes: { fight: fight('4', '5', 1) },
             children: [],
           },
         ],

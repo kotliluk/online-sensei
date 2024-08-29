@@ -130,7 +130,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
         blueFouls: foulsBlue,
         senchu: senchu,
       }))
-      dispatch(setModalWindow('FIGHT_RESULT_MODAL'))
+      dispatch(setModalWindow('FIGHT_RESULT'))
     }
   }, [dispatch, tournamentFight, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu])
 

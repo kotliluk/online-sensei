@@ -105,6 +105,7 @@ export interface Translation {
         },
         shuffleCompetitors: string,
         competitors: string,
+        repechage: string,
         cancelTournamentModal: {
           title: string,
           text: string,
@@ -118,6 +119,12 @@ export interface Translation {
           win: string,
           draw: string,
           loss: string,
+        },
+        reopenTreeFightModal: {
+          title: string,
+          text: string,
+          textSemifinal: string,
+          textRepechage: string,
         },
       },
     },

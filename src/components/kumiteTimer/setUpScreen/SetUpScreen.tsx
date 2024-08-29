@@ -21,6 +21,7 @@ import { range } from '../../../utils/array'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 
 
+// TODO - loading tournament from text file
 export const SetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
@@ -38,7 +39,7 @@ export const SetUpScreen = (): JSX.Element => {
     VALIDATOR.competitorsCount,
   )
   const [competitors, setCompetitors] = useState<Competitor[]>(
-    range(LIMITS.competitorsCount.max).map(_ => newCompetitor('AAA'))
+    range(LIMITS.competitorsCount.max).map((i) => newCompetitor(`${i + 1}`))
   )
   const [shuffleCompetitors, setShuffleCompetitors] = useState(false)
 
@@ -56,6 +57,7 @@ export const SetUpScreen = (): JSX.Element => {
       dispatch(setKumiteTimer(duration))
       history.push('/kumite-timer')
     } else {
+      // TODO - shuffle
       dispatch(setKumiteTimerTournament(
         duration, tournamentName, tournamentType, competitorsCount, competitors.slice(0, competitorsCount),
       ))
@@ -143,6 +145,7 @@ export const SetUpScreen = (): JSX.Element => {
             <li className='set-up-item'>
               <label>{t.tournament.shuffleCompetitors}:</label>
               <CheckBox
+                // TODO - show only for tree tournament
                 checked={shuffleCompetitors}
                 onChange={setShuffleCompetitors}
               />

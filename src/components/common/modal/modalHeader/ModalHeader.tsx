@@ -8,6 +8,7 @@ import { Button } from '../../../atoms/button/Button'
 
 interface ModalHeaderProps {
   heading: string
+  onClose?: () => void
 }
 
 export const ModalHeader = (props: ModalHeaderProps): JSX.Element | null => {
@@ -16,7 +17,7 @@ export const ModalHeader = (props: ModalHeaderProps): JSX.Element | null => {
   return (
     <header className='modal-header'>
       <h1>{props.heading}</h1>
-      <Button onClick={close}>
+      <Button onClick={props.onClose ?? close}>
         <Cross />
       </Button>
     </header>
