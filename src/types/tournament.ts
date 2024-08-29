@@ -323,12 +323,9 @@ const createRepechageLine = (
   }
 
   return newTree(
-    newFight(
-      '',
-      '',
-      fighters[0].uuid, fighters[0].name, type),
-      // recursive call cannot return null
-      [createRepechageLine(fighters.slice(1), type) as TournamentTreeNode],
+    newFight('', '', fighters[0].uuid, fighters[0].name, type),
+    // recursive call of createRepechageLine cannot return null -> retype
+    [createRepechageLine(fighters.slice(1), type) as TournamentTreeNode],
   )
 }
 
@@ -353,6 +350,11 @@ export const updateRepechageTree = (
       const repechage1 = createRepechageLine(opponents, 'REPECHAGE_1')
       const repechage2 = repechageTree?.children.find((c) => c.attributes.fight.type === 'REPECHAGE_2')
       const children = arrayOfDefined(repechage1, repechage2)
+
+      if (children.length === 0) {
+        return null
+      }
+
       return newTree(newFight('', '', '', '', 'REPECHAGE_ROOT'), children)
     }
 
@@ -366,6 +368,11 @@ export const updateRepechageTree = (
       const repechage1 = repechageTree?.children.find((c) => c.attributes.fight.type === 'REPECHAGE_1')
       const repechage2 = createRepechageLine(opponents, 'REPECHAGE_2')
       const children = arrayOfDefined(repechage1, repechage2)
+
+      if (children.length === 0) {
+        return null
+      }
+
       return newTree(newFight('', '', '', '', 'REPECHAGE_ROOT'), children)
     }
   }
