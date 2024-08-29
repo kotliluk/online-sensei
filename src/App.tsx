@@ -10,6 +10,7 @@ import { selectTheme } from './redux/page/selector'
 import { IntervalTimerPage } from './pages/intervalTimer/IntervalTimerPage'
 
 
+// TODO - refactor with React advanced features
 const App = (): JSX.Element => {
   const theme = useSelector(selectTheme)
 

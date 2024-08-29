@@ -17,7 +17,7 @@ import { setKumiteTimer, setKumiteTimerTournament, setNotActualKumiteTimer } fro
 import { Select } from '../../atoms/select/Select'
 import { Input } from '../../atoms/input/Input'
 import { Competitor, newCompetitor, TournamentType } from '../../../types/tournament'
-import { range } from '../../../utils/array'
+import { range, shuffle } from '../../../utils/array'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 
 
@@ -57,13 +57,14 @@ export const SetUpScreen = (): JSX.Element => {
       dispatch(setKumiteTimer(duration))
       history.push('/kumite-timer')
     } else {
-      // TODO - shuffle
-      dispatch(setKumiteTimerTournament(
-        duration, tournamentName, tournamentType, competitorsCount, competitors.slice(0, competitorsCount),
-      ))
+      const cs = competitors.slice(0, competitorsCount)
+      if (shuffleCompetitors) {
+        shuffle(cs)
+      }
+      dispatch(setKumiteTimerTournament(duration, tournamentName, tournamentType, competitorsCount, cs))
       history.push('/kumite-timer/tournament')
     }
-  }, [dispatch, duration, isTournament, tournamentName, tournamentType, competitorsCount, competitors])
+  }, [duration, isTournament, tournamentName, tournamentType, shuffleCompetitors, competitorsCount, competitors])
 
   const handleResumeTournament = useCallback(() => {
     if (isPreviousTournament) {
@@ -142,14 +143,15 @@ export const SetUpScreen = (): JSX.Element => {
               />
             </li>
 
-            <li className='set-up-item'>
-              <label>{t.tournament.shuffleCompetitors}:</label>
-              <CheckBox
-                // TODO - show only for tree tournament
-                checked={shuffleCompetitors}
-                onChange={setShuffleCompetitors}
-              />
-            </li>
+            {tournamentType === 'TREE' && (
+              <li className='set-up-item'>
+                <label>{t.tournament.shuffleCompetitors}:</label>
+                <CheckBox
+                  checked={shuffleCompetitors}
+                  onChange={setShuffleCompetitors}
+                />
+              </li>
+            )}
 
             <li className='set-up-item'>
               <label>{t.tournament.competitors}:</label>

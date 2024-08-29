@@ -10,3 +10,12 @@ export const split = <T> (arr: T[]): [T[], T[]] => {
 export const arrayOfDefined = <T> (...items: (T | null | undefined)[]): T[] => {
   return items.filter((i) => !!i) as T[]
 }
+
+export const shuffle = <T> (array: T[]): void => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+}
