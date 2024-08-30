@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/online-sensei/static/css/main.452f9379.chunk.css",
-    "main.js": "/online-sensei/static/js/main.b57d7441.chunk.js",
-    "main.js.map": "/online-sensei/static/js/main.b57d7441.chunk.js.map",
+    "main.css": "/online-sensei/static/css/main.f81baa53.chunk.css",
+    "main.js": "/online-sensei/static/js/main.e1134535.chunk.js",
+    "main.js.map": "/online-sensei/static/js/main.e1134535.chunk.js.map",
     "runtime-main.js": "/online-sensei/static/js/runtime-main.eba61c75.js",
     "runtime-main.js.map": "/online-sensei/static/js/runtime-main.eba61c75.js.map",
     "static/js/2.8a19a1cb.chunk.js": "/online-sensei/static/js/2.8a19a1cb.chunk.js",
     "static/js/2.8a19a1cb.chunk.js.map": "/online-sensei/static/js/2.8a19a1cb.chunk.js.map",
     "index.html": "/online-sensei/index.html",
-    "static/css/main.452f9379.chunk.css.map": "/online-sensei/static/css/main.452f9379.chunk.css.map",
+    "static/css/main.f81baa53.chunk.css.map": "/online-sensei/static/css/main.f81baa53.chunk.css.map",
     "static/js/2.8a19a1cb.chunk.js.LICENSE.txt": "/online-sensei/static/js/2.8a19a1cb.chunk.js.LICENSE.txt",
     "static/media/audio_off.2c544e8d.svg": "/online-sensei/static/media/audio_off.2c544e8d.svg",
     "static/media/audio_on.2768b73f.svg": "/online-sensei/static/media/audio_on.2768b73f.svg",
@@ -23,7 +23,7 @@
   "entrypoints": [
     "static/js/runtime-main.eba61c75.js",
     "static/js/2.8a19a1cb.chunk.js",
-    "static/css/main.452f9379.chunk.css",
-    "static/js/main.b57d7441.chunk.js"
+    "static/css/main.f81baa53.chunk.css",
+    "static/js/main.e1134535.chunk.js"
   ]
 }
