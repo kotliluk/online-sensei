@@ -1,35 +1,118 @@
 @import "src/styles/variables";
 @import "src/styles/mixins";
 @import "src/styles/media";
+@import "src/styles/css-function";
 
+
+$cell-size: 3rem;
+$fixed-column-width: 3 * $cell-size;
+$fixed-row-height: $cell-size;
 
 .tournament-screen {
   @include app-screen();
   @include with-buttons();
 }
 
+.fixed-table-wrapper {
+  display: grid;
+  grid-template-columns: $fixed-column-width css-min(70vw, 40rem);
+  grid-template-rows: $fixed-row-height 50vh;
+  grid-template-areas:
+    ". fixed-row"
+    "fixed-column fixed-content";
+
+  overflow: hidden;
+}
+
+.fixed-row {
+  grid-area: fixed-row;
+  display: flex;
+  flex-direction: row;
+  overflow-y: scroll;
+  overflow-x: hidden;
+
+  .top-names-row {
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+
+    border-top: 1px solid $black;
+    border-left: 1px solid $black;
+    border-bottom: 1px solid $black;
+
+    .top-names-cell {
+      @include center-content();
+      border-right: 1px solid $black;
+      box-sizing: border-box;
+
+      width: $cell-size;
+
+      @include themed {
+        background: t($secondary-color);
+      }
+    }
+  }
+}
+
+.fixed-column {
+  grid-area: fixed-column;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  overflow-x: scroll;
+
+  .left-names-column {
+    border-top: 1px solid $black;
+    border-left: 1px solid $black;
+    border-right: 1px solid $black;
+
+    .left-names-cell {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      border-bottom: 1px solid $black;
+      padding-left: 0.5rem;
+
+      height: $cell-size;
+
+      @include themed {
+        background: t($secondary-color);
+      }
+    }
+  }
+}
+
+.fixed-content {
+  grid-area: fixed-content;
+  overflow: scroll;
+  width: 100%;
+  height: 100%;
+  box-sizing: content-box;
+}
+
 .group-table {
-  border-collapse: collapse;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid $black;
+  border-left: 1px solid $black;
+  box-sizing: border-box;
+}
+
+.group-table-row {
+  display: flex;
+  flex-direction: row;
+  border-left: 1px solid $black;
 }
 
 .group-table-cell {
-  width: 3rem;
-  height: 3rem;
-  border: 1px solid $black;
-  display: inline-flex;
+  width: $cell-size;
+  height: $cell-size;
+  border-bottom: 1px solid $black;
+  border-right: 1px solid $black;
+  display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-
-  &.left-name {
-    width: 9rem;
-  }
-
-  .name-span {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
 
   &.upper {
     cursor: pointer;

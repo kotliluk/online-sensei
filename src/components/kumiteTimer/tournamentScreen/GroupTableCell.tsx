@@ -27,28 +27,28 @@ export const GroupTableCell = (props: GroupTableCellProps): JSX.Element | null =
   }, [fight, row, column])
 
   if (fight.redUuid === fight.blueUuid) {
-    return <td className='group-table-cell diagonal' />
+    return <div className='group-table-cell diagonal' />
   }
 
   if (fight.winner === undefined) {
     return (
-      <td
+      <div
         className={`group-table-cell ${row < column ? 'upper' : 'lower'}`}
         onClick={handleClick}
       >
         <span>-</span>
-      </td>
+      </div>
     )
   }
 
   return (
-    <td
+    <div
       className={`group-table-cell ${row < column ? 'upper' : 'lower'}`}
       onClick={handleClick}
     >
       <span className={fight.winner === 'RED' ? 'winner-score' : ''}>{fight.redPoints}</span>
       &nbsp;:&nbsp;
       <span className={fight.winner === 'BLUE' ? 'winner-score' : ''}>{fight.bluePoints}</span>
-    </td>
+    </div>
   )
 }

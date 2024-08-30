@@ -21,7 +21,6 @@ import { range, shuffle } from '../../../utils/array'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 
 
-// TODO - loading tournament from text file
 export const SetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
