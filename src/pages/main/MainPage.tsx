@@ -6,6 +6,13 @@ import { useSelector } from '../../redux/useSelector'
 import { selectTranslation } from '../../redux/page/selector'
 
 
+const FEATURES = [
+  { name: 'reactions', link: 'reactions' },
+  { name: 'kumiteTimer', link: 'kumite-timer' },
+  { name: 'intervalTimer', link: 'interval-timer' },
+  { name: 'groupStopwatch', link: 'group-stopwatch' },
+] as const
+
 export const MainPage = (): JSX.Element => {
   const { mainPage: t } = useSelector(selectTranslation)
 
@@ -24,20 +31,12 @@ export const MainPage = (): JSX.Element => {
 
       <h2>{t.availableFeatures}:</h2>
 
-      <div className='feature-card'>
-        <p className='feature-text'>{t.reactions.annotation}</p>
-        <Link className='feature-link' to='/reactions'>{t.reactions.link}</Link>
-      </div>
-
-      <div className='feature-card'>
-        <p className='feature-text'>{t.kumiteTimer.annotation}</p>
-        <Link className='feature-link' to='/kumite-timer'>{t.kumiteTimer.link}</Link>
-      </div>
-
-      <div className='feature-card'>
-        <p className='feature-text'>{t.intervalTimer.annotation}</p>
-        <Link className='feature-link' to='/interval-timer'>{t.intervalTimer.link}</Link>
-      </div>
+      {FEATURES.map(({ name, link }) => (
+        <div className='feature-card' key={name}>
+          <p className='feature-text'>{t[name].annotation}</p>
+          <Link className='feature-link' to={`/${link}`}>{t[name].link}</Link>
+        </div>
+      ))}
     </main>
   )
 }

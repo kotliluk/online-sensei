@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { useHistory } from 'react-router-dom'
@@ -11,13 +11,14 @@ import { LIMITS, VALIDATOR } from '../../../redux/kumiteTimer/utils'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
 import {
-  selectKumiteTimerCompetitorsCount, selectKumiteTimerDuration, selectKumiteTimerIsTournament,
+  selectKumiteTimerCompetitors, selectKumiteTimerCompetitorsCount,
+  selectKumiteTimerDuration, selectKumiteTimerIsTournament,
 } from '../../../redux/kumiteTimer/selector'
 import { setKumiteTimer, setKumiteTimerTournament, setNotActualKumiteTimer } from '../../../redux/kumiteTimer/actions'
 import { Select } from '../../atoms/select/Select'
 import { Input } from '../../atoms/input/Input'
 import { Competitor, newCompetitor, TournamentType } from '../../../types/tournament'
-import { range, shuffle } from '../../../utils/array'
+import { shuffle } from '../../../utils/array'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 
 
@@ -27,6 +28,7 @@ export const SetUpScreen = (): JSX.Element => {
   const initDuration = useSelector(selectKumiteTimerDuration)
   const isPreviousTournament = useSelector(selectKumiteTimerIsTournament)
   const initCompetitorsCount = useSelector(selectKumiteTimerCompetitorsCount)
+  const initCompetitors = useSelector(selectKumiteTimerCompetitors)
 
   const [duration, setDuration, isValidDuration] = useValidatedState(initDuration, VALIDATOR.duration)
 
@@ -37,13 +39,21 @@ export const SetUpScreen = (): JSX.Element => {
     initCompetitorsCount,
     VALIDATOR.competitorsCount,
   )
-  const [competitors, setCompetitors] = useState<Competitor[]>(
-    range(LIMITS.competitorsCount.max).map((i) => newCompetitor(`${i + 1}`))
-  )
+  const [competitors, setCompetitors] = useState(initCompetitors)
   const [shuffleCompetitors, setShuffleCompetitors] = useState(false)
 
   const dispatch = useDispatch()
   const history = useHistory()
+
+  useEffect(() => {
+    if (isCompetitorsCountValid && competitorsCount > competitors.length) {
+      const newCompetitors = [...competitors]
+      for (let i = competitors.length; i < competitorsCount; i++) {
+        newCompetitors[i] = newCompetitor(`${i + 1}`)
+      }
+      setCompetitors(newCompetitors)
+    }
+  }, [competitorsCount, isCompetitorsCountValid, competitors])
 
   const handleCompetitorEdit = useCallback((competitors: Competitor[], index: number, value: string) => {
     const newCompetitors = [...competitors]

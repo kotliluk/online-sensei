@@ -42,6 +42,33 @@ export interface Translation {
       annotation: string,
       link: string,
     },
+    groupStopwatch: {
+      annotation: string,
+      link: string,
+    },
+  }
+  groupStopwatch: {
+    setUpScreen: {
+      heading: string,
+      activityName: {
+        label: string,
+      },
+      competitorsCount: {
+        label: string,
+        // 2 params
+        error: string,
+      },
+      competitors: {
+        label: string,
+      },
+      startTogether: {
+        label: string,
+      },
+    },
+    playScreen: {
+      heading: string,
+      competitor: string,
+    },
   }
   reactions: {
     setUpScreen: {

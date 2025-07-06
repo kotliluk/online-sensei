@@ -1,0 +1,142 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
+import React, { useCallback, useEffect, useState } from 'react'
+import './SetUpScreen.scss'
+import { useDispatch } from '../../../redux/useDispatch'
+import { useHistory } from 'react-router-dom'
+import { Button } from '../../atoms/button/Button'
+import { useSelector } from '../../../redux/useSelector'
+import { selectTranslation } from '../../../redux/page/selector'
+import { Input } from '../../atoms/input/Input'
+// import { CheckBox } from '../../atoms/checkBox/CheckBox'
+import {
+  selectGroupStopwatchActivityName,
+  selectGroupStopwatchCompetitors,
+  selectGroupStopwatchCompetitorsCount,
+  selectGroupStopwatchStartTogether,
+} from '../../../redux/groupStopwatch/selector'
+import { setGroupStopwatch, setNotActualGroupStopwatch } from '../../../redux/groupStopwatch/actions'
+import { NumberInput } from '../../atoms/input/NumberInput'
+import useValidatedState from '../../../logic/hooks/useValidatedState'
+import { LIMITS, VALIDATOR } from '../../../redux/groupStopwatch/utils'
+import { insertWords } from '../../../logic/translation'
+
+
+export const SetUpScreen = (): JSX.Element => {
+  const translation = useSelector(selectTranslation)
+
+  const initActivityName = useSelector(selectGroupStopwatchActivityName)
+  const initCompetitorsCount = useSelector(selectGroupStopwatchCompetitorsCount)
+  const initCompetitors = useSelector(selectGroupStopwatchCompetitors)
+  const initStartTogether = useSelector(selectGroupStopwatchStartTogether)
+
+  const [activityName, setActivityName] = useState(initActivityName)
+  const [competitorsCount, setCompetitorsCount, isCompetitorsCountValid] = useValidatedState(
+    initCompetitorsCount,
+    VALIDATOR.competitorsCount,
+  )
+  const [competitors, setCompetitors] = useState(initCompetitors)
+  const [startTogether] = useState(initStartTogether)
+
+  const dispatch = useDispatch()
+  const history = useHistory()
+
+  useEffect(() => {
+    if (isCompetitorsCountValid && competitorsCount > competitors.length) {
+      const newCompetitors = [...competitors]
+      for (let i = competitors.length; i < competitorsCount; i++) {
+        newCompetitors[i] = `${i + 1}`
+      }
+      setCompetitors(newCompetitors)
+    }
+  }, [competitorsCount, isCompetitorsCountValid, competitors])
+
+  const handleCompetitorEdit = useCallback((competitors: string[], index: number, value: string) => {
+    const newCompetitors = [...competitors]
+    newCompetitors[index] = value
+    setCompetitors(newCompetitors)
+  }, [setCompetitors])
+
+  const handleStart = useCallback(() => {
+    dispatch(setGroupStopwatch(activityName, competitorsCount, competitors, startTogether))
+    history.push('/group-stopwatch')
+  }, [activityName, competitorsCount, competitors, startTogether])
+
+  const handleBack = useCallback(() => {
+    dispatch(setNotActualGroupStopwatch())
+    history.push('/')
+  }, [dispatch])
+
+  const { groupStopwatch: { setUpScreen: t } } = translation
+
+  return (
+    <main className='set-up-kumite-timer'>
+      <h1>{t.heading}</h1>
+
+      <ul className='set-up-items'>
+        <li className='set-up-item'>
+          <label>{t.activityName.label}:</label>
+          <Input
+            type='text'
+            className='set-up-input'
+            value={activityName}
+            onChange={setActivityName}
+          />
+        </li>
+
+        {/* <li className='set-up-item'>
+          <label>{t.startTogether.label}:</label>
+          <CheckBox
+            checked={startTogether}
+            onChange={setStartTogether}
+          />
+        </li> */}
+
+        <li className='set-up-item'>
+          <label>{t.competitorsCount.label}:</label>
+          <NumberInput
+            className='set-up-input'
+            value={competitorsCount}
+            onChange={setCompetitorsCount}
+            invalid={!isCompetitorsCountValid}
+            errorMessage={insertWords(
+              t.competitorsCount.error,
+              LIMITS.competitorsCount.min,
+              LIMITS.competitorsCount.max,
+            )}
+          />
+        </li>
+
+        <li className='set-up-item'>
+          <label>{t.competitors.label}:</label>
+        </li>
+
+        {competitors.slice(0, competitorsCount).map((competitor, index) => (
+          <li className='set-up-item no-border' key={`competitor-${index}`}>
+            <label>{index + 1}:</label>
+            <Input
+              type='text'
+              value={competitor}
+              onChange={(value) => handleCompetitorEdit(competitors, index, value)}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <div className='buttons'>
+        <Button
+          className='confirm-btn'
+          onClick={handleStart}
+        >
+          {translation.common.start}
+        </Button>
+
+        <Button
+          className='back-btn'
+          onClick={handleBack}
+        >
+          {translation.common.back}
+        </Button>
+      </div>
+    </main>
+  )
+}
