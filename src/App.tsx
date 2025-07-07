@@ -8,6 +8,7 @@ import { KumiteTimerPage } from './pages/kumiteTimer/KumiteTimerPage'
 import { useSelector } from './redux/useSelector'
 import { selectTheme } from './redux/page/selector'
 import { IntervalTimerPage } from './pages/intervalTimer/IntervalTimerPage'
+import { GroupStopWatchPage } from './pages/groupStopwatch/GroupStopWatchPage'
 
 
 // TODO - refactor with React advanced features
@@ -30,6 +31,9 @@ const App = (): JSX.Element => {
         </Route>
         <Route path='/interval-timer'>
           <IntervalTimerPage />
+        </Route>
+        <Route path='/group-stopwatch'>
+          <GroupStopWatchPage />
         </Route>
         <Route path='/' exact>
           <MainPage />

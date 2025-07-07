@@ -39,6 +39,29 @@ export const EN: Translation = {
       annotation: 'Prepare interval training with intervals as you need',
       link: 'Interval timer',
     },
+    groupStopwatch: {
+      annotation: 'Easily record time of all your friends and compare your performances',
+      link: 'Group stopwatch',
+    },
+  },
+  groupStopwatch: {
+    setUpScreen: {
+      heading: 'Group stopwatch',
+      competitorsCount: {
+        label: 'Competitors count',
+        // 2 params
+        error: 'Competitors count must be set between __{1}__ and __{2}__.',
+      },
+      competitors: {
+        label: 'Competitors',
+      },
+    },
+    playScreen: {
+      results: 'Results',
+      name: 'Name',
+      time: 'Time',
+      place: 'Place',
+    },
   },
   reactions: {
     setUpScreen: {

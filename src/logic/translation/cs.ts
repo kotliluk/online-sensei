@@ -39,6 +39,29 @@ export const CS: Translation = {
       annotation: 'Připrav si kruhový nebo intervalový trénink s přesně takovými intervaly, jak potřebuješ',
       link: 'Intervalové stopky',
     },
+    groupStopwatch: {
+      annotation: 'Zaznamenej si jednoduše čas všech svých kamarádů a porovnejte své výkony',
+      link: 'Skupinové stopky',
+    },
+  },
+  groupStopwatch: {
+    setUpScreen: {
+      heading: 'Skupinové stopky',
+      competitorsCount: {
+        label: 'Počet závodníků',
+        // 2 params
+        error: 'Počet účastníků musí být mezi __{1}__ a __{2}__.',
+      },
+      competitors: {
+        label: 'Závodníci',
+      },
+    },
+    playScreen: {
+      results: 'Výsledky',
+      name: 'Jméno',
+      time: 'Čas',
+      place: 'Pořadí',
+    },
   },
   reactions: {
     setUpScreen: {
