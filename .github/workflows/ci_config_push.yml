@@ -18,7 +18,7 @@ jobs:
           node-version: 15.x
 
       - name: Try to get cached dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache
         with:
           path: |
@@ -43,7 +43,7 @@ jobs:
           node-version: 15.x
 
       - name: Get cached dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             **/node_modules
