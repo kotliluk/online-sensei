@@ -68,33 +68,39 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
 
   return (
     <div className='results-group-stopwatch-wrapper'>
-      <table className='results-group-stopwatch-competitors'>
-        <tr>
-          <th className='competitor-id' onClick={() => handleChangeSort('id')}>
-            # {sortBy === 'id' && (<OrderArrow order={order} />)}
-          </th>
-          <th className='competitor-name' onClick={() => handleChangeSort('name')}>
-            {t.name} {sortBy === 'name' && (<OrderArrow order={order} />)}
-          </th>
-          <th className='competitor-time' onClick={() => handleChangeSort('place')}>
-            {t.time} {sortBy === 'place' && (<OrderArrow order={order} />)}
-          </th>
-          <th className='competitor-place' onClick={() => handleChangeSort('place')}>
-            {t.place} {sortBy === 'place' && (<OrderArrow order={order} />)}
-          </th>
-        </tr>
-        {competitorsToShow.map((competitor) => (
-          <tr
-            className='competitor-row'
-            key={competitor.id}
-          >
-            <td className='competitor-id cell'>{competitor.id}</td>
-            <td className='competitor-name'>{competitor.name}</td>
-            <td className='competitor-time'>{competitor.timeString}</td>
-            <td className='competitor-place'>{competitor.place}</td>
-          </tr>
-        ))}
-      </table>
+      <div className='results-group-stopwatch-competitors'>
+        <table>
+          <thead>
+            <tr>
+              <th className='competitor-id' onClick={() => handleChangeSort('id')}>
+                # {sortBy === 'id' && (<OrderArrow order={order} />)}
+              </th>
+              <th className='competitor-name' onClick={() => handleChangeSort('name')}>
+                {t.name} {sortBy === 'name' && (<OrderArrow order={order} />)}
+              </th>
+              <th className='competitor-time' onClick={() => handleChangeSort('place')}>
+                {t.time} {sortBy === 'place' && (<OrderArrow order={order} />)}
+              </th>
+              <th className='competitor-place' onClick={() => handleChangeSort('place')}>
+                {t.place} {sortBy === 'place' && (<OrderArrow order={order} />)}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {competitorsToShow.map((competitor) => (
+              <tr
+                className='competitor-row'
+                key={competitor.id}
+              >
+                <td className='competitor-id cell'>{competitor.id}</td>
+                <td className='competitor-name'>{competitor.name}</td>
+                <td className='competitor-time'>{competitor.timeString}</td>
+                <td className='competitor-place'>{competitor.place}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <div className='buttons'>
         <Button

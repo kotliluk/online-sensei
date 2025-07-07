@@ -174,6 +174,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
           <Button
             className='orange'
             onClick={() => setPhase('results')}
+            disabled={phase === 'init'}
           >
             {t.results}
           </Button>

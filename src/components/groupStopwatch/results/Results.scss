@@ -5,11 +5,16 @@
 .results-group-stopwatch-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: 2rem;
+  height: 100%;
 
-  margin: 2rem 0 2rem 0;
+  padding: 2rem 0 2rem 0;
+
+  .results-group-stopwatch-competitors {
+    overflow: auto;
+  }
 
   th {
     cursor: pointer;
