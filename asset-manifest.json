@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/online-sensei/static/css/main.a4bef11a.chunk.css",
-    "main.js": "/online-sensei/static/js/main.c4a202ea.chunk.js",
-    "main.js.map": "/online-sensei/static/js/main.c4a202ea.chunk.js.map",
+    "main.css": "/online-sensei/static/css/main.f4c25c40.chunk.css",
+    "main.js": "/online-sensei/static/js/main.204d4be5.chunk.js",
+    "main.js.map": "/online-sensei/static/js/main.204d4be5.chunk.js.map",
     "runtime-main.js": "/online-sensei/static/js/runtime-main.eba61c75.js",
     "runtime-main.js.map": "/online-sensei/static/js/runtime-main.eba61c75.js.map",
     "static/js/2.5df9415f.chunk.js": "/online-sensei/static/js/2.5df9415f.chunk.js",
     "static/js/2.5df9415f.chunk.js.map": "/online-sensei/static/js/2.5df9415f.chunk.js.map",
     "index.html": "/online-sensei/index.html",
-    "static/css/main.a4bef11a.chunk.css.map": "/online-sensei/static/css/main.a4bef11a.chunk.css.map",
+    "static/css/main.f4c25c40.chunk.css.map": "/online-sensei/static/css/main.f4c25c40.chunk.css.map",
     "static/js/2.5df9415f.chunk.js.LICENSE.txt": "/online-sensei/static/js/2.5df9415f.chunk.js.LICENSE.txt",
     "static/media/arrow_down.212b28fc.svg": "/online-sensei/static/media/arrow_down.212b28fc.svg",
     "static/media/arrow_up.35a90147.svg": "/online-sensei/static/media/arrow_up.35a90147.svg",
@@ -25,7 +25,7 @@
   "entrypoints": [
     "static/js/runtime-main.eba61c75.js",
     "static/js/2.5df9415f.chunk.js",
-    "static/css/main.a4bef11a.chunk.css",
-    "static/js/main.c4a202ea.chunk.js"
+    "static/css/main.f4c25c40.chunk.css",
+    "static/js/main.204d4be5.chunk.js"
   ]
 }
