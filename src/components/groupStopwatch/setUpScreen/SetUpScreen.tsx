@@ -41,7 +41,7 @@ export const SetUpScreen = (): JSX.Element => {
     if (isCompetitorsCountValid && competitorsCount > competitors.length) {
       const newCompetitors = [...competitors]
       for (let i = competitors.length; i < competitorsCount; i++) {
-        newCompetitors[i] = `${i + 1}`
+        newCompetitors[i] = ''
       }
       setCompetitors(newCompetitors)
     }

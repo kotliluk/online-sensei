@@ -9,7 +9,7 @@ export type State = {
 
 export const initialState: State = {
   competitorsCount: 4,
-  competitors: ['1', '2', '3', '4'],
+  competitors: ['', '', '', ''],
   startTogether: true,
 
   isActual: false,
