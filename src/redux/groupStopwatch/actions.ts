@@ -18,14 +18,12 @@ interface InitGroupStopwatch extends Action<typeof INIT_GROUP_STOPWATCH> {
 export const initGroupStopwatch = (): InitGroupStopwatch => {
   const competitorsCount = LS_ACCESS.competitorsCount.get()
   const competitors = LS_ACCESS.competitors.get()
-  const startTogether = LS_ACCESS.startTogether.get()
 
   return {
     type: INIT_GROUP_STOPWATCH,
     payload: {
       competitorsCount,
       competitors,
-      startTogether,
 
       isActual: false,
     },
@@ -43,11 +41,9 @@ interface SetGroupStopwatch extends Action<typeof SET_GROUP_STOPWATCH> {
 export const setGroupStopwatch = (
   competitorsCount: number,
   competitors: string[],
-  startTogether: boolean,
 ): SetGroupStopwatch => {
   LS_ACCESS.competitorsCount.set(competitorsCount)
   LS_ACCESS.competitors.set(competitors)
-  LS_ACCESS.startTogether.set(startTogether)
 
   return {
     type: SET_GROUP_STOPWATCH,
@@ -55,7 +51,6 @@ export const setGroupStopwatch = (
       isActual: true,
       competitorsCount,
       competitors,
-      startTogether,
     },
   }
 }

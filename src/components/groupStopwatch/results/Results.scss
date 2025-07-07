@@ -1,0 +1,42 @@
+@import "src/styles/variables";
+@import "src/styles/mixins";
+@import "src/styles/media";
+
+.results-group-stopwatch-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+
+  margin: 2rem 0 2rem 0;
+
+  th {
+    cursor: pointer;
+    border-bottom: 1px solid $black;
+  }
+
+  .competitor-id {
+    min-width: 5rem;
+    text-align: center;
+
+    &.cell {
+      color: $grey-light;
+    }
+  }
+
+  .competitor-name {
+    min-width: 10rem;
+    text-align: left;
+  }
+  
+  .competitor-time {
+    min-width: 10rem;
+    text-align: center;
+  }
+  
+  .competitor-place {
+    min-width: 5rem;
+    text-align: center;
+  }
+}

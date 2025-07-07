@@ -55,9 +55,12 @@ export const EN: Translation = {
       competitors: {
         label: 'Competitors',
       },
-      startTogether: {
-        label: 'Start together',
-      },
+    },
+    playScreen: {
+      results: 'Results',
+      name: 'Name',
+      time: 'Time',
+      place: 'Place',
     },
   },
   reactions: {

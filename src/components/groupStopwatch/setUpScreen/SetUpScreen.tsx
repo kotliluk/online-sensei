@@ -11,7 +11,6 @@ import { Input } from '../../atoms/input/Input'
 import {
   selectGroupStopwatchCompetitors,
   selectGroupStopwatchCompetitorsCount,
-  selectGroupStopwatchStartTogether,
 } from '../../../redux/groupStopwatch/selector'
 import { setGroupStopwatch, setNotActualGroupStopwatch } from '../../../redux/groupStopwatch/actions'
 import { NumberInput } from '../../atoms/input/NumberInput'
@@ -25,14 +24,12 @@ export const SetUpScreen = (): JSX.Element => {
 
   const initCompetitorsCount = useSelector(selectGroupStopwatchCompetitorsCount)
   const initCompetitors = useSelector(selectGroupStopwatchCompetitors)
-  const initStartTogether = useSelector(selectGroupStopwatchStartTogether)
 
   const [competitorsCount, setCompetitorsCount, isCompetitorsCountValid] = useValidatedState(
     initCompetitorsCount,
     VALIDATOR.competitorsCount,
   )
   const [competitors, setCompetitors] = useState(initCompetitors)
-  const [startTogether] = useState(initStartTogether)
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -49,19 +46,34 @@ export const SetUpScreen = (): JSX.Element => {
 
   const handleCompetitorEdit = useCallback((competitors: string[], index: number, value: string) => {
     const newCompetitors = [...competitors]
-    newCompetitors[index] = value
+    if (!value.includes(',')) {
+      newCompetitors[index] = value
+    } else {
+      const parts = value.split(',')
+      parts.forEach((part, i) => {
+        const trimmed = part.trim()
+        if (trimmed !== '' && index + i < LIMITS.competitorsCount.max) {
+          newCompetitors[index + i] = trimmed
+        }
+      })
+    }
     setCompetitors(newCompetitors)
   }, [setCompetitors])
 
   const handleStart = useCallback(() => {
-    dispatch(setGroupStopwatch(competitorsCount, competitors, startTogether))
+    dispatch(setGroupStopwatch(competitorsCount, competitors))
     history.push('/group-stopwatch')
-  }, [competitorsCount, competitors, startTogether])
+  }, [competitorsCount, competitors])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualGroupStopwatch())
     history.push('/')
   }, [dispatch])
+
+  const validCompetitorsCount = Math.min(
+    LIMITS.competitorsCount.max,
+    Math.max(LIMITS.competitorsCount.min, competitorsCount),
+  )
 
   const { groupStopwatch: { setUpScreen: t } } = translation
 
@@ -70,14 +82,6 @@ export const SetUpScreen = (): JSX.Element => {
       <h1>{t.heading}</h1>
 
       <ul className='set-up-items'>
-        {/* <li className='set-up-item'>
-          <label>{t.startTogether.label}:</label>
-          <CheckBox
-            checked={startTogether}
-            onChange={setStartTogether}
-          />
-        </li> */}
-
         <li className='set-up-item'>
           <label>{t.competitorsCount.label}:</label>
           <NumberInput
@@ -97,7 +101,7 @@ export const SetUpScreen = (): JSX.Element => {
           <label>{t.competitors.label}:</label>
         </li>
 
-        {competitors.slice(0, competitorsCount).map((competitor, index) => (
+        {competitors.slice(0, validCompetitorsCount).map((competitor, index) => (
           <li className='set-up-item no-border' key={`competitor-${index}`}>
             <label>{index + 1}:</label>
             <Input
@@ -113,6 +117,7 @@ export const SetUpScreen = (): JSX.Element => {
         <Button
           className='confirm-btn'
           onClick={handleStart}
+          disabled={!isCompetitorsCountValid}
         >
           {translation.common.start}
         </Button>

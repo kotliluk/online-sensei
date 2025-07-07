@@ -96,6 +96,11 @@ export const SetUpScreen = (): JSX.Element => {
     history.push('/')
   }, [dispatch])
 
+  const validCompetitorsCount = Math.min(
+    LIMITS.competitorsCount.max,
+    Math.max(LIMITS.competitorsCount.min, competitorsCount),
+  )
+
   const { kumiteTimer: { setUpScreen: t } } = translation
 
   return (
@@ -176,7 +181,7 @@ export const SetUpScreen = (): JSX.Element => {
               <label>{t.tournament.competitors}:</label>
             </li>
 
-            {competitors.slice(0, competitorsCount).map((competitor, index) => (
+            {competitors.slice(0, validCompetitorsCount).map((competitor, index) => (
               <li className='set-up-item no-border' key={`competitor-${index}`}>
                 <label>{index + 1}:</label>
                 <Input

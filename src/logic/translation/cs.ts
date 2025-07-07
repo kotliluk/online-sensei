@@ -55,9 +55,12 @@ export const CS: Translation = {
       competitors: {
         label: 'Závodníci',
       },
-      startTogether: {
-        label: 'Spustit společně',
-      },
+    },
+    playScreen: {
+      results: 'Výsledky',
+      name: 'Jméno',
+      time: 'Čas',
+      place: 'Pořadí',
     },
   },
   reactions: {

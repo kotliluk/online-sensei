@@ -58,9 +58,12 @@ export interface Translation {
       competitors: {
         label: string,
       },
-      startTogether: {
-        label: string,
-      },
+    },
+    playScreen: {
+      results: string,
+      name: string,
+      time: string,
+      place: string,
     },
   }
   reactions: {

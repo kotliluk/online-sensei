@@ -9,22 +9,23 @@ import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
 import {
   selectGroupStopwatchCompetitors,
+  selectGroupStopwatchCompetitorsCount,
   selectGroupStopwatchIsActual,
 } from '../../../redux/groupStopwatch/selector'
 import { setNotActualGroupStopwatch } from '../../../redux/groupStopwatch/actions'
 import { parseMinTime } from '../../../utils/time'
 import { Competitor, newCompetitor } from '../../../types/groupStopwatch'
 import { PausableStopwatch } from '../../../logic/timing/pausableStopwatch'
+import { Results } from '../results/Results'
 
 
-// TODO - show results
-
-type PlayPhase = 'init' | 'running' | 'paused' | 'finished'
+type PlayPhase = 'init' | 'running' | 'paused' | 'results'
 
 export const GroupStopwatchScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
 
   const isActual = useSelector(selectGroupStopwatchIsActual)
+  const competitorCount = useSelector(selectGroupStopwatchCompetitorsCount)
   const competitorNames = useSelector(selectGroupStopwatchCompetitors)
 
   // current time in milliseconds
@@ -33,7 +34,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [clock] = useState<PausableStopwatch>(new PausableStopwatch(emptyFunc, 0))
   const [competitors, setCompetitors] = useState<Competitor[]>(
-    competitorNames.map((name, index) => newCompetitor(index + 1, name)),
+    competitorNames.slice(0, competitorCount).map((name, index) => newCompetitor(index + 1, name)),
   )
 
   const dispatch = useDispatch()
@@ -100,7 +101,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
 
   const handleStart = useCallback(() => {
     setPhase('running')
-    clock.restart(setCurrTime, 100)
+    clock.restart(setCurrTime, 45)
   }, [setPhase, setCurrTime, clock])
 
   const handleReset = useCallback(() => {
@@ -133,9 +134,20 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
     return null
   }
 
-  const { common: ct } = translation
+  const { groupStopwatch: { playScreen: t }, common: ct } = translation
 
   const inProgress = phase === 'running' || phase === 'paused'
+
+  if (phase === 'results') {
+    return (
+      <main className='play-group-stopwatch'>
+        <Results
+          competitors={competitors}
+          onBackToStopwatch={() => setPhase(clock.isRunning() ? 'running' : 'paused')}
+        />
+      </main>
+    )
+  }
 
   return (
     <main className='play-group-stopwatch'>
@@ -158,6 +170,12 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
             disabled={phase === 'running'}
           >
             {phase === 'init' ? ct.start : ct.reset}
+          </Button>
+          <Button
+            className='orange'
+            onClick={() => setPhase('results')}
+          >
+            {t.results}
           </Button>
           <Button
             className='orange'
