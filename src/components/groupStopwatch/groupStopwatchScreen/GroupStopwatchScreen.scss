@@ -3,40 +3,77 @@
 @import "src/styles/media";
 
 
-.play-reactions {
+.play-group-stopwatch {
   @include app-screen();
+  height: calc(100% - #{$page-header-height});
+  padding: 0;
+  overflow: hidden;
 
-  & > p {
-    font-weight: bold;
-  }
-
-  .time {
-    font-size: 40vmin;
-
-    &.work {
-      color: $red;
-    }
-
-    &.pause {
-      color: $green;
-    }
-  }
-
-  .buttons {
+  .play-group-stopwatch-time-controls {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
 
-    button {
-      width: $button-long-width;
-      margin: 0 0.25rem;
+    .time {
+      font-size: 15vw;
+    }
 
-      &.green {
-        @include button-color($green);
+    .buttons {
+      display: flex;
+      flex-direction: row;
+
+      button {
+        width: $button-long-width;
+        margin: 0 0.25rem;
+
+        &.green {
+          @include button-color($green);
+        }
+
+        &.orange {
+          @include button-color($orange);
+        }
+      }
+    }
+  }
+
+  .play-group-stopwatch-competitors-wrapper {
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .play-group-stopwatch-competitors {
+    width: 100vw;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2.5vw;
+    padding: 1rem 2.5vw 2rem 2.5vw;
+
+    .competitor-card {
+      min-width: 150px;
+      height: 120px;
+      padding: 1rem;
+
+      border-radius: 4px;
+      background-color: $orange-light;
+
+      &.finished {
+        background-color: $grey-light;
       }
 
-      &.orange {
-        @include button-color($orange);
-      }
+      cursor: pointer;
+    }
+
+    .competitor-name {
+      margin: 0;
+    }
+
+    .competitor-time {
+      margin: 1rem 0 0 0;
+      text-align: center;
+      font-size: 2rem;
     }
   }
 }

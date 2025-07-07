@@ -47,9 +47,6 @@ export const EN: Translation = {
   groupStopwatch: {
     setUpScreen: {
       heading: 'Group stopwatch',
-      activityName: {
-        label: 'Activity name',
-      },
       competitorsCount: {
         label: 'Competitors count',
         // 2 params
@@ -61,10 +58,6 @@ export const EN: Translation = {
       startTogether: {
         label: 'Start together',
       },
-    },
-    playScreen: {
-      heading: '',
-      competitor: '',
     },
   },
   reactions: {

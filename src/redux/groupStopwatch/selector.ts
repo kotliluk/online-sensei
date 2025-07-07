@@ -1,10 +1,6 @@
 import { RootState } from '../state'
 
 
-export const selectGroupStopwatchActivityName = (state: RootState): string => {
-  return state.groupStopwatch.activityName
-}
-
 export const selectGroupStopwatchCompetitorsCount = (state: RootState): number => {
   return state.groupStopwatch.competitorsCount
 }

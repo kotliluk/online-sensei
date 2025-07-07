@@ -47,9 +47,6 @@ export const CS: Translation = {
   groupStopwatch: {
     setUpScreen: {
       heading: 'Skupinové stopky',
-      activityName: {
-        label: 'Název aktivity',
-      },
       competitorsCount: {
         label: 'Počet závodníků',
         // 2 params
@@ -61,10 +58,6 @@ export const CS: Translation = {
       startTogether: {
         label: 'Spustit společně',
       },
-    },
-    playScreen: {
-      heading: '',
-      competitor: '',
     },
   },
   reactions: {

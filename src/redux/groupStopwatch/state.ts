@@ -1,6 +1,5 @@
 export type State = {
   // set up
-  activityName: string,
   competitorsCount: number,
   competitors: string[],
   startTogether: boolean,
@@ -9,7 +8,6 @@ export type State = {
 }
 
 export const initialState: State = {
-  activityName: '',
   competitorsCount: 4,
   competitors: ['1', '2', '3', '4'],
   startTogether: true,

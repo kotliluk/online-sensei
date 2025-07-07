@@ -8,115 +8,119 @@ import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
 import {
-  selectIntervalTimerAudioSound,
-  selectIntervalTimerAudioVolume,
-  selectIntervalTimerIntervals,
-  selectIntervalTimerIsActual,
-} from '../../../redux/intervalTimer/selector'
-import { setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
-import { PausableInterval } from '../../../logic/timing/pausableInterval'
+  selectGroupStopwatchCompetitors,
+  selectGroupStopwatchIsActual,
+} from '../../../redux/groupStopwatch/selector'
+import { setNotActualGroupStopwatch } from '../../../redux/groupStopwatch/actions'
 import { parseMinTime } from '../../../utils/time'
-import { playBeep } from '../../../logic/audio/beep'
+import { Competitor, newCompetitor } from '../../../types/groupStopwatch'
+import { PausableStopwatch } from '../../../logic/timing/pausableStopwatch'
 
 
-type PlayPhase = 'init' | 'start' | 'intervals' | 'finished'
+// TODO - show results
+
+type PlayPhase = 'init' | 'running' | 'paused' | 'finished'
 
 export const GroupStopwatchScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
 
-  const isActual = useSelector(selectIntervalTimerIsActual)
-  const intervals = useSelector(selectIntervalTimerIntervals)
-  const audioSound = useSelector(selectIntervalTimerAudioSound)
-  const audioVolume = useSelector(selectIntervalTimerAudioVolume)
+  const isActual = useSelector(selectGroupStopwatchIsActual)
+  const competitorNames = useSelector(selectGroupStopwatchCompetitors)
 
-  // remaining time in current interval
-  const [currTime, setCurrTime] = useState(intervals[0].duration)
-  // total number of rounds (work intervals)
-  const [totalRounds] = useState(intervals.filter((i) => i.type === 'work').length)
-  // actual round (number of previous work intervals)
-  const [currRound, setCurrRound] = useState(intervals[0].type === 'work' ? 1 : 0)
-  // total number of intervals
-  const [totalIntervals] = useState(intervals.length)
-  // index of the current interval
-  const [currInterval, setCurrentInterval] = useState(0)
-  // type of the current interval
-  const [currIntervalType, setCurrentIntervalType] = useState(intervals[0].type)
-
+  // current time in milliseconds
+  const [currTime, setCurrTime] = useState(0)
+  const [actualLeadingTimeUnit, setActualLeadingTimeUnit] = useState<'seconds' | 'minutes' | 'hours'>('seconds')
   const [phase, setPhase] = useState<PlayPhase>('init')
-  const [isPaused, setIsPaused] = useState(false)
-  const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
+  const [clock] = useState<PausableStopwatch>(new PausableStopwatch(emptyFunc, 0))
+  const [competitors, setCompetitors] = useState<Competitor[]>(
+    competitorNames.map((name, index) => newCompetitor(index + 1, name)),
+  )
 
   const dispatch = useDispatch()
   const history = useHistory()
 
-  // handles change of intervals
-  useEffect(() => {
-    if (phase === 'init' || phase === 'finished') {
-      return
-    }
-
-    playBeep(audioSound, 500, audioVolume)
-    clock.pause()
-    if (currInterval === totalIntervals) {
-      setPhase('finished')
-    } else {
-      if (intervals[currInterval].type === 'work') {
-        setCurrRound(prev => prev + 1)
+  const handleCompetitorClick = useCallback((id: number, time: number) => {
+    setCompetitors(prevCompetitors => prevCompetitors.map((c) => {
+      if (c.id === id) {
+        const now = new Date().getTime()
+        // save time for the first time or rewrite it only if 2 clicks within 2 seconds
+        if (c.time === null || (now - c.lastClick) < 2000) {
+          return {
+            ...c,
+            time,
+            timeString: parseMinTime(time / 1000, 2, actualLeadingTimeUnit),
+            lastClick: now,
+          }
+        } else {
+          return {
+            ...c,
+            lastClick: now,
+          }
+        }
       }
-      setCurrTime(intervals[currInterval].duration)
-      setCurrentIntervalType(intervals[currInterval].type)
-      clock.restart()
-    }
-  }, [currInterval])
+      return c
+    }))
+  }, [setCompetitors, actualLeadingTimeUnit])
 
-  // handles change of seconds
+  const recomputeCompetitorTimeStrings = useCallback((leadingTimeUnit: 'seconds' | 'minutes' | 'hours') => {
+    setCompetitors(prevCompetitors => prevCompetitors.map((c) => ({
+      ...c,
+      timeString: parseMinTime(c.time !== null ? c.time / 1000 : null, 2, leadingTimeUnit),
+    })))
+  }, [setCompetitors])
+
   useEffect(() => {
-    if (phase === 'init' || phase === 'finished') {
-      return
+    if (currTime >= 60 * 60 * 1000) {
+      if (actualLeadingTimeUnit !== 'hours') {
+        setActualLeadingTimeUnit('hours')
+        recomputeCompetitorTimeStrings('hours')
+      }
+    } else if (currTime >= 60 * 1000) {
+      if (actualLeadingTimeUnit !== 'minutes') {
+        setActualLeadingTimeUnit('minutes')
+        recomputeCompetitorTimeStrings('minutes')
+      }
+    } else {
+      if (actualLeadingTimeUnit !== 'seconds') {
+        setActualLeadingTimeUnit('seconds')
+        recomputeCompetitorTimeStrings('seconds')
+      }
     }
-
-    if (currTime === 0) {
-      setCurrentInterval(prev => prev + 1)
-      clock.pause()
-    }
-  }, [currTime])
+  }, [currTime, actualLeadingTimeUnit, setActualLeadingTimeUnit, recomputeCompetitorTimeStrings])
 
   const handleTogglePause = useCallback(() => {
-    if (phase === 'finished') {
-      return
-    }
-
-    if (isPaused) {
-      setIsPaused(false)
+    if (phase === 'paused') {
+      setPhase('running')
       clock.resume()
-    } else {
-      setIsPaused(true)
+    } else if (phase === 'running') {
+      setPhase('paused')
       clock.pause()
     }
-  }, [phase, isPaused, setIsPaused, clock])
+  }, [phase, setPhase, clock])
 
   const handleStart = useCallback(() => {
-    setPhase('intervals')
-    setIsPaused(false)
-    clock.restart(() => setCurrTime(prev => prev - 1), 1000)
-  }, [isPaused, setIsPaused, setCurrTime])
+    setPhase('running')
+    clock.restart(setCurrTime, 100)
+  }, [setPhase, setCurrTime, clock])
 
   const handleReset = useCallback(() => {
     setPhase('init')
-    setIsPaused(true)
-    setCurrTime(intervals[0].duration)
-    setCurrentInterval(0)
-    setCurrentIntervalType(intervals[0].type)
-    setCurrRound(intervals[0].type === 'work' ? 1 : 0)
-  }, [isPaused, setIsPaused, setCurrRound])
+    setCurrTime(0)
+    setCompetitors(prevCompetitors => prevCompetitors.map((c) => ({
+      ...c,
+      time: null,
+      timeString: '--.--',
+    })))
+    clock.stop()
+  }, [setPhase, setCurrTime, setCompetitors])
 
   const handleGoBack = useCallback(() => {
-    dispatch(setNotActualIntervalTimer())
+    dispatch(setNotActualGroupStopwatch())
   }, [dispatch])
 
   useEffect(() => {
     return () => {
-      dispatch(setNotActualIntervalTimer())
+      dispatch(setNotActualGroupStopwatch())
       clock.pause()
     }
   }, [])
@@ -129,44 +133,55 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
     return null
   }
 
-  const { intervalTimer: { playScreen: t }, common: ct } = translation
+  const { common: ct } = translation
 
-  const inProgress = phase === 'intervals' || phase === 'start'
+  const inProgress = phase === 'running' || phase === 'paused'
 
   return (
-    <main className='play-reactions'>
-      <h1>{t.heading}</h1>
-      <p>
-        {currInterval < totalIntervals && `${t.work}: ${currRound}/${totalRounds}`}
-        {currInterval === totalIntervals && `${ct.finished}!`}
-      </p>
+    <main className='play-group-stopwatch'>
+      <div className='play-group-stopwatch-time-controls'>
+        <div>
+          <span className='time'>{parseMinTime(currTime / 1000, 2, actualLeadingTimeUnit)}</span>
+        </div>
 
-      <h1>{intervals[currInterval].name}</h1>
+        <div className='buttons'>
+          <Button
+            className={phase === 'paused' ? 'green' : 'orange'}
+            onClick={handleTogglePause}
+            disabled={!inProgress}
+          >
+            {phase === 'paused' ? ct.resume : ct.pause}
+          </Button>
+          <Button
+            className={phase === 'init' ? 'green' : 'orange'}
+            onClick={phase === 'init' ? handleStart : handleReset}
+            disabled={phase === 'running'}
+          >
+            {phase === 'init' ? ct.start : ct.reset}
+          </Button>
+          <Button
+            className='orange'
+            onClick={handleGoBack}
+            disabled={phase === 'running'}
+          >
+            {ct.back}
+          </Button>
+        </div>
+      </div>
 
-      <span className={`time ${currIntervalType}`}>{parseMinTime(currTime)}</span>
-
-      <div className='buttons'>
-        <Button
-          className={isPaused ? 'green' : 'orange'}
-          onClick={handleTogglePause}
-          disabled={!inProgress}
-        >
-          {isPaused ? ct.resume : ct.pause}
-        </Button>
-        <Button
-          className={phase === 'init' ? 'green' : 'orange'}
-          onClick={phase === 'init' ? handleStart : handleReset}
-          disabled={inProgress && !isPaused}
-        >
-          {phase === 'init' ? ct.start : ct.reset}
-        </Button>
-        <Button
-          className='orange'
-          onClick={handleGoBack}
-          disabled={inProgress && !isPaused}
-        >
-          {ct.back}
-        </Button>
+      <div className='play-group-stopwatch-competitors-wrapper'>
+        <div className='play-group-stopwatch-competitors'>
+          {competitors.map((competitor) => (
+            <div
+              className={`competitor-card ${competitor.time !== null ? 'finished' : ''}`}
+              key={competitor.id}
+              onClick={() => handleCompetitorClick(competitor.id, currTime)}
+            >
+              <p className='competitor-name'>{competitor.id}) {competitor.name}</p>
+              <p className='competitor-time'>{competitor.timeString}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </main>
   )

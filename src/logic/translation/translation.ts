@@ -50,9 +50,6 @@ export interface Translation {
   groupStopwatch: {
     setUpScreen: {
       heading: string,
-      activityName: {
-        label: string,
-      },
       competitorsCount: {
         label: string,
         // 2 params
@@ -64,10 +61,6 @@ export interface Translation {
       startTogether: {
         label: string,
       },
-    },
-    playScreen: {
-      heading: string,
-      competitor: string,
     },
   }
   reactions: {

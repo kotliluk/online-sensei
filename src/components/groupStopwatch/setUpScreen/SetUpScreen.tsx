@@ -9,7 +9,6 @@ import { selectTranslation } from '../../../redux/page/selector'
 import { Input } from '../../atoms/input/Input'
 // import { CheckBox } from '../../atoms/checkBox/CheckBox'
 import {
-  selectGroupStopwatchActivityName,
   selectGroupStopwatchCompetitors,
   selectGroupStopwatchCompetitorsCount,
   selectGroupStopwatchStartTogether,
@@ -24,12 +23,10 @@ import { insertWords } from '../../../logic/translation'
 export const SetUpScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
 
-  const initActivityName = useSelector(selectGroupStopwatchActivityName)
   const initCompetitorsCount = useSelector(selectGroupStopwatchCompetitorsCount)
   const initCompetitors = useSelector(selectGroupStopwatchCompetitors)
   const initStartTogether = useSelector(selectGroupStopwatchStartTogether)
 
-  const [activityName, setActivityName] = useState(initActivityName)
   const [competitorsCount, setCompetitorsCount, isCompetitorsCountValid] = useValidatedState(
     initCompetitorsCount,
     VALIDATOR.competitorsCount,
@@ -57,9 +54,9 @@ export const SetUpScreen = (): JSX.Element => {
   }, [setCompetitors])
 
   const handleStart = useCallback(() => {
-    dispatch(setGroupStopwatch(activityName, competitorsCount, competitors, startTogether))
+    dispatch(setGroupStopwatch(competitorsCount, competitors, startTogether))
     history.push('/group-stopwatch')
-  }, [activityName, competitorsCount, competitors, startTogether])
+  }, [competitorsCount, competitors, startTogether])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualGroupStopwatch())
@@ -73,16 +70,6 @@ export const SetUpScreen = (): JSX.Element => {
       <h1>{t.heading}</h1>
 
       <ul className='set-up-items'>
-        <li className='set-up-item'>
-          <label>{t.activityName.label}:</label>
-          <Input
-            type='text'
-            className='set-up-input'
-            value={activityName}
-            onChange={setActivityName}
-          />
-        </li>
-
         {/* <li className='set-up-item'>
           <label>{t.startTogether.label}:</label>
           <CheckBox
