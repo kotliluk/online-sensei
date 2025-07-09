@@ -1,10 +1,14 @@
 # Online Sensei
 
-Online training assistant for karate
+Online training assistant for karate. Offers multiple features for karate and other sport trainings:
+- kumite timer
+- reactions
+- interval timer
+- group stopwatch
 
 ## Kumite timer
 
-The basic feature of Kumite timer is counting time, points, and fouls
+The basic feature of Kumite timer is the timer itself and the management of points and fouls
 for a kumite fight. It supports:
 
 - starting/pausing/resuming/restarting/manual changing of time
@@ -54,8 +58,58 @@ all repechage results in the half are lost
 It is a competition type with a group of competitors and fights
 "each again each".
 
-The group table with results is displayed. Clicking on a upper-right
-half starts a clicked fight. Finished fights can be reopened at will.
+The group table with results is displayed. Clicking on an upper-right
+half starts a fight. Finished fights can be reopened at will.
 Last 6 columns show:
+
 - number of wins, draws, losses
-- given points, received points, points summary (+/-)
+- given points, received points, points difference (+/-)
+
+## Reactions
+
+This feature is for reaction exercises where random signals are needed. The signal is both visual
+(colorful circle) and sonic (beep sound). You can customize:
+
+- 1-4 circles and their colors
+- isual signal duration
+- interval for random repetition
+- audio on/off
+
+Once started, you can always pause/resume/reset the ongoing exercise.
+
+## Interval timer
+
+This timer is great for work outs and running trainings. It measures given intervals and repeats them
+for given number of series. There are two ways of setting the interval timer.
+
+### Basic settings
+
+Basic settings are quick and easy way to start the timer. You can set:
+
+- number of rounds
+- duration of work interval
+- duration of pause (rest) interval
+- audio on/off
+
+Once started, the timer repeats work and pause interval (the number of repetitions is given by the number of rounds). You can always pause/resume/reset the ongoing exercise.
+
+### Advanced settings
+
+In the advanced settings, you can further customize the itervals. You can set the duration of each individual
+interval in a single round and its type (work / pause) and name. For example, you can create:
+
+- 20 seconds work: Boxing
+- 20 seconds work: Squating
+- 30 seconds rest: Running
+- 15 seconds work: Sprints
+- 25 seconds rest: Stretching
+
+Also, you can set the number of repetitions of this whole round.
+
+## Group stopwatch
+
+Simple but powerful feature is group stopwatch. It helps to measure durations of multiple people at once.
+You simple set their count, optionally fill their names, and start the time. When someone finishes,
+you save their time by clicking their name. If you misclick, you can update saved time by double-click.
+You can always see the result list where you can sort the results by the time, the name or by the starting
+number.
