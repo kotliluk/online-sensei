@@ -1,6 +1,7 @@
 import { Action } from 'redux'
 import { State } from './state'
 import { LS_ACCESS } from './utils'
+import { CompetitorSetup } from '../../types/groupStopwatch'
 
 
 export type Actions = InitGroupStopwatch
@@ -40,7 +41,7 @@ interface SetGroupStopwatch extends Action<typeof SET_GROUP_STOPWATCH> {
 
 export const setGroupStopwatch = (
   competitorsCount: number,
-  competitors: string[],
+  competitors: CompetitorSetup[],
 ): SetGroupStopwatch => {
   LS_ACCESS.competitorsCount.set(competitorsCount)
   LS_ACCESS.competitors.set(competitors)

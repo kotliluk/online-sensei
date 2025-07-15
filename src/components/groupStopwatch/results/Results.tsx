@@ -92,7 +92,12 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
                 className='competitor-row'
                 key={competitor.id}
               >
-                <td className='competitor-id cell'>{competitor.id}</td>
+                <td
+                  className='competitor-id'
+                  style={{ backgroundColor: competitor.color, color: competitor.contrastColor }}
+                >
+                  {competitor.id}
+                </td>
                 <td className='competitor-name'>{competitor.name}</td>
                 <td className='competitor-time'>{competitor.timeString}</td>
                 <td className='competitor-place'>{competitor.place}</td>

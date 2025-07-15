@@ -7,7 +7,6 @@ import { Button } from '../../atoms/button/Button'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
 import { Input } from '../../atoms/input/Input'
-// import { CheckBox } from '../../atoms/checkBox/CheckBox'
 import {
   selectGroupStopwatchCompetitors,
   selectGroupStopwatchCompetitorsCount,
@@ -17,6 +16,7 @@ import { NumberInput } from '../../atoms/input/NumberInput'
 import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { LIMITS, VALIDATOR } from '../../../redux/groupStopwatch/utils'
 import { insertWords } from '../../../logic/translation'
+import { CompetitorSetup, newCompetitorSetup } from '../../../types/groupStopwatch'
 
 
 export const SetUpScreen = (): JSX.Element => {
@@ -29,7 +29,7 @@ export const SetUpScreen = (): JSX.Element => {
     initCompetitorsCount,
     VALIDATOR.competitorsCount,
   )
-  const [competitors, setCompetitors] = useState(initCompetitors)
+  const [competitors, setCompetitors] = useState(initCompetitors.map((c) => newCompetitorSetup(c.name, c.color)))
 
   const dispatch = useDispatch()
   const history = useHistory()
@@ -38,25 +38,31 @@ export const SetUpScreen = (): JSX.Element => {
     if (isCompetitorsCountValid && competitorsCount > competitors.length) {
       const newCompetitors = [...competitors]
       for (let i = competitors.length; i < competitorsCount; i++) {
-        newCompetitors[i] = ''
+        newCompetitors[i] = newCompetitorSetup()
       }
       setCompetitors(newCompetitors)
     }
   }, [competitorsCount, isCompetitorsCountValid, competitors])
 
-  const handleCompetitorEdit = useCallback((competitors: string[], index: number, value: string) => {
-    const newCompetitors = [...competitors]
+  const handleCompetitorNameEdit = useCallback((competitors: CompetitorSetup[], index: number, value: string) => {
+    const newCompetitors = competitors.map((c) => newCompetitorSetup(c.name, c.color))
     if (!value.includes(',')) {
-      newCompetitors[index] = value
+      newCompetitors[index].name = value
     } else {
       const parts = value.split(',')
       parts.forEach((part, i) => {
         const trimmed = part.trim()
         if (trimmed !== '' && index + i < LIMITS.competitorsCount.max) {
-          newCompetitors[index + i] = trimmed
+          newCompetitors[index + i].name = trimmed
         }
       })
     }
+    setCompetitors(newCompetitors)
+  }, [setCompetitors])
+
+  const handleCompetitorColorEdit = useCallback((competitors: CompetitorSetup[], index: number, value: string) => {
+    const newCompetitors = competitors.map((c) => newCompetitorSetup(c.name, c.color))
+    newCompetitors[index].color = value
     setCompetitors(newCompetitors)
   }, [setCompetitors])
 
@@ -78,7 +84,7 @@ export const SetUpScreen = (): JSX.Element => {
   const { groupStopwatch: { setUpScreen: t } } = translation
 
   return (
-    <main className='set-up-kumite-timer'>
+    <main className='set-up-group-stopwatch'>
       <h1>{t.heading}</h1>
 
       <ul className='set-up-items'>
@@ -104,11 +110,18 @@ export const SetUpScreen = (): JSX.Element => {
         {competitors.slice(0, validCompetitorsCount).map((competitor, index) => (
           <li className='set-up-item no-border' key={`competitor-${index}`}>
             <label>{index + 1}:</label>
-            <Input
-              type='text'
-              value={competitor}
-              onChange={(value) => handleCompetitorEdit(competitors, index, value)}
-            />
+            <div className='group-inputs'>
+              <Input
+                type='text'
+                value={competitor.name}
+                onChange={(value) => handleCompetitorNameEdit(competitors, index, value)}
+              />
+              <Input
+                type='color'
+                value={competitor.color}
+                onChange={(value) => handleCompetitorColorEdit(competitors, index, value)}
+              />
+            </div>
           </li>
         ))}
       </ul>

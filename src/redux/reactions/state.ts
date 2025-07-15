@@ -1,4 +1,5 @@
 import { BEEP_A, BeepType } from '../../types/beepType'
+import { THexColor } from '../../types/color'
 
 
 export interface State {
@@ -8,7 +9,7 @@ export interface State {
   minInterval: number
   maxInterval: number
   signalCount: number
-  signalColors: string[]
+  signalColors: THexColor[]
   audioSound: BeepType
   audioVolume: number
 }

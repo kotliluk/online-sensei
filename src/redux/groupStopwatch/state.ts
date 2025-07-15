@@ -1,14 +1,22 @@
+import { CompetitorSetup, newCompetitorSetup } from '../../types/groupStopwatch'
+
+
 export type State = {
   // set up
   competitorsCount: number,
-  competitors: string[],
+  competitors: CompetitorSetup[],
   // common
   isActual: boolean,
 }
 
 export const initialState: State = {
   competitorsCount: 4,
-  competitors: ['', '', '', ''],
+  competitors: [
+    newCompetitorSetup(),
+    newCompetitorSetup(),
+    newCompetitorSetup(),
+    newCompetitorSetup(),
+  ],
 
   isActual: false,
 }

@@ -3,11 +3,12 @@
 @import "src/styles/media";
 
 
-.set-up-kumite-timer {
+.set-up-group-stopwatch {
   @include set-up-screen();
 
-  .resume-tournament-btn {
-    @include button-color($orange);
-    width: $button-long-width;
+  .group-inputs {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 }

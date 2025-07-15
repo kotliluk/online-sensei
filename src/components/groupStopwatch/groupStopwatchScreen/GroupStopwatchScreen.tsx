@@ -34,7 +34,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [clock] = useState<PausableStopwatch>(new PausableStopwatch(emptyFunc, 0))
   const [competitors, setCompetitors] = useState<Competitor[]>(
-    competitorNames.slice(0, competitorCount).map((name, index) => newCompetitor(index + 1, name)),
+    competitorNames.slice(0, competitorCount).map((c, index) => newCompetitor(index + 1, c.name, c.color)),
   )
 
   const dispatch = useDispatch()
@@ -195,6 +195,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
               className={`competitor-card ${competitor.time !== null ? 'finished' : ''}`}
               key={competitor.id}
               onClick={() => handleCompetitorClick(competitor.id, currTime)}
+              style={{ backgroundColor: competitor.color, color: competitor.contrastColor }}
             >
               <p className='competitor-name'>{competitor.id}) {competitor.name}</p>
               <p className='competitor-time'>{competitor.timeString}</p>

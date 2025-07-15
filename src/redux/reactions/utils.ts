@@ -5,7 +5,7 @@ import {
 } from '../../logic/localStorage/access'
 import { Limits, Validator } from '../../logic/validation/types'
 import { anythingIsValid, isBetweenValidator } from '../../logic/validation/validators'
-import { isHexColor } from '../../utils/color'
+import { isHexColor } from '../../types/color'
 import { isBeepType } from '../../types/beepType'
 import { initialState, State } from './state'
 
@@ -29,7 +29,7 @@ export const VALIDATOR: Validator<State> = {
   signalColors: (arr) => {
     return Array.isArray(arr)
       && arr.length === LIMITS.signalCount.max
-      && arr.reduce<boolean>((agg, cur) => agg && isHexColor(cur), true)
+      && arr.every(isHexColor)
   },
   audioSound: isBeepType,
   audioVolume: isBetweenValidator(LIMITS.audioVolume),

@@ -2,6 +2,7 @@ import { Action } from 'redux'
 import { State } from './state'
 import { BeepType } from '../../types/beepType'
 import { LS_ACCESS } from './utils'
+import { THexColor } from '../../types/color'
 
 
 export type Actions = InitReactions | SetReactions | SetNotActualReactions
@@ -54,7 +55,7 @@ export const setReactions = (
   minInterval: number,
   maxInterval: number,
   signalCount: number,
-  signalColors: string[],
+  signalColors: THexColor[],
   audioSound: BeepType,
   audioVolume: number,
 ): SetReactions => {

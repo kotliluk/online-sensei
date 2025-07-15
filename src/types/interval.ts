@@ -9,11 +9,11 @@ export interface Interval {
   duration: number
 }
 
-export const isValidIntervalType = (x: any): boolean => {
+export const isValidIntervalType = (x: any): x is IntervalType => {
   return x === 'work' || x === 'pause'
 }
 
-export const isValidInterval = (x: any): boolean => {
+export const isValidInterval = (x: any): x is Interval => {
   if (typeof x !== 'object') {
     return false
   }

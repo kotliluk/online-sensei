@@ -57,10 +57,9 @@
       padding: 1rem;
 
       border-radius: 4px;
-      background-color: $orange-light;
 
       &.finished {
-        background-color: $grey-light;
+        opacity: 0.5;
       }
 
       cursor: pointer;

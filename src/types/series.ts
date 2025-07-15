@@ -12,7 +12,7 @@ export type Series = {
   audioVolume: number,
 }
 
-export const isValidSeries = (x: any): boolean => {
+export const isValidSeries = (x: any): x is Series => {
   if (typeof x !== 'object') {
     return false
   }

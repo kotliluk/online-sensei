@@ -4,6 +4,7 @@ import { getValidatedNumberFromLS, getValidatedObjectFromLS, saveToLS } from '..
 import { Limits, Validator } from '../../logic/validation/types'
 import { anythingIsValid, isBetweenValidator } from '../../logic/validation/validators'
 import { initialState, State } from './state'
+import { isValidCompetitorSetup } from '../../types/groupStopwatch'
 
 
 export const LIMITS: Limits<State> = {
@@ -12,7 +13,11 @@ export const LIMITS: Limits<State> = {
 
 export const VALIDATOR: Validator<State> = {
   competitorsCount: isBetweenValidator(LIMITS.competitorsCount),
-  competitors: anythingIsValid,
+  competitors: (arr) => {
+    return Array.isArray(arr)
+      && arr.length <= LIMITS.competitorsCount.max
+      && arr.every(isValidCompetitorSetup)
+  },
 
   isActual: anythingIsValid,
 }

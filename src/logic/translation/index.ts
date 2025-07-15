@@ -5,7 +5,7 @@ import { Translation } from './translation'
 
 export type Language = 'EN' | 'CS'
 
-export const isValidLanguage = (value: any): boolean => {
+export const isValidLanguage = (value: any): value is Language => {
   return value === 'EN' || value === 'CS'
 }
 

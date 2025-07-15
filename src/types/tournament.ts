@@ -15,7 +15,7 @@ export const newCompetitor = (name = ''): Competitor => ({
   name,
 })
 
-export const isValidCompetitor = (x: any): boolean => {
+export const isValidCompetitor = (x: any): x is Competitor => {
   if (typeof x !== 'object') {
     return false
   }
@@ -94,7 +94,7 @@ export const newFight = (
   oppositeFight: undefined,
 })
 
-export const isValidFight = (x: any): boolean => {
+export const isValidFight = (x: any): x is Fight => {
   if (typeof x !== 'object') {
     return false
   }
@@ -220,7 +220,7 @@ export const createTournamentTree = (competitors: Competitor[], depth: number): 
   return newTree(fight, children)
 }
 
-export const isValidTournamentTree = (x: any): boolean => {
+export const isValidTournamentTree = (x: any): x is TournamentTreeNode => {
   if (typeof x !== 'object') {
     return false
   }
