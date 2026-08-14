@@ -1,8 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useState } from 'react'
+import { JSX, useCallback, useState } from 'react'
 import './SetUpScreenSimple.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { Select } from '../../atoms/select/Select'
@@ -43,7 +42,7 @@ export const SetUpScreenSimple = (): JSX.Element => {
   const [skipLastPause, setSkipLastPause] = useState(initSkipLastPause)
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleAudioChange = useCallback((newValue: string) => {
     preloadBeep(newValue as BeepType)
@@ -52,17 +51,17 @@ export const SetUpScreenSimple = (): JSX.Element => {
 
   const handleGoToAdvancedSettings = useCallback(() => {
     dispatch(setIntervalTimerSimple(rounds, work, pause, skipLastPause, audioSound, audioVolume))
-    history.push('/interval-timer/set-up-advanced')
+    void navigate('/interval-timer/set-up-advanced')
   }, [dispatch, rounds, work, pause, skipLastPause, audioSound, audioVolume])
 
   const handleStart = useCallback(() => {
     dispatch(setIntervalTimerSimple(rounds, work, pause, skipLastPause, audioSound, audioVolume))
-    history.push('/interval-timer')
+    void navigate('/interval-timer')
   }, [dispatch, rounds, work, pause, skipLastPause, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualIntervalTimer())
-    history.push('/')
+    void navigate('/')
   }, [dispatch])
 
   const { intervalTimer: { setUpScreenSimple: t } } = translation

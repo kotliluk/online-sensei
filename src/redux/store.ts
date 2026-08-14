@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware, combineReducers } from '@reduxjs/toolkit'
+import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { Dispatch, Store } from '@reduxjs/toolkit'
 import { RootState } from './state'
 import { Actions } from './actions'
@@ -23,7 +23,7 @@ export const store: Store<RootState, Actions> = configureStore({
     reactions: reactionsReducer,
   }),
   // to ignore non-serializable Date field
-  middleware: getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
     serializableCheck: false,
   }),
 })

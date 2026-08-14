@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback } from 'react'
-import { useHistory } from 'react-router-dom'
+import { JSX, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './TournamentScreen.scss'
 import { Fight } from '../../../types/tournament'
 import { useDispatch } from '../../../redux/useDispatch'
@@ -17,12 +16,12 @@ export const GroupTableCell = (props: GroupTableCellProps): JSX.Element | null =
   const { fight, row, column } = props
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleClick = useCallback(() => {
     if (row < column) {
       dispatch(setTournamentFight(fight))
-      history.push('/kumite-timer')
+      void navigate('/kumite-timer')
     }
   }, [fight, row, column])
 

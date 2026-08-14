@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { JSX, useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './KumiteTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { useDispatch } from '../../../redux/useDispatch'
@@ -59,7 +58,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleManualTimeChange = useCallback((newTime: number) => {
     if (newTime >= 0 && newTime <= LIMITS.duration.max) {
@@ -114,11 +113,11 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const handleGoBack = useCallback(() => {
     dispatch(setNotActualKumiteTimer())
     if (tournamentFight) {
-      history.push('/kumite-timer/tournament')
+      void navigate('/kumite-timer/tournament')
     } else {
-      history.push('/kumite-timer/set-up')
+      void navigate('/kumite-timer/set-up')
     }
-  }, [dispatch, history, tournamentFight])
+  }, [dispatch, navigate, tournamentFight])
 
   const handleSaveTournamentFight = useCallback(() => {
     if (tournamentFight) {
@@ -163,7 +162,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   }, [time])
 
   useEffect(() => {
-    !isActual && history.push('/kumite-timer/set-up')
+    if (!isActual) {
+      void navigate('/kumite-timer/set-up')
+    }
   }, [isActual])
 
   const renderRedData = useCallback((className: string) => (

@@ -1,5 +1,4 @@
-@import "src/styles/variables";
-@import "src/styles/theme";
+@use 'src/styles' as *;
 
 .modal-header {
   display: flex;

@@ -10,7 +10,7 @@ export const isBetween = (num: number, x: number, y: number): boolean => {
   return x <= num && num <= y
 }
 
-export const anythingIsValid = <T extends unknown>(_: T): boolean => true
+export const anythingIsValid = <T>(_: T): boolean => true
 
 export const isValidArrayOf = <T> (validator: (item: T) => boolean): Predicate<T[]> => {
   return (arr: T[]) => arr.every(validator)

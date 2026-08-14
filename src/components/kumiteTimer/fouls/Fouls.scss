@@ -1,7 +1,4 @@
-@import "src/styles/variables";
-@import "src/styles/mixins";
-@import "src/styles/media";
-@import "src/styles/css-function";
+@use 'src/styles' as *;
 
 
 .__fouls {

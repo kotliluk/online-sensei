@@ -9,6 +9,6 @@ export interface IconPropsWithFill extends IconProps {
 }
 
 export interface IconPropsWithStroke extends IconPropsWithFill {
-  stroke?: string
+  'stroke'?: string
   'stroke-width'?: number
 }

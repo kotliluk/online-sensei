@@ -18,6 +18,6 @@ export const isValidInterval = (x: any): x is Interval => {
     return false
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,max-len
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@stylistic/max-len
   return isValidIntervalType(x.type) && typeof x.name === 'string' && typeof x.duration === 'number' && VALIDATOR.simpleWork(x.duration)
 }

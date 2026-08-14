@@ -1,8 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../../atoms/button/Button'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
@@ -32,7 +31,7 @@ export const SetUpScreen = (): JSX.Element => {
   const [competitors, setCompetitors] = useState(initCompetitors.map((c) => newCompetitorSetup(c.name, c.color)))
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (isCompetitorsCountValid && competitorsCount > competitors.length) {
@@ -68,12 +67,12 @@ export const SetUpScreen = (): JSX.Element => {
 
   const handleStart = useCallback(() => {
     dispatch(setGroupStopwatch(competitorsCount, competitors))
-    history.push('/group-stopwatch')
+    void navigate('/group-stopwatch')
   }, [competitorsCount, competitors])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualGroupStopwatch())
-    history.push('/')
+    void navigate('/')
   }, [dispatch])
 
   const validCompetitorsCount = Math.min(

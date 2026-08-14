@@ -1,11 +1,11 @@
-/* eslint-disable no-multi-spaces */
-/* eslint-disable array-bracket-spacing */
+/* eslint-disable @stylistic/no-multi-spaces */
+
 
 export enum TimeUnit {
   HOURS = 0,
   MINUTES = 1,
   SECONDS = 2,
-  TENTHS = 3,
+  TENTHS = 3
 }
 
 // [from][to]

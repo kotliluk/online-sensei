@@ -1,6 +1,4 @@
-@import 'src/styles/variables';
-@import 'src/styles/theme';
-@import 'src/styles/mixins';
+@use 'src/styles' as *;
 
 
 $menu-width: 18rem;

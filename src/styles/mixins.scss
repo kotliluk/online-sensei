@@ -1,6 +1,7 @@
-@import "variables";
-@import "theme";
-@import "media";
+@use 'sass:color';
+@use 'variables' as *;
+@use 'theme' as *;
+@use 'media' as *;
 
 
 @mixin app-screen {
@@ -154,7 +155,7 @@
 
 @mixin button-color($color) {
   .theme--light & {
-    background: lighten($color, 15%);
+    background: color.adjust($color, $lightness: 15%);
     color: $black;
 
     &:disabled {
@@ -169,7 +170,7 @@
     }
 
     &:active:not(:disabled) {
-      background: darken($color, 10%);
+      background: color.adjust($color, $lightness: -10%);
     }
   }
 
@@ -182,14 +183,14 @@
     }
 
     &:hover:not(:disabled) {
-      background: darken($color, 15%);
+      background: color.adjust($color, $lightness: -15%);
       color: $white;
       transition: all 0.3s ease;
       font-weight: bold;
     }
 
     &:active:not(:disabled) {
-      background: darken($color, 25%);
+      background: color.adjust($color, $lightness: -25%);
     }
   }
 }

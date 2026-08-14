@@ -1,4 +1,4 @@
-@import "src/styles/variables";
+@use 'src/styles' as *;
 
 .modal-container {
   position: absolute;

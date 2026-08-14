@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useState } from 'react'
+import { JSX, useCallback, useState } from 'react'
 import './VolumeInput.scss'
 import { RangeInput } from './RangeInput'
 import { Button } from '../button/Button'

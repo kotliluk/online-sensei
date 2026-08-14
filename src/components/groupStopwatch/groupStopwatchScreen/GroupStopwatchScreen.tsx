@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { JSX, useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './GroupStopwatchScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { useDispatch } from '../../../redux/useDispatch'
@@ -38,7 +37,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   )
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleCompetitorClick = useCallback((id: number, time: number) => {
     setCompetitors(prevCompetitors => prevCompetitors.map((c) => {
@@ -127,7 +126,9 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   }, [])
 
   useEffect(() => {
-    !isActual && history.push('/group-stopwatch/set-up')
+    if (!isActual) {
+      void navigate('/group-stopwatch/set-up')
+    }
   }, [isActual])
 
   if (!isActual) {

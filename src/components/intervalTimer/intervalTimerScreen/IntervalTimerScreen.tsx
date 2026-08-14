@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { JSX, useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './IntervalTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { useDispatch } from '../../../redux/useDispatch'
@@ -47,7 +46,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
   const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   // handles change of intervals
   useEffect(() => {
@@ -122,7 +121,9 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
   }, [])
 
   useEffect(() => {
-    !isActual && history.push('/interval-timer/set-up')
+    if (!isActual) {
+      void navigate('/interval-timer/set-up')
+    }
   }, [isActual])
 
   if (!isActual) {

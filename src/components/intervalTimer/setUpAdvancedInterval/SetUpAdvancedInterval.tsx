@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, DragEvent } from 'react'
+import { JSX, useCallback, DragEvent } from 'react'
 import './SetUpAdvancedInterval.scss'
 import { Select } from '../../atoms/select/Select'
 import { Interval, IntervalType } from '../../../types/interval'

@@ -6,6 +6,25 @@ Online training assistant for karate. Offers multiple features for karate and ot
 - interval timer
 - group stopwatch
 
+## Development
+
+The app is a [Vite](https://vite.dev) + React + TypeScript single page application.
+
+Requirements: Node.js as pinned in `.nvmrc` (`nvm use`) and Yarn via Corepack (`corepack enable`).
+
+```bash
+yarn install     # install dependencies
+yarn dev         # start the dev server on http://localhost:5173/online-sensei/
+yarn test        # run the test suite (Vitest)
+yarn lint        # run ESLint
+yarn typecheck   # run the TypeScript compiler
+yarn build       # type-check and build into ./build
+yarn preview     # serve the production build locally
+```
+
+Pushing to `main` runs lint, tests and the build in GitHub Actions and deploys
+the result to GitHub Pages.
+
 ## Kumite timer
 
 The basic feature of Kumite timer is the timer itself and the management of points and fouls

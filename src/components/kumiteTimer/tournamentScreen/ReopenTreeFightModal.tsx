@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback } from 'react'
+import { JSX, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import './ReopenTreeFightModal.scss'
 import { ModalHeader } from '../../common/modal/modalHeader/ModalHeader'
@@ -8,7 +7,7 @@ import { Button } from '../../atoms/button/Button'
 import { useDispatch } from '../../../redux/useDispatch'
 import { selectTranslation } from '../../../redux/page/selector'
 import { setTournamentFight } from '../../../redux/kumiteTimer/actions'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { selectKumiteTimerTournamentFight } from '../../../redux/kumiteTimer/selector'
 
 
@@ -18,14 +17,14 @@ export const ReopenTreeFightModal = (): JSX.Element | null => {
   const fight = useSelector(selectKumiteTimerTournamentFight)
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const close = useCloseModal()
 
   const handleStart = useCallback(() => {
     // confirms current selected fight
-    history.push('/kumite-timer')
+    void navigate('/kumite-timer')
     close()
-  }, [history, close])
+  }, [navigate, close])
 
   const handleClose = useCallback(() => {
     // reset selected fight

@@ -103,9 +103,9 @@ export const isValidFight = (x: any): x is Fight => {
   return (typeof x.uuid === 'string') && (typeof x.depth === 'number') && (typeof x.type === 'string')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.winner === 'undefined' || typeof x.winner === 'string')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,max-len
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@stylistic/max-len
     && (typeof x.redUuid === 'string') && (typeof x.redName === 'string') && (typeof x.redPoints === 'number') && (typeof x.redFouls === 'number')
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,max-len
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@stylistic/max-len
     && (typeof x.blueUuid === 'string') && (typeof x.blueName === 'string') && (typeof x.bluePoints === 'number') && (typeof x.blueFouls === 'number')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.senchu === 'string') && (x.senchu === 'RED' || x.senchu === 'BLUE' || x.senchu === 'NONE')
@@ -412,9 +412,9 @@ export const createGroup = (competitors: Competitor[]): Fight[][] => {
     fights.push(row)
   }
 
-  // eslint-disable-next-line @typescript-eslint/prefer-for-of
+
   for (let i = 0; i < competitors.length; ++i) {
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
+
     for (let j = 0; j < competitors.length; ++j) {
       fights[i][j].oppositeFight = fights[j][i].uuid
     }

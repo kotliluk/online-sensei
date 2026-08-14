@@ -1,5 +1,4 @@
-@import "../../../styles/variables";
-@import "../../../styles/mixins";
+@use 'src/styles' as *;
 
 .advanced-series-row {
   display: flex;

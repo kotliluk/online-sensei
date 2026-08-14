@@ -1,7 +1,7 @@
 import {
   ThunkDispatch as ReduxThunkDispatch,
   ThunkAction as ReduxThunkAction,
-} from 'redux-thunk'
+} from '@reduxjs/toolkit'
 import { Actions } from './actions'
 import { RootState } from './state'
 

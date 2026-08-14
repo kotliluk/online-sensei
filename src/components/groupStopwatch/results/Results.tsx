@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useState } from 'react'
 import './Results.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { Button } from '../../atoms/button/Button'

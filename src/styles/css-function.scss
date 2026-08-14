@@ -1,5 +1,7 @@
+@use 'sass:string';
+
 @function css-function( $function, $values... ) {
-  @return $function + unquote( '(' ) + $values + unquote( ')' );
+  @return $function + string.unquote( '(' ) + $values + string.unquote( ')' );
 }
 
 @function css-min( $values... ) {

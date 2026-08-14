@@ -1,6 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
-@import 'variables';
-@import 'mixins';
+// The Open Sans webfont is loaded via <link> in index.html.
+@use 'sass:color';
+@use 'variables' as *;
+@use 'mixins' as *;
 
 
 html, body, #root, .app {
@@ -15,11 +16,11 @@ html, body, #root {
 }
 
 .theme--light .with-scrollbar {
-  @include with-scrollbar($grey-light, $white, darken($grey-light, 10%));
+  @include with-scrollbar($grey-light, $white, color.adjust($grey-light, $lightness: -10%));
 }
 
 .theme--dark .with-scrollbar {
-  @include with-scrollbar($grey-dark, $grey, lighten($grey-dark, 5%));
+  @include with-scrollbar($grey-dark, $grey, color.adjust($grey-dark, $lightness: 5%));
 }
 
 .app {

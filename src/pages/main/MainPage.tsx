@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useEffect } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { JSX, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import './MainPage.scss'
 import { useSelector } from '../../redux/useSelector'
 import { selectTranslation } from '../../redux/page/selector'
@@ -16,11 +15,11 @@ const FEATURES = [
 export const MainPage = (): JSX.Element => {
   const { mainPage: t } = useSelector(selectTranslation)
 
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (window.location.search.includes('mirror=true')) {
-      history.push('/kumite-timer/mirror')
+      void navigate('/kumite-timer/mirror')
     }
   }, [window.location.search])
 

@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React from 'react'
-import { ReactComponent } from '../../assets/svg/arrow_up.svg'
+import { JSX } from 'react'
+import ReactComponent from '../../assets/svg/arrow_up.svg?react'
 import { IconPropsWithFill } from './iconProps'
 
 

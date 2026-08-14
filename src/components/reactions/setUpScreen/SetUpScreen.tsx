@@ -1,9 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setNotActualReactions, setReactions } from '../../../redux/reactions/actions'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Input } from '../../atoms/input/Input'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
@@ -52,7 +51,7 @@ export const SetUpScreen = (): JSX.Element => {
   const [audioVolume, setAudioVolume] = useState(initAudioVolume)
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleMinIntervalChange = useCallback((newValue: number) => {
     setMinInterval(newValue)
@@ -85,12 +84,12 @@ export const SetUpScreen = (): JSX.Element => {
 
   const handleStart = useCallback(() => {
     dispatch(setReactions(rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume))
-    history.push('/reactions')
+    void navigate('/reactions')
   }, [dispatch, rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualReactions())
-    history.push('/')
+    void navigate('/')
   }, [dispatch])
 
   useEffect(() => {

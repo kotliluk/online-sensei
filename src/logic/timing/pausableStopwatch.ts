@@ -6,7 +6,7 @@ export type PausableStopwatchCallback = (elapsedMs: number, wasPaused: boolean) 
 export class PausableStopwatch {
   private callback: PausableStopwatchCallback
   private callbackInterval: number
-  private intervalId: NodeJS.Timeout | undefined
+  private intervalId: ReturnType<typeof setInterval> | undefined
   private lastStart: number
   private elapsedBefore: number
 

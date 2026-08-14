@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback } from 'react'
-import { useHistory } from 'react-router-dom'
+import { JSX, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './TournamentScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
@@ -19,14 +18,14 @@ export const TournamentScreen = (): JSX.Element => {
   const tournamentType = useSelector(selectKumiteTimerTournamentType)
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleCancel = useCallback(() => {
     dispatch(setModalWindow('CANCEL_TOURNAMENT'))
   }, [dispatch])
 
   const handleBack = useCallback(() => {
-    history.push('/kumite-timer/set-up')
+    void navigate('/kumite-timer/set-up')
   }, [dispatch])
 
   return (

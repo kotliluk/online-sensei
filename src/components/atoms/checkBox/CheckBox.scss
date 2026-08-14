@@ -1,5 +1,5 @@
-@import 'src/styles/variables';
-@import 'src/styles/theme';
+@use 'sass:color';
+@use 'src/styles' as *;
 
 
 $checkbox-size: 1.5rem;
@@ -27,7 +27,7 @@ $checkbox-size: 1.5rem;
     display: none;
     width: 100%;
     height: 100%;
-    background-color: lighten($orange, 10%);
+    background-color: color.adjust($orange, $lightness: 10%);
     border-radius: $border-radius;
 
     &::after {

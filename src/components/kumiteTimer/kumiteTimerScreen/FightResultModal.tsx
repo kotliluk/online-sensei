@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import './FightResultModal.scss'
 import { ModalHeader } from '../../common/modal/modalHeader/ModalHeader'
@@ -8,7 +7,7 @@ import { Button } from '../../atoms/button/Button'
 import { useDispatch, useThunkDispatch } from '../../../redux/useDispatch'
 import { selectTranslation } from '../../../redux/page/selector'
 import { saveTournamentFight } from '../../../redux/kumiteTimer/actions'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { selectKumiteTimerTournamentFight, selectKumiteTimerTournamentType } from '../../../redux/kumiteTimer/selector'
 import { Select } from '../../atoms/select/Select'
 import { FightWinner } from '../../../types/tournament'
@@ -25,7 +24,7 @@ export const FightResultModal = (): JSX.Element | null => {
 
   const dispatch = useDispatch()
   const thunkDispatch = useThunkDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const close = useCloseModal()
 
   useEffect(() => {
@@ -68,9 +67,9 @@ export const FightResultModal = (): JSX.Element | null => {
       blueFouls: tournamentFight.blueFouls,
       senchu: tournamentFight.senchu,
     }))
-    history.push('/kumite-timer/tournament')
+    void navigate('/kumite-timer/tournament')
     close()
-  }, [dispatch, history, close, tournamentFight, winner])
+  }, [dispatch, navigate, close, tournamentFight, winner])
 
   const akaText = `AKA (${tournamentFight?.redName})`
   const aoText = `AO (${tournamentFight?.blueName})`

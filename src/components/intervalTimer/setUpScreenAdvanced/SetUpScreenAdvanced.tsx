@@ -1,8 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useState } from 'react'
 import './SetUpScreenAdvanced.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { Select } from '../../atoms/select/Select'
@@ -49,7 +48,7 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   const [isDragging, setIsDragging] = useState(-1)
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleIntervalChange = useCallback((newValue: Interval, index: number) => {
     const newIntervals = [...intervals]
@@ -98,17 +97,17 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
 
   const handleGoToBasicSettings = useCallback(() => {
     dispatch(setIntervalTimerAdvanced(intervals, rounds, skipLastPause, audioSound, audioVolume))
-    history.push('/interval-timer/set-up')
+    void navigate('/interval-timer/set-up')
   }, [dispatch, intervals, rounds, skipLastPause, audioSound, audioVolume])
 
   const handleStart = useCallback(() => {
     dispatch(setIntervalTimerAdvanced(intervals, rounds, skipLastPause, audioSound, audioVolume))
-    history.push('/interval-timer')
+    void navigate('/interval-timer')
   }, [dispatch, intervals, rounds, skipLastPause, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualIntervalTimer())
-    history.push('/')
+    void navigate('/')
   }, [dispatch])
 
   // handles change of init values when lastLoadTime has changes

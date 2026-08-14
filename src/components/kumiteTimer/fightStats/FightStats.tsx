@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback } from 'react'
+import { JSX, useCallback } from 'react'
 import './FightStats.scss'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 import { Button } from '../../atoms/button/Button'

@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { useSelector } from 'react-redux'
 import './ModalContainer.scss'

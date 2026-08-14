@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useEffect } from 'react'
+import { JSX, useEffect } from 'react'
 import './TournamentScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import {
@@ -50,7 +49,7 @@ export const GroupTournamentScreen = (): JSX.Element => {
     <div
       className='fixed-table-wrapper'
       style={{
-        // eslint-disable-next-line max-len
+        // eslint-disable-next-line @stylistic/max-len
         gridTemplateColumns: `min(${FIXED_COLUMN_MAX_WIDTH}, ${FIXED_COLUMN_WIDTH}) min(${FIXED_TABLE_MAX_WIDTH}, ${gridContentWidth})`,
         gridTemplateRows: `${FIXED_ROW_HEIGHT} min(${FIXED_TABLE_MAX_HEIGHT}, ${gridContentHeight})`,
       }}

@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback } from 'react'
+import { JSX, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import './SaveAdvancedSeries.scss'
 import { ModalHeader } from '../../common/modal/modalHeader/ModalHeader'

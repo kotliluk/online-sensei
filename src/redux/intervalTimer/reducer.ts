@@ -10,7 +10,6 @@ import {
 } from './actions'
 
 
-// eslint-disable-next-line @typescript-eslint/default-param-last
 export function reducer (state = initialState, action: Actions): State {
   switch (action.type) {
     case INIT_INTERVAL_TIMER:

@@ -1,0 +1,10 @@
+// Single entry point for the shared styles.
+//
+// Component stylesheets pull everything in with `@use 'src/styles' as *;`.
+// Under the old `@import` rules transitive imports leaked into every file;
+// Sass modules do not leak, so the shared pieces are re-exported from here.
+@forward 'variables';
+@forward 'media';
+@forward 'theme';
+@forward 'mixins';
+@forward 'css-function';

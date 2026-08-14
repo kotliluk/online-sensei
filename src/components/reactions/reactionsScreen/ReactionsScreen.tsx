@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { JSX, useCallback, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './ReactionsScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import {
@@ -45,7 +44,7 @@ export const ReactionsScreen = (): JSX.Element | null => {
   const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const handleTogglePause = useCallback(() => {
     if (phase === 'finished') {
@@ -100,7 +99,9 @@ export const ReactionsScreen = (): JSX.Element | null => {
   }, [phase])
 
   useEffect(() => {
-    !isActual && history.push('/reactions/set-up')
+    if (!isActual) {
+      void navigate('/reactions/set-up')
+    }
   }, [isActual])
 
   if (!isActual) {

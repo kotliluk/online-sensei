@@ -82,9 +82,9 @@ export const setIntervalTimerSimple = (
   LS_ACCESS.audioSound.set(audioSound)
   LS_ACCESS.audioVolume.set(audioVolume)
 
-  const intervals: Interval[] = range(simpleRounds).flatMap(() => [
-    { type: 'work', name: '', duration: simpleWork } as Interval,
-    { type: 'pause', name: '', duration: simplePause } as Interval,
+  const intervals: Interval[] = range(simpleRounds).flatMap<Interval>(() => [
+    { type: 'work', name: '', duration: simpleWork },
+    { type: 'pause', name: '', duration: simplePause },
   ]).slice(0, skipLastPause ? -1 : undefined)
 
   return {

@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useEffect } from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { JSX, useEffect } from 'react'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import { PageHeader } from './components/common/pageHeader/PageHeader'
 import { MainPage } from './pages/main/MainPage'
 import { ReactionsPage } from './pages/reactions/ReactionsPage'
@@ -22,26 +21,14 @@ const App = (): JSX.Element => {
   return (
     <div className='app with-scrollbar'>
       <PageHeader />
-      <Switch>
-        <Route path='/reactions'>
-          <ReactionsPage />
-        </Route>
-        <Route path='/kumite-timer'>
-          <KumiteTimerPage />
-        </Route>
-        <Route path='/interval-timer'>
-          <IntervalTimerPage />
-        </Route>
-        <Route path='/group-stopwatch'>
-          <GroupStopWatchPage />
-        </Route>
-        <Route path='/' exact>
-          <MainPage />
-        </Route>
-        <Route path='*'>
-          <Redirect to='/' />
-        </Route>
-      </Switch>
+      <Routes>
+        <Route path='/reactions/*' element={<ReactionsPage />} />
+        <Route path='/kumite-timer/*' element={<KumiteTimerPage />} />
+        <Route path='/interval-timer/*' element={<IntervalTimerPage />} />
+        <Route path='/group-stopwatch/*' element={<GroupStopWatchPage />} />
+        <Route path='/' element={<MainPage />} />
+        <Route path='*' element={<Navigate to='/' replace />} />
+      </Routes>
     </div>
   )
 }

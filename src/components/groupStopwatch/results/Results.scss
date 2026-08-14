@@ -1,6 +1,4 @@
-@import "src/styles/variables";
-@import "src/styles/mixins";
-@import "src/styles/media";
+@use 'src/styles' as *;
 
 .results-group-stopwatch-wrapper {
   display: flex;

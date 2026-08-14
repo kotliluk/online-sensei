@@ -1,6 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
+import { JSX, useCallback, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Tree from 'react-d3-tree'
 import './TournamentScreen.scss'
 import { TreeNode } from './TreeNode'
@@ -20,7 +19,7 @@ export const TreeTournamentScreen = (): JSX.Element => {
   const repechage = useSelector(selectKumiteTimerRepechageTree)
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const initTreeTranslate = useMemo(() => {
     const depth = getTreeDepth(tree)
@@ -49,10 +48,10 @@ export const TreeTournamentScreen = (): JSX.Element => {
         if (needsConfirmationToReopen(fight, tree)) {
           dispatch(setModalWindow('REOPEN_TREE_FIGHT'))
         } else {
-          history.push('/kumite-timer')
+          void navigate('/kumite-timer')
         }
       } else {
-        history.push('/kumite-timer')
+        void navigate('/kumite-timer')
       }
     }
   }, [tree])

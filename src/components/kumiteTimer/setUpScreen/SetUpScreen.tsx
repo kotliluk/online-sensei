@@ -1,8 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { useSelector } from '../../../redux/useSelector'
@@ -43,7 +42,7 @@ export const SetUpScreen = (): JSX.Element => {
   const [shuffleCompetitors, setShuffleCompetitors] = useState(false)
 
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (isCompetitorsCountValid && competitorsCount > competitors.length) {
@@ -74,26 +73,26 @@ export const SetUpScreen = (): JSX.Element => {
   const handleStart = useCallback(() => {
     if (!isTournament) {
       dispatch(setKumiteTimer(duration))
-      history.push('/kumite-timer')
+      void navigate('/kumite-timer')
     } else {
       const cs = competitors.slice(0, competitorsCount)
       if (shuffleCompetitors) {
         shuffle(cs)
       }
       dispatch(setKumiteTimerTournament(duration, tournamentName, tournamentType, competitorsCount, cs))
-      history.push('/kumite-timer/tournament')
+      void navigate('/kumite-timer/tournament')
     }
   }, [duration, isTournament, tournamentName, tournamentType, shuffleCompetitors, competitorsCount, competitors])
 
   const handleResumeTournament = useCallback(() => {
     if (isPreviousTournament) {
-      history.push('/kumite-timer/tournament')
+      void navigate('/kumite-timer/tournament')
     }
   }, [dispatch, isPreviousTournament])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualKumiteTimer())
-    history.push('/')
+    void navigate('/')
   }, [dispatch])
 
   const validCompetitorsCount = Math.min(

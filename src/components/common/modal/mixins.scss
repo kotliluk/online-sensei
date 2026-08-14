@@ -1,5 +1,8 @@
-@import "./variables";
-@import "src/styles/variables";
+@use './variables' as *;
+@use 'src/styles' as *;
+
+// re-exported so consumers of the modal mixins also get the modal variables
+@forward './variables';
 
 @mixin modal-window {
   height: $modal-height;

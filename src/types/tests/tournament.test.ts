@@ -1,7 +1,8 @@
+import { vi } from 'vitest'
 import { Competitor, createTournamentTree, Fight } from '../tournament'
 
 
-jest.mock('uuid', () => ({ v4: () => 'mocked-uuid-v4' }))
+vi.mock('uuid', () => ({ v4: () => 'mocked-uuid-v4' }))
 
 const competitor = (name: string): Competitor => ({
   uuid: name,

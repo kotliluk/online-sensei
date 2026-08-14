@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React, { useEffect, useState } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import './TournamentScreen.scss'
 import { GroupTableCell } from './GroupTableCell'
 import { Fight } from '../../../types/tournament'

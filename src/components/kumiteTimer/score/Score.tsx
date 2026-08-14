@@ -1,5 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars-experimental
-import React from 'react'
+import { JSX } from 'react'
 import './Score.scss'
 import { Button } from '../../atoms/button/Button'
 import { emptyFunc } from '../../../utils/function'

@@ -8,8 +8,8 @@ export class PausableInterval {
   private callback: Func
   private intervalTime: number
   private remainingTime: number
-  private timeoutId: NodeJS.Timeout | undefined
-  private intervalId: NodeJS.Timeout | undefined
+  private timeoutId: ReturnType<typeof setTimeout> | undefined
+  private intervalId: ReturnType<typeof setInterval> | undefined
   private lastStart: number
 
   constructor (callback: Func, ms: number, start = false) {
