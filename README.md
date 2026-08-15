@@ -25,6 +25,24 @@ yarn preview     # serve the production build locally
 Pushing to `main` runs lint, tests and the build in GitHub Actions and deploys
 the result to GitHub Pages.
 
+## Sharing a set up
+
+The set-up screens of Reactions, Interval timer and Group stopwatch have a
+**Share** button. It copies a link that carries the current set up in its query
+string, so sending it to someone opens their app with the same values already
+filled in:
+
+```
+https://kotliluk.github.io/online-sensei/reactions/set-up?rounds=25&signal=350
+https://kotliluk.github.io/online-sensei/interval-timer/set-up-advanced?rounds=3&iv=w;Sprint;20,p;Rest;40
+https://kotliluk.github.io/online-sensei/group-stopwatch/set-up?count=3&names=Alice,Bob,Charles
+```
+
+Only values that differ from the defaults are put in the link, and every one of
+them is validated on the way back in - an edited or truncated link falls back to
+the defaults field by field instead of failing. Opening a link only fills in the
+form; the settings are stored locally once the recipient presses Start.
+
 ## Kumite timer
 
 The basic feature of Kumite timer is the timer itself and the management of points and fouls

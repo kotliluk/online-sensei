@@ -26,6 +26,9 @@ export interface Translation {
     stop: string,
     cancel: string,
     save: string,
+    share: string,
+    shareCopied: string,
+    shareFailed: string,
   }
   mainPage: {
     appIntroduction: string,

@@ -1,7 +1,7 @@
 import { JSX, useCallback, useState } from 'react'
 import './SetUpScreenSimple.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { Select } from '../../atoms/select/Select'
@@ -22,6 +22,14 @@ import { LIMITS, VALIDATOR } from '../../../redux/intervalTimer/utils'
 import { setIntervalTimerSimple, setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
 import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
 import { preloadBeep } from '../../../logic/audio/beep'
+import { ShareButton } from '../../common/shareButton/ShareButton'
+import { buildAppUrl } from '../../../logic/urlState/appUrl'
+import {
+  decodeIntervalTimerSimpleSetUp,
+  encodeIntervalTimerSimpleSetUp,
+  hasIntervalTimerSimpleSetUp,
+  INTERVAL_TIMER_SIMPLE_SET_UP_PATH,
+} from '../../../logic/urlState/intervalTimerUrl'
 
 
 export const SetUpScreenSimple = (): JSX.Element => {
@@ -34,12 +42,29 @@ export const SetUpScreenSimple = (): JSX.Element => {
   const initAudioVolume = useSelector(selectIntervalTimerAudioVolume)
   const initSkipLastPause = useSelector(selectIntervalTimerSkipLastPause)
 
-  const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATOR.simpleRounds)
-  const [work, setWork, isValidWork] = useValidatedState(initWork, VALIDATOR.simpleWork)
-  const [pause, setPause, isValidPause] = useValidatedState(initPause, VALIDATOR.simplePause)
-  const [audioSound, setAudioSound] = useState(initAudioSound)
-  const [audioVolume, setAudioVolume] = useState(initAudioVolume)
-  const [skipLastPause, setSkipLastPause] = useState(initSkipLastPause)
+  const [searchParams] = useSearchParams()
+
+  // A shared link fully describes a set up, so it wins over the stored one.
+  // Computed once - later edits must not be overwritten by the URL.
+  const [init] = useState(() => {
+    const stored = {
+      simpleRounds: initRounds,
+      simpleWork: initWork,
+      simplePause: initPause,
+      skipLastPause: initSkipLastPause,
+      audioSound: initAudioSound,
+      audioVolume: initAudioVolume,
+    }
+
+    return hasIntervalTimerSimpleSetUp(searchParams) ? decodeIntervalTimerSimpleSetUp(searchParams) : stored
+  })
+
+  const [rounds, setRounds, isValidRounds] = useValidatedState(init.simpleRounds, VALIDATOR.simpleRounds)
+  const [work, setWork, isValidWork] = useValidatedState(init.simpleWork, VALIDATOR.simpleWork)
+  const [pause, setPause, isValidPause] = useValidatedState(init.simplePause, VALIDATOR.simplePause)
+  const [audioSound, setAudioSound] = useState(init.audioSound)
+  const [audioVolume, setAudioVolume] = useState(init.audioVolume)
+  const [skipLastPause, setSkipLastPause] = useState(init.skipLastPause)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -58,6 +83,18 @@ export const SetUpScreenSimple = (): JSX.Element => {
     dispatch(setIntervalTimerSimple(rounds, work, pause, skipLastPause, audioSound, audioVolume))
     void navigate('/interval-timer')
   }, [dispatch, rounds, work, pause, skipLastPause, audioSound, audioVolume])
+
+  const buildShareUrl = useCallback(() => buildAppUrl(
+    INTERVAL_TIMER_SIMPLE_SET_UP_PATH,
+    encodeIntervalTimerSimpleSetUp({
+      simpleRounds: rounds,
+      simpleWork: work,
+      simplePause: pause,
+      skipLastPause,
+      audioSound,
+      audioVolume,
+    }),
+  ), [rounds, work, pause, skipLastPause, audioSound, audioVolume])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualIntervalTimer())
@@ -158,6 +195,11 @@ export const SetUpScreenSimple = (): JSX.Element => {
         >
           {translation.common.start}
         </Button>
+
+        <ShareButton
+          buildUrl={buildShareUrl}
+          disabled={!isValidRounds || !isValidWork || !isValidPause}
+        />
 
         <Button
           className='back-btn'

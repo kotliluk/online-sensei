@@ -1,7 +1,7 @@
-import { JSX, useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useRef, useState } from 'react'
 import './SetUpScreenAdvanced.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
 import { Select } from '../../atoms/select/Select'
@@ -26,6 +26,14 @@ import { preloadBeep } from '../../../logic/audio/beep'
 import { SetUpAdvancedInterval } from '../setUpAdvancedInterval/SetUpAdvancedInterval'
 import { Interval, IntervalType } from '../../../types/interval'
 import { setModalWindow } from '../../../redux/page/actions'
+import { ShareButton } from '../../common/shareButton/ShareButton'
+import { buildAppUrl } from '../../../logic/urlState/appUrl'
+import {
+  decodeIntervalTimerAdvancedSetUp,
+  encodeIntervalTimerAdvancedSetUp,
+  hasIntervalTimerAdvancedSetUp,
+  INTERVAL_TIMER_ADVANCED_SET_UP_PATH,
+} from '../../../logic/urlState/intervalTimerUrl'
 
 
 export const SetUpScreenAdvanced = (): JSX.Element => {
@@ -39,11 +47,30 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   const initSkipLastPause = useSelector(selectIntervalTimerSkipLastPause)
   const lastLoadTime = useSelector(selectIntervalTimerAdvancedLastLoadTime)
 
-  const [intervals, setIntervals, isValidIntervals] = useValidatedState(initIntervals, VALIDATOR.advancedRoundIntervals)
-  const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATOR.advancedRounds)
-  const [audioSound, setAudioSound] = useState(initAudioSound)
-  const [audioVolume, setAudioVolume] = useState(initAudioVolume)
-  const [skipLastPause, setSkipLastPause] = useState(initSkipLastPause)
+  const [searchParams] = useSearchParams()
+
+  // A shared link fully describes a set up, so it wins over the stored one.
+  // Computed once - later edits must not be overwritten by the URL.
+  const [init] = useState(() => {
+    const stored = {
+      advancedRoundIntervals: initIntervals,
+      advancedRounds: initRounds,
+      skipLastPause: initSkipLastPause,
+      audioSound: initAudioSound,
+      audioVolume: initAudioVolume,
+    }
+
+    return hasIntervalTimerAdvancedSetUp(searchParams) ? decodeIntervalTimerAdvancedSetUp(searchParams) : stored
+  })
+
+  const [intervals, setIntervals, isValidIntervals] = useValidatedState(
+    init.advancedRoundIntervals,
+    VALIDATOR.advancedRoundIntervals,
+  )
+  const [rounds, setRounds, isValidRounds] = useValidatedState(init.advancedRounds, VALIDATOR.advancedRounds)
+  const [audioSound, setAudioSound] = useState(init.audioSound)
+  const [audioVolume, setAudioVolume] = useState(init.audioVolume)
+  const [skipLastPause, setSkipLastPause] = useState(init.skipLastPause)
 
   const [isDragging, setIsDragging] = useState(-1)
 
@@ -105,13 +132,32 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
     void navigate('/interval-timer')
   }, [dispatch, intervals, rounds, skipLastPause, audioSound, audioVolume])
 
+  const buildShareUrl = useCallback(() => buildAppUrl(
+    INTERVAL_TIMER_ADVANCED_SET_UP_PATH,
+    encodeIntervalTimerAdvancedSetUp({
+      advancedRoundIntervals: intervals,
+      advancedRounds: rounds,
+      skipLastPause,
+      audioSound,
+      audioVolume,
+    }),
+  ), [intervals, rounds, skipLastPause, audioSound, audioVolume])
+
   const handleBack = useCallback(() => {
     dispatch(setNotActualIntervalTimer())
     void navigate('/')
   }, [dispatch])
 
-  // handles change of init values when lastLoadTime has changes
+  // handles change of init values when lastLoadTime has changed; the first run
+  // is skipped so that it does not overwrite a set up taken from the URL
+  const isFirstLoadTimeRun = useRef(true)
+
   useEffect(() => {
+    if (isFirstLoadTimeRun.current) {
+      isFirstLoadTimeRun.current = false
+      return
+    }
+
     setIntervals(initIntervals)
     setRounds(initRounds)
     setAudioSound(initAudioSound)
@@ -234,6 +280,11 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
         >
           {translation.common.start}
         </Button>
+
+        <ShareButton
+          buildUrl={buildShareUrl}
+          disabled={!isValidIntervals || !isValidRounds}
+        />
 
         <Button
           className='back-btn'

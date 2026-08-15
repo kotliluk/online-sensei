@@ -23,6 +23,9 @@ export const EN: Translation = {
     stop: 'Stop',
     cancel: 'Cancel',
     save: 'Save',
+    share: 'Share',
+    shareCopied: 'A link with the current set up was copied to the clipboard',
+    shareFailed: 'The link could not be copied to the clipboard',
   },
   mainPage: {
     appIntroduction: 'Train alone or with friends with OnlineSensei!',
