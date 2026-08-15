@@ -2,7 +2,7 @@ import { JSX, useCallback, useEffect, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setNotActualReactions, setReactions } from '../../../redux/reactions/actions'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Input } from '../../atoms/input/Input'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
@@ -26,6 +26,14 @@ import { VolumeInput } from '../../atoms/input/VolumeInput'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
 import { CounterInput } from '../../atoms/input/CounterInput'
+import { ShareButton } from '../../common/shareButton/ShareButton'
+import { buildAppUrl } from '../../../logic/urlState/appUrl'
+import {
+  decodeReactionsSetUp,
+  encodeReactionsSetUp,
+  hasReactionsSetUp,
+  REACTIONS_SET_UP_PATH,
+} from '../../../logic/urlState/reactionsUrl'
 
 
 export const SetUpScreen = (): JSX.Element => {
@@ -40,15 +48,34 @@ export const SetUpScreen = (): JSX.Element => {
   const initAudioSound = useSelector(selectReactionsAudioSound)
   const initAudioVolume = useSelector(selectReactionsAudioVolume)
 
-  const [rounds, setRounds, isValidRounds] = useValidatedState(initRounds, VALIDATOR.rounds)
-  const [signal, setSignal, isValidSignal] = useValidatedState(initSignalDuration, VALIDATOR.signalDuration)
-  const [minInterval, setMinInterval, isValidMinInterval] = useValidatedState(initMinInterval, VALIDATOR.minInterval)
-  const [maxInterval, setMaxInterval, isValidMaxInterval] = useValidatedState(initMaxInterval, VALIDATOR.maxInterval)
-  const [isValidIntervalRange, setIsValidIntervalRange] = useState(initMinInterval <= initMaxInterval)
-  const [signalCount, setSignalCount] = useState(initSignalCount)
-  const [signalColors, setSignalColors] = useState(initSignalColors)
-  const [audioSound, setAudioSound] = useState(initAudioSound)
-  const [audioVolume, setAudioVolume] = useState(initAudioVolume)
+  const [searchParams] = useSearchParams()
+
+  // A shared link fully describes a set up, so it wins over the stored one.
+  // Computed once - later edits must not be overwritten by the URL.
+  const [init] = useState(() => {
+    const stored = {
+      rounds: initRounds,
+      signalDuration: initSignalDuration,
+      minInterval: initMinInterval,
+      maxInterval: initMaxInterval,
+      signalCount: initSignalCount,
+      signalColors: initSignalColors,
+      audioSound: initAudioSound,
+      audioVolume: initAudioVolume,
+    }
+
+    return hasReactionsSetUp(searchParams) ? decodeReactionsSetUp(searchParams) : stored
+  })
+
+  const [rounds, setRounds, isValidRounds] = useValidatedState(init.rounds, VALIDATOR.rounds)
+  const [signal, setSignal, isValidSignal] = useValidatedState(init.signalDuration, VALIDATOR.signalDuration)
+  const [minInterval, setMinInterval, isValidMinInterval] = useValidatedState(init.minInterval, VALIDATOR.minInterval)
+  const [maxInterval, setMaxInterval, isValidMaxInterval] = useValidatedState(init.maxInterval, VALIDATOR.maxInterval)
+  const [isValidIntervalRange, setIsValidIntervalRange] = useState(init.minInterval <= init.maxInterval)
+  const [signalCount, setSignalCount] = useState(init.signalCount)
+  const [signalColors, setSignalColors] = useState(init.signalColors)
+  const [audioSound, setAudioSound] = useState(init.audioSound)
+  const [audioVolume, setAudioVolume] = useState(init.audioVolume)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -87,13 +114,27 @@ export const SetUpScreen = (): JSX.Element => {
     void navigate('/reactions')
   }, [dispatch, rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
 
+  const buildShareUrl = useCallback(() => buildAppUrl(
+    REACTIONS_SET_UP_PATH,
+    encodeReactionsSetUp({
+      rounds,
+      signalDuration: signal,
+      minInterval,
+      maxInterval,
+      signalCount,
+      signalColors,
+      audioSound,
+      audioVolume,
+    }),
+  ), [rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
+
   const handleBack = useCallback(() => {
     dispatch(setNotActualReactions())
     void navigate('/')
   }, [dispatch])
 
   useEffect(() => {
-    preloadBeep(initAudioSound)
+    preloadBeep(init.audioSound)
   }, [])
 
   const { reactions: { setUpScreen: t } } = translation
@@ -218,6 +259,14 @@ export const SetUpScreen = (): JSX.Element => {
         >
           {translation.common.start}
         </Button>
+
+        <ShareButton
+          buildUrl={buildShareUrl}
+          disabled={
+            !isValidRounds || !isValidSignal || !isValidMinInterval
+            || !isValidMaxInterval || !isValidIntervalRange
+          }
+        />
 
         <Button
           className='back-btn'

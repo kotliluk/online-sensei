@@ -1,7 +1,7 @@
 import { JSX, useCallback, useEffect, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../../atoms/button/Button'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
@@ -16,6 +16,14 @@ import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { LIMITS, VALIDATOR } from '../../../redux/groupStopwatch/utils'
 import { insertWords } from '../../../logic/translation'
 import { CompetitorSetup, newCompetitorSetup } from '../../../types/groupStopwatch'
+import { ShareButton } from '../../common/shareButton/ShareButton'
+import { buildAppUrl } from '../../../logic/urlState/appUrl'
+import {
+  decodeGroupStopwatchSetUp,
+  encodeGroupStopwatchSetUp,
+  GROUP_STOPWATCH_SET_UP_PATH,
+  hasGroupStopwatchSetUp,
+} from '../../../logic/urlState/groupStopwatchUrl'
 
 
 export const SetUpScreen = (): JSX.Element => {
@@ -24,11 +32,21 @@ export const SetUpScreen = (): JSX.Element => {
   const initCompetitorsCount = useSelector(selectGroupStopwatchCompetitorsCount)
   const initCompetitors = useSelector(selectGroupStopwatchCompetitors)
 
+  const [searchParams] = useSearchParams()
+
+  // A shared link fully describes a set up, so it wins over the stored one.
+  // Computed once - later edits must not be overwritten by the URL.
+  const [init] = useState(() => {
+    const stored = { competitorsCount: initCompetitorsCount, competitors: initCompetitors }
+
+    return hasGroupStopwatchSetUp(searchParams) ? decodeGroupStopwatchSetUp(searchParams) : stored
+  })
+
   const [competitorsCount, setCompetitorsCount, isCompetitorsCountValid] = useValidatedState(
-    initCompetitorsCount,
+    init.competitorsCount,
     VALIDATOR.competitorsCount,
   )
-  const [competitors, setCompetitors] = useState(initCompetitors.map((c) => newCompetitorSetup(c.name, c.color)))
+  const [competitors, setCompetitors] = useState(init.competitors.map((c) => newCompetitorSetup(c.name, c.color)))
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -69,6 +87,11 @@ export const SetUpScreen = (): JSX.Element => {
     dispatch(setGroupStopwatch(competitorsCount, competitors))
     void navigate('/group-stopwatch')
   }, [competitorsCount, competitors])
+
+  const buildShareUrl = useCallback(() => buildAppUrl(
+    GROUP_STOPWATCH_SET_UP_PATH,
+    encodeGroupStopwatchSetUp({ competitorsCount, competitors }),
+  ), [competitorsCount, competitors])
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualGroupStopwatch())
@@ -133,6 +156,11 @@ export const SetUpScreen = (): JSX.Element => {
         >
           {translation.common.start}
         </Button>
+
+        <ShareButton
+          buildUrl={buildShareUrl}
+          disabled={!isCompetitorsCountValid}
+        />
 
         <Button
           className='back-btn'

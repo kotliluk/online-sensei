@@ -23,6 +23,9 @@ export const CS: Translation = {
     stop: 'Stop',
     cancel: 'Zrušit',
     save: 'Uložit',
+    share: 'Sdílet',
+    shareCopied: 'Odkaz s aktuálním nastavením byl zkopírován do schránky',
+    shareFailed: 'Odkaz se nepodařilo zkopírovat do schránky',
   },
   mainPage: {
     appIntroduction: 'Trénuj sám a nebo s přáteli s OnlineSensei!',

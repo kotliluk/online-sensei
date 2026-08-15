@@ -1,0 +1,35 @@
+@use 'src/styles' as *;
+
+.share {
+  // the message is taken out of the flow so that showing it does not reflow
+  // the row of buttons it sits in
+  position: relative;
+  display: flex;
+  justify-content: center;
+
+  .share-btn {
+    @include button-color($blue);
+    width: $button-middle-width;
+  }
+
+  .share-message {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: max-content;
+    max-width: 80vw;
+    text-align: center;
+    font-size: $text-small;
+
+    @include themed() {
+      color: t($secondary-text);
+    }
+
+    &.share-message--failed {
+      color: $red;
+      font-weight: bold;
+    }
+  }
+}
