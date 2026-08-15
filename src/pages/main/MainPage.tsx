@@ -1,5 +1,5 @@
-import { JSX, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { JSX } from 'react'
+import { Link } from 'react-router-dom'
 import './MainPage.scss'
 import { useSelector } from '../../redux/useSelector'
 import { selectTranslation } from '../../redux/page/selector'
@@ -14,14 +14,6 @@ const FEATURES = [
 
 export const MainPage = (): JSX.Element => {
   const { mainPage: t } = useSelector(selectTranslation)
-
-  const navigate = useNavigate()
-
-  useEffect(() => {
-    if (window.location.search.includes('mirror=true')) {
-      void navigate('/kumite-timer/mirror')
-    }
-  }, [window.location.search])
 
   return (
     <main className='main-page'>
