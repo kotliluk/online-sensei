@@ -1,7 +1,31 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="utf-8" />
+    <title>OS! OnlineSensei</title>
     <script>
-      window.location = "https://kotliluk.github.io/online-sensei/"
+      // GitHub Pages has no SPA fallback: it answers any unknown path with this
+      // file. Encode the requested path and query into a single query string on
+      // the app root; the matching snippet in index.html restores the real URL
+      // before the app boots. Without this every shared deep link (and every
+      // reload of a sub-page) would land on the main screen.
+      //
+      // Adapted from https://github.com/rafgraph/spa-github-pages
+      //
+      // The app is served from /online-sensei/, so the first path segment is
+      // part of the base and must be kept.
+      var pathSegmentsToKeep = 1
+
+      var l = window.location
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '')
+        + l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/'
+        + l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~')
+        + (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '')
+        + l.hash
+      )
     </script>
   </head>
+  <body>
+  </body>
 </html>

@@ -17,6 +17,25 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap"
     />
     <title>OS! OnlineSensei</title>
+    <script>
+      // Restores the real URL after public/404.html encoded it into a query
+      // string, so react-router sees the path that was actually requested.
+      // Must run before the app bundle, hence the inline script in <head>.
+      //
+      // Adapted from https://github.com/rafgraph/spa-github-pages
+      ;(function () {
+        var l = window.location
+        if (l.search[1] !== '/') {
+          return
+        }
+        var decoded = l.search
+          .slice(1)
+          .split('&')
+          .map(function (s) { return s.replace(/~and~/g, '&') })
+          .join('?')
+        window.history.replaceState(null, '', l.pathname.slice(0, -1) + decoded + l.hash)
+      })()
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
