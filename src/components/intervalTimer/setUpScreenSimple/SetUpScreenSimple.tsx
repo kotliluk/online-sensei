@@ -1,4 +1,4 @@
-import { JSX, useCallback, useState } from 'react'
+import { JSX, useCallback, useMemo, useState } from 'react'
 import './SetUpScreenSimple.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -30,6 +30,7 @@ import {
   hasIntervalTimerSimpleSetUp,
   INTERVAL_TIMER_SIMPLE_SET_UP_PATH,
 } from '../../../logic/urlState/intervalTimerUrl'
+import { useClearUrlOnEdit } from '../../../logic/urlState/useClearUrlOnEdit'
 
 
 export const SetUpScreenSimple = (): JSX.Element => {
@@ -84,17 +85,19 @@ export const SetUpScreenSimple = (): JSX.Element => {
     void navigate('/interval-timer')
   }, [dispatch, rounds, work, pause, skipLastPause, audioSound, audioVolume])
 
-  const buildShareUrl = useCallback(() => buildAppUrl(
-    INTERVAL_TIMER_SIMPLE_SET_UP_PATH,
-    encodeIntervalTimerSimpleSetUp({
-      simpleRounds: rounds,
-      simpleWork: work,
-      simplePause: pause,
-      skipLastPause,
-      audioSound,
-      audioVolume,
-    }),
-  ), [rounds, work, pause, skipLastPause, audioSound, audioVolume])
+  const shareParams = useMemo(() => encodeIntervalTimerSimpleSetUp({
+    simpleRounds: rounds,
+    simpleWork: work,
+    simplePause: pause,
+    skipLastPause,
+    audioSound,
+    audioVolume,
+  }), [rounds, work, pause, skipLastPause, audioSound, audioVolume])
+
+  const buildShareUrl = useCallback(() => buildAppUrl(INTERVAL_TIMER_SIMPLE_SET_UP_PATH, shareParams), [shareParams])
+
+  // the link stops describing the screen as soon as anything is edited
+  useClearUrlOnEdit(shareParams)
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualIntervalTimer())

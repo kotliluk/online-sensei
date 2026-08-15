@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -24,6 +24,7 @@ import {
   GROUP_STOPWATCH_SET_UP_PATH,
   hasGroupStopwatchSetUp,
 } from '../../../logic/urlState/groupStopwatchUrl'
+import { useClearUrlOnEdit } from '../../../logic/urlState/useClearUrlOnEdit'
 
 
 export const SetUpScreen = (): JSX.Element => {
@@ -88,10 +89,12 @@ export const SetUpScreen = (): JSX.Element => {
     void navigate('/group-stopwatch')
   }, [competitorsCount, competitors])
 
-  const buildShareUrl = useCallback(() => buildAppUrl(
-    GROUP_STOPWATCH_SET_UP_PATH,
-    encodeGroupStopwatchSetUp({ competitorsCount, competitors }),
-  ), [competitorsCount, competitors])
+  const shareParams = useMemo(() => encodeGroupStopwatchSetUp({ competitorsCount, competitors }), [competitorsCount, competitors])
+
+  const buildShareUrl = useCallback(() => buildAppUrl(GROUP_STOPWATCH_SET_UP_PATH, shareParams), [shareParams])
+
+  // the link stops describing the screen as soon as anything is edited
+  useClearUrlOnEdit(shareParams)
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualGroupStopwatch())

@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import './SetUpScreen.scss'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setNotActualReactions, setReactions } from '../../../redux/reactions/actions'
@@ -34,6 +34,7 @@ import {
   hasReactionsSetUp,
   REACTIONS_SET_UP_PATH,
 } from '../../../logic/urlState/reactionsUrl'
+import { useClearUrlOnEdit } from '../../../logic/urlState/useClearUrlOnEdit'
 
 
 export const SetUpScreen = (): JSX.Element => {
@@ -114,19 +115,21 @@ export const SetUpScreen = (): JSX.Element => {
     void navigate('/reactions')
   }, [dispatch, rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
 
-  const buildShareUrl = useCallback(() => buildAppUrl(
-    REACTIONS_SET_UP_PATH,
-    encodeReactionsSetUp({
-      rounds,
-      signalDuration: signal,
-      minInterval,
-      maxInterval,
-      signalCount,
-      signalColors,
-      audioSound,
-      audioVolume,
-    }),
-  ), [rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
+  const shareParams = useMemo(() => encodeReactionsSetUp({
+    rounds,
+    signalDuration: signal,
+    minInterval,
+    maxInterval,
+    signalCount,
+    signalColors,
+    audioSound,
+    audioVolume,
+  }), [rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume])
+
+  const buildShareUrl = useCallback(() => buildAppUrl(REACTIONS_SET_UP_PATH, shareParams), [shareParams])
+
+  // the link stops describing the screen as soon as anything is edited
+  useClearUrlOnEdit(shareParams)
 
   const handleBack = useCallback(() => {
     dispatch(setNotActualReactions())

@@ -43,6 +43,10 @@ them is validated on the way back in - an edited or truncated link falls back to
 the defaults field by field instead of failing. Opening a link only fills in the
 form; the settings are stored locally once the recipient presses Start.
 
+The parameters stay in the address bar as long as the form still holds them, so
+reloading restores the shared set up. They are dropped on the first edit, when
+they would otherwise describe something the screen no longer shows.
+
 ## Kumite timer
 
 The basic feature of Kumite timer is the timer itself and the management of points and fouls
