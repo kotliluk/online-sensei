@@ -163,11 +163,18 @@ number.
 
 The result list can be exported as a CSV file. It holds exactly what the table
 shows, in the order it is shown, so the chosen sorting carries over. The file is
-semicolon separated and starts with a byte order mark - the combination that
-spreadsheets in European locales open directly, with the accented names intact
-and without an import dialog.
+UTF-8 without a byte order mark and semicolon separated - spreadsheets do not
+read the separator from the file, and a semicolon is what Excel expects in the
+European locales this app is used in, while LibreOffice and Google Sheets detect
+it either way.
 
 On a touch device the button opens the system share sheet, which hands the file
-straight to Sheets, Drive or a chat and still offers saving it; on a desktop, and
+straight to Drive or a chat and still offers saving it; on a desktop, and
 wherever sharing files is not available, it downloads the file instead. Sharing
 needs a secure context, so over plain http it always falls back to the download.
+
+One known limitation, in a reader rather than in the file: the Google Sheets app
+on Android does not detect the encoding of a local CSV and mangles accented
+names. The same file opens correctly on a desktop, in Numbers, in LibreOffice and
+in Google Sheets on the web, so a roster with accented names is best opened
+there.
