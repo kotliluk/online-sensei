@@ -252,11 +252,26 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     // both the clock and logEvent keep their identity, so this still only runs on a tick
   }, [time, clock, logEvent])
 
+  /**
+   * The redirect is here for one case: the screen opened without a session, by
+   * a bookmark or a reload. Leaving the screen turns the same flag off, and then
+   * it must not fire - whatever is leaving has already chosen where to go, and a
+   * redirect landing on top of it sends the user somewhere else. That is what
+   * used to happen to a tournament fight: both Back and saving the result asked
+   * for the tournament table and arrived at the set-up screen instead.
+   */
+  const hadSession = useRef(isActual)
+
   useEffect(() => {
-    if (!isActual) {
+    if (isActual) {
+      hadSession.current = true
+      return
+    }
+
+    if (!hadSession.current) {
       void navigate('/kumite-timer/set-up')
     }
-  }, [isActual])
+  }, [isActual, navigate])
 
   const renderRedData = useCallback((className: string) => (
     <FighterStats
