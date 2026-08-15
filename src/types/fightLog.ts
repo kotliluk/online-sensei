@@ -49,6 +49,28 @@ export type FightLogEntry = {
  */
 const BREAKS_GROUPING: readonly FightEventKind[] = ['START', 'RESET', 'REOPEN', 'TIME_SET']
 
+/**
+ * An event that reports no change at all.
+ *
+ * These do not only come out of grouping a correction. They arrive first hand:
+ * the score has a `0` button that sends an absolute zero, so pressing it at zero
+ * asks to set what is already set, and resetting the clock before the fight
+ * starts moves it to where it already stands. Both are a valid value, so the
+ * setters accept them and the handlers see a change - the log is the last place
+ * that can tell they were not one.
+ */
+const isNoOp = (event: FightEvent): boolean => {
+  if (event.kind === 'POINTS') {
+    return event.delta === 0
+  }
+
+  if (event.kind === 'FOULS' || event.kind === 'TIME_SET') {
+    return event.from === event.to
+  }
+
+  return event.kind === 'SENCHU' && event.from === event.to
+}
+
 /** Whether the two events are about the same thing and so may be grouped. */
 const isSameSubject = (a: FightEvent, b: FightEvent): boolean => {
   if (a.kind === 'POINTS' && b.kind === 'POINTS') {
@@ -141,6 +163,10 @@ const findTimeSetToGroupWith = (log: FightLogEntry[]): number => {
  * changes.
  */
 export const appendFightEvent = (log: FightLogEntry[], entry: FightLogEntry): FightLogEntry[] => {
+  if (isNoOp(entry.event)) {
+    return log
+  }
+
   const index = entry.event.kind === 'TIME_SET'
     ? findTimeSetToGroupWith(log)
     : findEntryToGroupWith(log, entry.fightTime, entry.event)
