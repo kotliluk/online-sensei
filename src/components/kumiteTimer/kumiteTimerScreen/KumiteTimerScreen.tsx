@@ -27,6 +27,15 @@ import { FightLog } from '../fightLog/FightLog'
 
 type PlayPhase = 'init' | 'fight' | 'finished'
 
+/**
+ * At module level so the setters built on them keep their identity. An arrow
+ * written in the body would be a new function every render, which would make
+ * every setter new as well and turn the dependencies of anything holding one
+ * into a list that says it watches the fight while really running every tick.
+ */
+const isValidScore = (value: number): boolean => value >= 0 && value <= 99
+const isValidFouls = (value: number): boolean => value >= 0 && value <= 5
+
 // TODO - update mobile phone view
 export const KumiteTimerScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
@@ -39,10 +48,12 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   const [time, setTime] = useState(duration)
   const [redOnLeft, setRedOnLeft] = useState(true)
-  const [scoreRed, setScoreRed] = useControlledState(0, (value) => value >= 0 && value <= 99)
-  const [foulsRed, setFoulsRed] = useControlledState(0, (value) => value >= 0 && value <= 5)
-  const [scoreBlue, setScoreBlue] = useControlledState(0, (value) => value >= 0 && value <= 99)
-  const [foulsBlue, setFoulsBlue] = useControlledState(0, (value) => value >= 0 && value <= 5)
+  // typed explicitly: with a named validator the zero would otherwise be inferred
+  // as the literal type and nothing else could ever be set
+  const [scoreRed, setScoreRed] = useControlledState<number>(0, isValidScore)
+  const [foulsRed, setFoulsRed] = useControlledState<number>(0, isValidFouls)
+  const [scoreBlue, setScoreBlue] = useControlledState<number>(0, isValidScore)
+  const [foulsBlue, setFoulsBlue] = useControlledState<number>(0, isValidFouls)
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
   useLSSyncProvider(time, LS_KEYS.time)

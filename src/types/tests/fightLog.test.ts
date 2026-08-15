@@ -62,6 +62,36 @@ describe('appendFightEvent', () => {
     expect(actual).toEqual([{ at: 1000, fightTime: 120, event: points('RED', 2) }])
   })
 
+  test.each<{ name: string, event: FightEvent }>([
+    { name: 'the score being set to the zero it already is', event: points('RED', 0) },
+    { name: 'fouls set to the value they already have', event: { kind: 'FOULS', side: 'RED', from: 2, to: 2 } },
+    { name: 'senchu set to where it already is', event: { kind: 'SENCHU', from: 'RED', to: 'RED' } },
+    { name: 'the clock reset to where it already stands', event: { kind: 'TIME_SET', from: 120, to: 120 } },
+  ])('writes no entry for $name', ({ event }) => {
+    // arrange
+    const log = logOf([120, points('BLUE', 1)])
+    // act
+    const actual = appendFightEvent(log, { at: 9, fightTime: 120, event })
+    // assert - and the very same log back, so nothing re-renders either
+    expect(actual).toBe(log)
+  })
+
+  test('does not group across the fight being started', () => {
+    // act
+    const actual = logOf([120, points('RED', 1)], [120, { kind: 'START' }], [120, points('RED', 1)])
+    // assert
+    expect(eventsOf(actual)).toEqual([points('RED', 1), { kind: 'START' }, points('RED', 1)])
+  })
+
+  test('does not group across a manual change of the clock', () => {
+    // arrange - the reading is the same on both sides of the change
+    const change = { kind: 'TIME_SET', from: 130, to: 120 } as const
+    // act
+    const actual = logOf([120, points('RED', 1)], [120, change], [120, points('RED', 1)])
+    // assert
+    expect(eventsOf(actual)).toEqual([points('RED', 1), change, points('RED', 1)])
+  })
+
   test('does not group across a reset, even at the same clock reading', () => {
     // act
     const actual = logOf([120, points('RED', 1)], [120, { kind: 'RESET' }], [120, points('RED', 1)])
@@ -168,13 +198,29 @@ describe('appendFightEvent', () => {
     expect(eventsOf(actual)).toEqual([{ kind: 'SENCHU', from: 'NONE', to: 'BLUE' }])
   })
 
-  test('leaves the log it was given untouched', () => {
+  test('drops the senchu entry when it is given and taken straight back', () => {
+    // act
+    const actual = logOf(
+      [120, { kind: 'SENCHU', from: 'NONE', to: 'RED' }],
+      [120, { kind: 'SENCHU', from: 'RED', to: 'NONE' }],
+    )
+    // assert
+    expect(actual).toEqual([])
+  })
+
+  test('leaves the log it was given untouched and returns a new one', () => {
     // arrange
     const log = logOf([120, points('RED', 1)])
-    // act
-    appendFightEvent(log, { at: 2, fightTime: 120, event: points('RED', 1) })
-    // assert
-    expect(eventsOf(log)).toEqual([points('RED', 1)])
+    const before = [...log]
+    // act - the three branches: a new entry, one grouped in, one that cancels out
+    const appended = appendFightEvent(log, { at: 2, fightTime: 119, event: points('BLUE', 1) })
+    const grouped = appendFightEvent(log, { at: 3, fightTime: 120, event: points('RED', 1) })
+    const dropped = appendFightEvent(log, { at: 4, fightTime: 120, event: points('RED', -1) })
+    // assert - a shared reference would make React skip the render and stall the panel
+    expect(log).toEqual(before)
+    expect(appended).not.toBe(log)
+    expect(grouped).not.toBe(log)
+    expect(dropped).not.toBe(log)
   })
 })
 

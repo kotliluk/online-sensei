@@ -46,8 +46,14 @@ export const FightLog = ({ entries }: FightLogProps): JSX.Element => {
         entries.length === 0
           ? <p className='fight-log__empty'>{t.empty}</p>
           : (
-            <ol className='fight-log__entries' ref={listRef}>
-              {/* the index is a stable key here - entries are only appended, and grouping rewrites the last one */}
+            <ol className='fight-log__entries with-scrollbar' ref={listRef}>
+              {/*
+                Grouping can rewrite an entry, and a correction that cancels out removes one
+                from the middle, so an index is not a stable identity. It is used anyway
+                because these items hold no state of their own - everything they show comes
+                from props. An item that gains state (expanding, animating, focus) needs a
+                real key first.
+              */}
               {entries.map((entry, i) => (
                 <li className='fight-log__entry' key={i}>
                   <span className='fight-log__entry-time'>{parseTime(entry.fightTime)}</span>

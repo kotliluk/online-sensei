@@ -138,10 +138,11 @@ bloby ani soubory. Zůstává **layout**: panel přibývá na obrazovku, která 
 
 ## D — Hotovo
 
-**Co se udělalo:** Commit `fee3ffe`, 15 souborů, +850/−30. Čistá `appendFightEvent`,
-panel na obrazovce, log na entitě zápasu včetně persistence a prohození stran u skupiny.
-28 unit testů nad `src/types/fightLog.ts` (sada celkem 98) a 15 browser testů (sada
-celkem 63, žije mimo repo — viz bod 3 v `TODO.md`).
+**Co se udělalo:** Commit `fee3ffe` (implementace) a druhý s opravami z review. Čistá
+`appendFightEvent`, panel na obrazovce, log na entitě zápasu včetně persistence
+a prohození stran u skupiny. Sada je po review **118 testů** (z 98 před ním): jednotkově
+`fightLog`, `switchResultSides`, `useControlledState` a nově i chování obrazovky přes
+Testing Library. Navíc 15 browser testů, které ale žijí mimo repo — viz bod 3 v `TODO.md`.
 
 **Odchylky od B/C:**
 
@@ -178,9 +179,86 @@ což je rozlišení, ne zařízení. Na reálném telefonu **neověřeno**. Proh
 změna nedotýká, takže riziko je jen layoutové: čitelnost panelu, jeho vlastní scroll
 a to, jestli nezhorší už tak přetékající řadu tlačítek u turnajového zápasu.
 
+Barva tlačítka v tmavém motivu je ověřená měřením v prohlížeči (spočtené `background`
+tlačítka proti pozadí obrazovky), ne okem — po opravě `rgb(165,166,169)` na
+`rgb(82,82,86)`. Testy jsou ověřené mutacemi: 13 mutací v kopii repa, všech 13 zčervenalo.
+
+**Co na telefon zbývá:** otevřít turnajový zápas se jmény závodníků, bez scrollování
+najít tlačítko „Průběh zápasu", ťuknout a zjistit, jestli je z toho poznat, že se něco
+stalo — v obou motivech.
+
 ## Review
 
-**Neproběhla.** Kód vznikl před tímhle flow, žádný z reviewerů (`correctness`,
-`react-state`, `device-ux`, `tests`) neběžel. Podle tabulky ve `ticket-review` by se na
-tenhle diff hodili všichni čtyři — sahá na `src/types/` i na `src/components/`, hooky
-a efekty, a přidává texty do obou jazyků.
+Branch: `fight-log` · revieweři: všichni čtyři (`correctness`, `react-state`, `device-ux`,
+`tests`) — diff sahá na `src/types/` i `src/components/`, na hooky a efekty, a přidává
+texty do obou jazyků.
+
+**Opravit (90–100) — vše opraveno**
+
+- [major] `KumiteTimerScreen.tsx:118` + `Score.tsx:32` · tlačítko `0` u skóre při skóre 0
+  pošle platnou hodnotu, setter vrátí `true` a do logu spadne `AKA 0`; totéž
+  „Reset času" ve fázi `init` zapíše `2:00 → 2:00` a tou prázdnou položkou navíc **rozdělí
+  slučování**, protože `TIME_SET` je hranicí okna → invariant „log neobsahuje položku,
+  která nic nezměnila" přesunut do `appendFightEvent` (`isNoOp`), ne do pěti volajících ·
+  **✅ opraveno** (nález korektnosti a react-state, sloučeno — jedna příčina)
+- [major] `FightLog.scss:17` · `button-color($grey)` — `$grey` je `primary-color` tmavého
+  motivu a tlačítka nemají okraj, takže se tlačítko v tmavém motivu **ztratí v pozadí**
+  a objeví se až na hover, který telefon nemá. Změřeno: pozadí i tlačítko
+  `rgb(82,82,86)` → `$grey-light`, po opravě `rgb(165,166,169)` na `rgb(82,82,86)` ·
+  **✅ opraveno**
+- [minor] `KumiteTimerScreen.tsx:42-45` · validátory byly inline šipky, takže settery
+  měnily identitu při každém renderu a efekt načítající zápas se ve skutečnosti spouštěl
+  po každém tiku — držel ho jen ref, deps lhaly → validátory na úroveň modulu ·
+  **✅ opraveno**
+- [minor] `FightLog.tsx:50` · komentář u index-key tvrdil, že se položky jen přidávají;
+  `appendFightEvent` umí smazat položku z prostředka → komentář opraven na to, co kód
+  dělá, a proč to u bezstavových položek nevadí · **✅ opraveno**
+- [minor] `FightLog.tsx:49` · scrollovací seznam bez třídy `with-scrollbar`, kterou mají
+  všechny ostatní scrollovací seznamy v appce · **✅ opraveno**
+- [major] `tournament.ts:88` · mutace `log: switchFightLogSides(fight.log)` → `log:
+  fight.log` **prošla celou sadou** — prohození logu v zrcadlené buňce nehlídalo nic ·
+  **✅ opraveno** (3 testy nad `switchResultSides`, kryjí i `switchSenchu` pro `BLUE`)
+- [major] `fightLog.ts:50` · `BREAKS_GROUPING` bez `'START'` prošlo celou sadou ·
+  **✅ opraveno** (viz poznámka k `TIME_SET` níž)
+- [major] `fightLog.test.ts` · test na neměnnost volal `appendFightEvent` jen ve
+  slučovací větvi, takže `log.push(entry); return log` v přidávací větvi prošlo — a to
+  není kosmetika, sdílená reference by nechala React bailoutnout a panel by přestal
+  přibývat · **✅ opraveno** (všechny tři větve + assert na novou referenci)
+- [minor] `fightLog.ts:83` · zrušení senchu (`RED → NONE`) položku nemazalo a nikdo to
+  nehlídal, přestože pro body i fauly ten test je · **✅ opraveno**
+- [major] `useControledState.ts` · nový boolean kontrakt setteru neměl žádný test ·
+  **✅ opraveno** (nový `src/logic/hooks/tests/useControledState.test.ts`, včetně
+  stability identity setteru)
+- [major] chování obrazovky nemělo v repu **žádný** test — pět akceptačních kritérií
+  viselo jen na Playwright sadě mimo git · **✅ opraveno** (6 testů přes Testing Library
+  podle vzoru `src/tests/app.test.tsx`)
+
+**Zvážit (80–89) — nechal jsem na tebe**
+
+- `KumiteTimerScreen.tsx:238` · po konci zápasu je `phase === 'finished'`, tlačítka času
+  jsou povolená, takže `+` a `-` vrátí hodiny na nulu a efekt zapíše **druhý** „Konec
+  zápasu". Oprava je jedna podmínka (`time === 0 && phase !== 'finished'`), ale jestli
+  má být návrat hodin na nulu vidět, je produktová otázka.
+- `tournament.ts:134` + `fightLog.ts` · `isValidFightLog` je shovívavý jen k **chybějícímu**
+  logu. Log přítomný ve špatném tvaru vrátí `false` → `isValidFight` `false` →
+  `getValidatedTypeFromLS` přepíše celý klíč defaultem a **rozehraný turnaj je pryč**.
+  Tuhle cestu otevřel tenhle diff (dřív pole `log` neexistovalo) a je to jediné pole
+  `Fight`, jehož tvar se má ve fázi 2/3 dál vyvíjet. Oprava (nevázat platnost zápasu na
+  log a vadný log zahodit zvlášť) je netriviální a mění chování persistence.
+- `FightLog.tsx:41` · na reálném telefonu s lištou prohlížeče se panel nejspíš otevře pod
+  okrajem obrazovky a tlačítko nedává najevo, že je otevřeno (chybí `aria-expanded`
+  i šipka). Scroller je `.app`, ne dokument, takže se adresní řádek nesbalí. Chce to
+  **ověřit na zařízení**, ne opravovat naslepo.
+- `fightLog.test.ts:231` · v `test.each` pro `isValidFightLog` jsou dva případy
+  nedosažitelné (netextový `fightTime`, `[null]`) — každý existující vstup padne dřív na
+  jiné podmínce.
+
+**Poznámka — nález, který platí jen z poloviny:** `tests` hlásil, že mutace
+`BREAKS_GROUPING` bez `'TIME_SET'` projde. Prošla, ale ne kvůli chybějícímu pokrytí:
+položka `TIME_SET` se stampuje časem `from`, takže se její čtení hodin **nikdy neshoduje**
+s tím, co po ní následuje (`to`), a fightTime tu hranici uřízne dřív. Přes obrazovku je ta
+větev nedosažitelná. Nechal jsem ji tam jako pojistku (`logEvent` umožňuje čas přepsat)
+a zamkl testem přímo nad kontraktem reducerů.
+
+**Ověření oprav:** 13 mutací spuštěno v kopii repa mimo pracovní strom, **všech 13
+zčervenalo**. Nové testy tedy hlídají, ne jen svítí zeleně.
