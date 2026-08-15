@@ -37,7 +37,7 @@
   {
     "name": "pouští ticket",
     "expect": "allow",
-    "payload": { "tool_name": "Write", "tool_input": { "file_path": "tickets/fight-log.md" } }
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": "tickets/001-fight-log.md" } }
   },
   {
     "name": "blokuje --no-verify",

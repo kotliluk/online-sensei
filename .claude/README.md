@@ -1,15 +1,16 @@
 # .claude — AI vývojová flow
 
 Vede změnu od nápadu po hotový lokální diff. Postavené na stejné kostře jako flow
-v clubSystem, ale **zmenšené na velikost tohohle projektu**: tenhle repo se vyvíjí
-iteracemi po stovkách řádků, ne po tisících.
+v clubSystem, ale **zmenšené na velikost tohohle projektu**: tenhle repo se vyvíjí většinou
+iteracemi po stovkách řádků, ne po tisících — a flow se má té velikosti přizpůsobit, ne
+naopak.
 
 ## Co tu je
 
 ```
 skills/
-  ticket/                orchestrátor          → /ticket <slug | nápad>
-    references/          šablona ticketu + tvrdé limity délky
+  ticket/                orchestrátor          → /ticket <id | slug | nápad>
+    references/          šablona ticketu + měřítko délky
   ticket-feat/           fáze 1  A → B (zadání)                → měkká pauza
   ticket-analyza/        fáze 2  B → C (analýza)               → TVRDÝ GATE
   ticket-implementace/   fáze 3  branch + TDD + commity
@@ -30,11 +31,11 @@ Konvence projektu (jazyky, styl commitů, testy, známý dluh) žijí v kořenov
 
 ```
 /ticket <popis nápadu>    # založí ticket a provede ho flow
-/ticket fight-log         # naváže na existující ticket
+/ticket 001               # naváže na existující ticket (jde i slugem: /ticket fight-log)
 /ticket-review            # re-run jedné fáze (každá je samostatný skill)
 ```
 
-Tickety žijí v `tickets/<slug>.md` a **commitují se** — sekce `D — Hotovo` hotových
+Tickety žijí v `tickets/<id>-<slug>.md` a **commitují se** — sekce `D — Hotovo` hotových
 ticketů je jediná knihovna precedentů, kterou tenhle projekt má, a analýza z ní čte.
 (Nechceš je v repu? Stačí řádek v `.gitignore`; flow funguje dál, jen si příště nepřečte,
 co posledně překvapilo.)
@@ -47,10 +48,15 @@ drobné nejasnosti jdou do „Předpoklady", ne do chatu.
 
 Rozdíly nejsou kosmetické — vycházejí z toho, že je to jiný produkt.
 
-**Jeden soubor na ticket** místo pěti (`tickets/<slug>.md`, sekce A–D + Review) a **žádné
-číselné id ani BOARD.md**. Slug je unikátní, čitelný a je to zároveň jméno branche; board,
-který se udržuje ručně, by u solo projektu jen hnil. **Sekce mají tvrdé limity délky**
-a zastřešující pravidlo: *dokumentace ticketu nesmí být delší než diff, který popisuje.*
+**Jeden soubor na ticket** místo pěti — `tickets/<id>-<slug>.md`, sekce A–D + Review.
+Číselné `id` zůstává (je z něj vidět návaznost), ale **bez `BOARD.md`**: další volné číslo
+je nejvyšší v adresáři + 1, takže není co udržovat ručně a co by hnilo. Slug je zároveň
+jméno branche.
+
+**Délka se řídí proporcí, ne stropem.** Orientačně: drobnost pár řádků a žádná analýza,
+běžná iterace zadání ~25 a analýza ~50 řádků, nová funkce tolik, kolik potřebuje. Jediné
+pravidlo, které platí vždycky, je *co nepomůže implementaci ani review, je vata* — sto
+řádků analýzy na desetiřádkovou opravu je špatně i tehdy, když je to napsané dobře.
 
 **Dvě dráhy.** Malá změna (jeden dva soubory, jasná oprava) `C` úplně vynechá — místo
 analýzy dostane pár odrážek přímo v zadání a jediný gate. Plná flow se pouští, když je

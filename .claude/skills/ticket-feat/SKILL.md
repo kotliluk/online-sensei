@@ -5,14 +5,15 @@ description: Fáze 1 flow Online Sensei — z nápadu (sekce A) udělá krátké
 
 # Fáze 1 — Zadání
 
-**Vstup:** `tickets/<slug>.md`, sekce `A — Nápad`.
-**Výstup:** sekce `B — Zadání` (**~25 řádků**) + **měkká pauza**.
+**Vstup:** `tickets/<id>-<slug>.md`, sekce `A — Nápad`.
+**Výstup:** sekce `B — Zadání` + **měkká pauza**.
 
 ## Tvrdá pravidla
 
 - **Produkt, ne technika.** Piš **co a proč**, ne **jak**. (Výjimka: malá dráha, viz níž.)
 - **`A` je append-only.** Nikdy ho nepřepisuj ani „neuklízej".
-- **Přečtené za minutu.** Hustota > délka. Když se blížíš k limitu, škrtej, nepiš hustěji.
+- **Hustota > délka.** Běžná iterace se vejde do ~25 řádků a měla by jít přečíst za minutu;
+  u nové funkce klidně víc, ale ne o vatu — jen o věci, které se doopravdy rozhodují.
 - **Nehádej.** Co z nápadu nevyplývá a je to podstatné → „Otevřené otázky", ne vymyšlený
   detail.
 

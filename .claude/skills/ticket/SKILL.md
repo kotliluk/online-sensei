@@ -9,16 +9,17 @@ Vede jednu změnu jako pipeline fází. Cíl: kvalitní výsledek s **minimem z�
 ale s **tvrdým gatem tam, kde je omyl drahý**. Každá fáze je samostatný skill a jde spustit
 izolovaně.
 
-**Vstup:** `/ticket <slug>` (existující ticket) nebo `/ticket <popis nápadu>` (založí nový).
+**Vstup:** `/ticket <id nebo slug>` (existující ticket) nebo `/ticket <popis nápadu>`
+(založí nový).
 
-Artefakt je **jeden soubor** `tickets/<slug>.md` se sekcemi A–D a Review. Šablona a **tvrdé
-limity délky**: [`references/ticket-template.md`](./references/ticket-template.md).
+Artefakt je **jeden soubor** `tickets/<id>-<slug>.md` se sekcemi A–D a Review. Šablona
+a **měřítko délky**: [`references/ticket-template.md`](./references/ticket-template.md).
 
 ## Dvě dráhy
 
-Tenhle projekt se vyvíjí po iteracích v řádu **stovek řádků**, ne tisíců. Plná flow je na
-ně občas těžší než ta změna samotná, proto **hned na začátku odhadni rozsah a řekni, kterou
-dráhou jdeš:**
+Tenhle projekt se vyvíjí většinou po iteracích v řádu **stovek řádků**, ne tisíců. Plná
+flow je na ně občas těžší než ta změna samotná, proto **hned na začátku odhadni rozsah
+a řekni, kterou dráhou jdeš:**
 
 | Dráha       | Kdy                                                                 | Co se děje                                                     |
 | ----------- | ------------------------------------------------------------------- | -------------------------------------------------------------- |
@@ -50,9 +51,9 @@ rozhodnutí, kde špatná volba znamená přepsat velkou část práce.
 Platí `CLAUDE.md`. Nad rámec toho:
 
 - **Nikdy necommituj na `main` a nikdy na `main` nepushuj** — `main` se deployuje na
-  GitHub Pages. Vždy feature branch pojmenovaná **slugem ticketu** (`fight-log`, ne
-  `feat/fight-log` — tak vypadají branche v tomhle repu). Hook `guard.mjs` to stejně
-  zablokuje.
+  GitHub Pages. Vždy feature branch pojmenovaná **slugem ticketu bez id** (`fight-log` —
+  ne `feat/fight-log` ani `001-fight-log`; tak vypadají branche v tomhle repu). Hook
+  `guard.mjs` to stejně zablokuje.
 - Zdroj pravdy o stavu ticketu je **`status:` ve frontmatteru**, ne kontext session.
 - **Nepředstírej zeleno.** Co jsi nespustil, neproběhlo; co jsi neověřil na zařízení,
   není ověřené.
@@ -61,11 +62,15 @@ Platí `CLAUDE.md`. Nad rámec toho:
 
 ### 0 — Rozpoznej vstup
 
-- **`/ticket <slug>`** → načti `tickets/<slug>.md`. Když neexistuje, řekni to a nabídni
-  založení.
+- **`/ticket <id nebo slug>`** → načti `tickets/<id>-<slug>.md` (stačí kterákoli půlka
+  jména, dohledej ji). Když neexistuje, řekni to a nabídni založení.
 - **`/ticket <popis nápadu>`** → projdi `tickets/` (existující i `done`), jestli k tomu už
-  něco není. Když ne, odvoď **anglický kebab-case slug** a založ `tickets/<slug>.md`
-  se sekcí `A — Nápad`: **doslova to, co uživatel řekl**, s datem, append-only.
+  něco není. Když ne, založ nový:
+  1. vezmi **další volné `id`** — nejvyšší číslo v `tickets/` + 1, trojmístné zero-padded
+     (`001`), **nikdy nerecykluj**;
+  2. odvoď krátký **anglický kebab-case slug**;
+  3. vytvoř `tickets/<id>-<slug>.md` se sekcí `A — Nápad`: **doslova to, co uživatel řekl**,
+     s datem, append-only.
 
 Kde ve flow jsi, poznáš podle `status:`; které sekce existují, je jen kontrola navíc.
 
