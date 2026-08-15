@@ -46,7 +46,7 @@
   .buttons {
     // the label does not fit the width the play screen gives its buttons and
     // would wrap onto a second line
-    button.download-btn {
+    button.export-btn {
       width: auto;
       min-width: $button-long-width;
     }

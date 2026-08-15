@@ -15,12 +15,18 @@ Requirements: Node.js as pinned in `.nvmrc` (`nvm use`) and Yarn via Corepack (`
 ```bash
 yarn install     # install dependencies
 yarn dev         # start the dev server on http://localhost:5173/online-sensei/
+yarn dev:https   # the same, exposed on the local network over https
 yarn test        # run the test suite (Vitest)
 yarn lint        # run ESLint
 yarn typecheck   # run the TypeScript compiler
 yarn build       # type-check and build into ./build
 yarn preview     # serve the production build locally
 ```
+
+`yarn dev:https` exists because sharing a link and sharing a file both need a
+secure context, which a phone reaching the dev server over the local network does
+not get from plain http. It serves a self-signed certificate - the phone warns
+once, and past the warning both features can be tried out for real.
 
 Pushing to `main` runs lint, tests and the build in GitHub Actions and deploys
 the result to GitHub Pages.
@@ -155,8 +161,13 @@ you save their time by clicking their name. If you misclick, you can update save
 You can always see the result list where you can sort the results by the time, the name or by the starting
 number.
 
-The result list can be downloaded as a CSV file. It holds exactly what the table
+The result list can be exported as a CSV file. It holds exactly what the table
 shows, in the order it is shown, so the chosen sorting carries over. The file is
 semicolon separated and starts with a byte order mark - the combination that
 spreadsheets in European locales open directly, with the accented names intact
 and without an import dialog.
+
+On a touch device the button opens the system share sheet, which hands the file
+straight to Sheets, Drive or a chat and still offers saving it; on a desktop, and
+wherever sharing files is not available, it downloads the file instead. Sharing
+needs a secure context, so over plain http it always falls back to the download.

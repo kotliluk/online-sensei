@@ -27,6 +27,7 @@ export const CS: Translation = {
     shareCopied: 'Odkaz s aktuálním nastavením byl zkopírován do schránky',
     shareFailed: 'Odkaz se nepodařilo zkopírovat do schránky',
     downloadCsv: 'Stáhnout CSV',
+    shareCsv: 'Sdílet CSV',
   },
   mainPage: {
     appIntroduction: 'Trénuj sám a nebo s přáteli s OnlineSensei!',
