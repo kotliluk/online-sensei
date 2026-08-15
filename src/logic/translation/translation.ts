@@ -158,6 +158,24 @@ export interface Translation {
     },
     timerScreen: {
       saveTournamentFight: string,
+      log: {
+        toggle: string,
+        empty: string,
+        start: string,
+        pause: string,
+        resume: string,
+        reset: string,
+        end: string,
+        // 2 params
+        reopen: string,
+        // 3 params
+        fouls: string,
+        // 1 param
+        senchu: string,
+        senchuNone: string,
+        // 2 params
+        time: string,
+      },
     },
   }
   intervalTimer: {

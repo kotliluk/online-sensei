@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './KumiteTimerScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
@@ -21,6 +21,8 @@ import { playAtoshibaraku, playSignalEnd, preloadKumiteAudio } from '../../../lo
 import { useLSSyncProvider } from '../../../logic/hooks/useLSSyncProvider'
 import { Senchu } from '../../../types/senchu'
 import { setModalWindow } from '../../../redux/page/actions'
+import { appendFightEvent, FightEvent, FightLogEntry } from '../../../types/fightLog'
+import { FightLog } from '../fightLog/FightLog'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
@@ -57,26 +59,75 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [isPaused, setIsPaused] = useState(true)
   const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
+  const [log, setLog] = useState<FightLogEntry[]>([])
+
+  /**
+   * The clock is read through a ref so the handlers do not have to be rebuilt
+   * every second - a stale `time` captured in one of them would put the wrong
+   * moment in the log. Callers that already know the reading pass it in, because
+   * the ref only catches up after the render that changed the state.
+   */
+  const timeRef = useRef(time)
+
+  useEffect(() => {
+    timeRef.current = time
+  }, [time])
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const logEvent = useCallback((event: FightEvent, fightTime = timeRef.current) => {
+    setLog((prev) => appendFightEvent(prev, { at: Date.now(), fightTime, event }))
+  }, [setLog])
 
   const handleManualTimeChange = useCallback((newTime: number) => {
     if (newTime >= 0 && newTime <= LIMITS.duration.max) {
       setTime(newTime)
+      logEvent({ kind: 'TIME_SET', from: timeRef.current, to: newTime })
     }
-  }, [setTime])
+  }, [setTime, logEvent])
 
   const handleManualTimeReset = useCallback(() => {
     setTime(duration)
-  }, [setTime])
+    logEvent({ kind: 'TIME_SET', from: timeRef.current, to: duration })
+  }, [setTime, duration, logEvent])
 
+  // which corner is shown on which side is a matter of the view, not of the fight
   const handleSwitchSides = useCallback(() => {
     setRedOnLeft(prev => !prev)
   }, [setRedOnLeft])
 
-  const handleSenchuChange = useCallback((senchu: Senchu) => {
-    setSenchu(prev => prev === senchu ? 'NONE' : senchu)
-  }, [setSenchu])
+  const handleSenchuChange = useCallback((value: Senchu) => {
+    const newSenchu = senchu === value ? 'NONE' : value
+
+    setSenchu(newSenchu)
+    logEvent({ kind: 'SENCHU', from: senchu, to: newSenchu })
+  }, [senchu, setSenchu, logEvent])
+
+  // the score setters take the new total, so what was awarded is the difference
+  const handleScoreRedChange = useCallback((value: number) => {
+    if (setScoreRed(value)) {
+      logEvent({ kind: 'POINTS', side: 'RED', delta: value - scoreRed })
+    }
+  }, [scoreRed, setScoreRed, logEvent])
+
+  const handleScoreBlueChange = useCallback((value: number) => {
+    if (setScoreBlue(value)) {
+      logEvent({ kind: 'POINTS', side: 'BLUE', delta: value - scoreBlue })
+    }
+  }, [scoreBlue, setScoreBlue, logEvent])
+
+  const handleFoulsRedChange = useCallback((value: number) => {
+    if (setFoulsRed(value)) {
+      logEvent({ kind: 'FOULS', side: 'RED', from: foulsRed, to: value })
+    }
+  }, [foulsRed, setFoulsRed, logEvent])
+
+  const handleFoulsBlueChange = useCallback((value: number) => {
+    if (setFoulsBlue(value)) {
+      logEvent({ kind: 'FOULS', side: 'BLUE', from: foulsBlue, to: value })
+    }
+  }, [foulsBlue, setFoulsBlue, logEvent])
 
   const handleTogglePause = useCallback(() => {
     if (phase === 'finished') {
@@ -86,17 +137,20 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     if (isPaused) {
       setIsPaused(false)
       clock.resume()
+      logEvent({ kind: 'RESUME' })
     } else {
       setIsPaused(true)
       clock.pause()
+      logEvent({ kind: 'PAUSE' })
     }
-  }, [phase, isPaused, setIsPaused, clock])
+  }, [phase, isPaused, setIsPaused, clock, logEvent])
 
   const handleStart = useCallback(() => {
     setPhase('fight')
     setIsPaused(false)
     clock.restart(() => setTime(prev => prev - 1), 1000)
-  }, [isPaused, setIsPaused, setTime])
+    logEvent({ kind: 'START' })
+  }, [setIsPaused, setTime, clock, logEvent])
 
   const handleReset = useCallback(() => {
     setPhase('init')
@@ -108,7 +162,10 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     setFoulsBlue(0)
     setSenchu('NONE')
     clock.pause()
-  }, [isPaused, setIsPaused, setTime])
+    // the log is kept on purpose - it is the record of what happened at the
+    // table, and it is the one thing the reset cannot give back
+    logEvent({ kind: 'RESET' })
+  }, [duration, setIsPaused, setTime, setScoreRed, setFoulsRed, setScoreBlue, setFoulsBlue, setSenchu, clock, logEvent])
 
   const handleGoBack = useCallback(() => {
     dispatch(setNotActualKumiteTimer())
@@ -128,20 +185,41 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
         bluePoints: scoreBlue,
         blueFouls: foulsBlue,
         senchu: senchu,
+        log,
       }))
       dispatch(setModalWindow('FIGHT_RESULT'))
     }
-  }, [dispatch, tournamentFight, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu])
+  }, [dispatch, tournamentFight, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu, log])
+
+  /**
+   * Keyed on which fight it is rather than on the object it came in: saving a
+   * fight dispatches a new one, and loading from that would wipe the log the
+   * fight has just been given and mark it as reopened on top of that.
+   */
+  const loadedFightUuid = useRef<string | null>(null)
 
   useEffect(() => {
-    if (tournamentFight) {
-      setScoreRed(tournamentFight.redPoints)
-      setFoulsRed(tournamentFight.redFouls)
-      setScoreBlue(tournamentFight.bluePoints)
-      setFoulsBlue(tournamentFight.blueFouls)
-      setSenchu(tournamentFight.senchu)
+    if (!tournamentFight || loadedFightUuid.current === tournamentFight.uuid) {
+      return
     }
-  }, [tournamentFight])
+
+    loadedFightUuid.current = tournamentFight.uuid
+
+    setScoreRed(tournamentFight.redPoints)
+    setFoulsRed(tournamentFight.redFouls)
+    setScoreBlue(tournamentFight.bluePoints)
+    setFoulsBlue(tournamentFight.blueFouls)
+    setSenchu(tournamentFight.senchu)
+
+    // a fight opened again carries on its own log rather than starting a new one
+    const previous = tournamentFight.log ?? []
+
+    setLog(previous.length === 0 ? previous : [...previous, {
+      at: Date.now(),
+      fightTime: duration,
+      event: { kind: 'REOPEN', redPoints: tournamentFight.redPoints, bluePoints: tournamentFight.bluePoints },
+    }])
+  }, [tournamentFight, duration, setScoreRed, setFoulsRed, setScoreBlue, setFoulsBlue, setSenchu, setLog])
 
   useEffect(() => {
     preloadKumiteAudio()
@@ -156,10 +234,12 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       playSignalEnd()
       setPhase('finished')
       clock.pause()
+      logEvent({ kind: 'END' }, 0)
     } else if (time === 15) {
       playAtoshibaraku()
     }
-  }, [time])
+    // both the clock and logEvent keep their identity, so this still only runs on a tick
+  }, [time, clock, logEvent])
 
   useEffect(() => {
     if (!isActual) {
@@ -174,11 +254,11 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       score={scoreRed}
       fouls={foulsRed}
       isMirror={false}
-      onScoreChange={setScoreRed}
-      onFoulsChange={setFoulsRed}
+      onScoreChange={handleScoreRedChange}
+      onFoulsChange={handleFoulsRedChange}
       name={tournamentFight?.redName}
     />
-  ), [scoreRed, foulsRed, tournamentFight])
+  ), [scoreRed, foulsRed, tournamentFight, handleScoreRedChange, handleFoulsRedChange])
 
   const renderBlueData = useCallback((className: string) => (
     <FighterStats
@@ -187,11 +267,11 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       score={scoreBlue}
       fouls={foulsBlue}
       isMirror={false}
-      onScoreChange={setScoreBlue}
-      onFoulsChange={setFoulsBlue}
+      onScoreChange={handleScoreBlueChange}
+      onFoulsChange={handleFoulsBlueChange}
       name={tournamentFight?.blueName}
     />
-  ), [scoreBlue, foulsBlue, tournamentFight])
+  ), [scoreBlue, foulsBlue, tournamentFight, handleScoreBlueChange, handleFoulsBlueChange])
 
   if (!isActual) {
     return null
@@ -254,6 +334,8 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
           {ct.back}
         </Button>
       </div>
+
+      <FightLog entries={log} />
     </main>
   )
 }

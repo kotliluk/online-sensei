@@ -66,6 +66,7 @@ export const FightResultModal = (): JSX.Element | null => {
       bluePoints: tournamentFight.bluePoints,
       blueFouls: tournamentFight.blueFouls,
       senchu: tournamentFight.senchu,
+      log: tournamentFight.log ?? [],
     }))
     void navigate('/kumite-timer/tournament')
     close()
