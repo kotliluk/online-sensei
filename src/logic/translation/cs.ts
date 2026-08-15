@@ -157,6 +157,17 @@ export const CS: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Uložit zápas',
+      export: {
+        tournament: 'Turnaj',
+        remaining: 'Zbývá',
+        type: 'Typ',
+        side: 'Strana',
+        value: 'Hodnota',
+        description: 'Popis',
+        // navazuje na AKA / AO, proto malým písmenem
+        points: 'body',
+        fouls: 'fauly',
+      },
       log: {
         toggle: 'Průběh zápasu',
         empty: 'Zatím se nic nestalo.',
