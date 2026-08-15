@@ -157,6 +157,24 @@ export const EN: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Save fight',
+      log: {
+        toggle: 'Fight log',
+        empty: 'Nothing has happened yet.',
+        start: 'Fight started',
+        pause: 'Paused',
+        resume: 'Resumed',
+        reset: 'Fight reset',
+        end: 'Fight ended',
+        // 2 params
+        reopen: 'Fight reopened (__{1}__:__{2}__)',
+        // 3 params
+        fouls: '__{1}__ fouls __{2}__ → __{3}__',
+        // 1 param
+        senchu: 'Senchu: __{1}__',
+        senchuNone: 'cancelled',
+        // 2 params
+        time: 'Time __{1}__ → __{2}__',
+      },
     },
   },
   intervalTimer: {

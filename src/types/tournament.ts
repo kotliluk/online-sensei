@@ -1,6 +1,7 @@
 import { v4 as uuidV4 } from 'uuid'
 import { arrayOfDefined, split } from '../utils/array'
-import { Senchu } from './senchu'
+import { Senchu, switchSenchu } from './senchu'
+import { FightLogEntry, isValidFightLog, switchFightLogSides } from './fightLog'
 
 
 export type TournamentType = 'TREE' | 'GROUP'
@@ -43,6 +44,8 @@ export type Fight = {
   blueFouls: number,
   senchu: Senchu,
   oppositeFight: string | undefined,
+  /** Optional: fights stored before the log existed do not have one. */
+  log?: FightLogEntry[],
 }
 
 export type FightResult = {
@@ -55,8 +58,22 @@ export type FightResult = {
   blueFouls: number,
   senchu: Senchu,
   oppositeFight: string | undefined,
+  /**
+   * Required, unlike the one on {@link Fight}: a result is built field by field
+   * in two places and never read back from storage, so making it compulsory is
+   * what stops it being quietly left out of one of them.
+   */
+  log: FightLogEntry[],
 }
 
+/**
+ * The result as the opposite cell of a group table sees it - there the same
+ * fight is listed with the fighters the other way round.
+ *
+ * Everything the result carries has to be named here, so anything added to
+ * {@link FightResult} has to be added here as well or it silently goes missing
+ * from half of the table.
+ */
 export const switchResultSides = (fight: FightResult): FightResult => {
   return {
     uuid: fight.uuid,
@@ -66,8 +83,9 @@ export const switchResultSides = (fight: FightResult): FightResult => {
     redFouls: fight.blueFouls,
     bluePoints: fight.redPoints,
     blueFouls: fight.redFouls,
-    senchu: (fight.senchu === 'RED' ? 'BLUE' : (fight.senchu === 'BLUE' ? 'RED' : 'NONE')),
+    senchu: switchSenchu(fight.senchu),
     oppositeFight: fight.oppositeFight,
+    log: switchFightLogSides(fight.log),
   }
 }
 
@@ -92,6 +110,7 @@ export const newFight = (
   blueFouls: 0,
   senchu: 'NONE',
   oppositeFight: undefined,
+  log: [],
 })
 
 export const isValidFight = (x: any): x is Fight => {
@@ -111,6 +130,8 @@ export const isValidFight = (x: any): x is Fight => {
     && (typeof x.senchu === 'string') && (x.senchu === 'RED' || x.senchu === 'BLUE' || x.senchu === 'NONE')
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     && (typeof x.oppositeFight === 'undefined' || typeof x.oppositeFight === 'string')
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    && isValidFightLog(x.log)
 }
 
 export const isFinal = (fight: Fight): boolean => fight.depth === 0 && fight.type === 'MAIN'

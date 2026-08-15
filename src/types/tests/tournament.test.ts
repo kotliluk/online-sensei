@@ -24,6 +24,7 @@ const fight = (red: string, blue: string, depth = 0): Fight => ({
   blueFouls: 0,
   senchu: 'NONE',
   oppositeFight: undefined,
+  log: [],
 })
 
 describe('createTournamentTree', () => {

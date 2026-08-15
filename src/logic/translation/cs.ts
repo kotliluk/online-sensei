@@ -157,6 +157,24 @@ export const CS: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Uložit zápas',
+      log: {
+        toggle: 'Průběh zápasu',
+        empty: 'Zatím se nic nestalo.',
+        start: 'Začátek zápasu',
+        pause: 'Pauza',
+        resume: 'Pokračování',
+        reset: 'Reset zápasu',
+        end: 'Konec zápasu',
+        // 2 params
+        reopen: 'Znovuotevření zápasu (__{1}__:__{2}__)',
+        // 3 params
+        fouls: '__{1}__ fauly __{2}__ → __{3}__',
+        // 1 param
+        senchu: 'Senchu: __{1}__',
+        senchuNone: 'zrušeno',
+        // 2 params
+        time: 'Čas __{1}__ → __{2}__',
+      },
     },
   },
   intervalTimer: {

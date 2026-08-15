@@ -64,6 +64,29 @@ for a kumite fight. It supports:
 - giving/cancelling senchu
 - mirroring a screen in a new browser tab
 - switching sides of aka/ao (separately for original and mirror screen)
+- a log of how the fight got to where it is
+
+### Fight log
+
+Everything that changes the fight is recorded with the clock reading it happened
+at, and shown under the buttons in a panel that is closed by default. Which side
+was showing on the left is not recorded - that is a matter of the view, not of
+the fight.
+
+Presses that belong to one decision are grouped into one line, because that is
+how the fight is read back afterwards. Three presses of `+` become `AKA +3`,
+which is also how an ippon is called; five presses of the time `-` become one
+`2:00 → 1:55`; and a point awarded and taken straight back leaves no line at all.
+Grouping is per clock reading rather than per press, so a stoppage where the
+referee sorts out an exchange reads as one line even though the clock stood still
+for a while - and it never reaches across a reset, a manual change of the clock,
+or a fight being reopened, since the same reading comes round again after those.
+
+A fight played in a tournament keeps its log with it, so it survives a reload and
+carries on where it left off when the fight is reopened, with the score it was
+reopened at marked in the log. In a group table the same fight is listed twice,
+once from each corner, and the mirrored copy has aka and ao the other way round
+in its log as well as in its score.
 
 The application can also manage a tournament. It supports both group
 and tree tournament types with up to 64 competitors. There can be only
