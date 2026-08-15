@@ -1,27 +1,37 @@
-# Šablona ticketu — `tickets/<slug>.md`
+# Šablona ticketu — `tickets/<id>-<slug>.md`
 
 **Jeden ticket = jeden soubor.** Sekce přibývají, jak flow postupuje; starší se nepřepisují.
 Česky. Sekce, která pro daný ticket nedává smysl, se **vynechá** — prázdný nadpis je horší
 než chybějící.
 
-## Limity délky (tvrdé)
+`id` je trojmístné zero-padded pořadové číslo (`001`, `002`, …) — **nikdy se nerecykluje**,
+takže je z názvů souborů vidět, co po čem přišlo. Další volné číslo = nejvyšší existující
+v `tickets/` + 1; žádný board se kvůli tomu neudržuje.
 
-| Sekce           | Strop     | Kdy je porušený limit v pořádku |
-| --------------- | --------- | ------------------------------- |
-| `A — Nápad`     | bez limitu (append-only přepis toho, co uživatel řekl) | vždy |
-| `B — Zadání`    | ~25 řádků | nikdy |
-| `C — Analýza`   | ~50 řádků | nikdy |
-| `D — Hotovo`    | ~25 řádků | nikdy |
-| `Review`        | ~30 řádků | nikdy |
+## Délka: proporcionalita, ne strop
 
-**Zastřešující pravidlo: dokumentace ticketu nesmí být delší než diff, který popisuje.**
-Když se k tomu blížíš, není řešení psát hustěji — je to signál, že ticket měl jít
-[malou dráhou](../SKILL.md#dvě-dráhy) nebo se rozdělit.
+Dokumentace roste **s tou změnou**, ne s ambicí. Orientační body, ne limity:
+
+| Rozsah změny                                        | Kolik dokumentace to unese                    |
+| --------------------------------------------------- | --------------------------------------------- |
+| drobnost — jeden soubor, jasná oprava                | pár řádků zadání, **analýza vůbec žádná** ([malá dráha](../SKILL.md#dvě-dráhy)) |
+| běžná iterace — stovky řádků                         | zadání kolem 25 řádků, analýza kolem 50        |
+| nová funkce — nová obrazovka, nový tvar stavu, víc feature | tolik, kolik potřebuje                    |
+
+**Tou hranicí, která platí vždy, není počet řádků, ale užitečnost:** co nepomůže
+implementaci ani review, je vata a patří pryč. Sto řádků analýzy na desetiřádkovou opravu
+je špatně bez ohledu na to, jak dobře je to napsané; padesát řádků na novou obrazovku může
+být málo.
+
+Když dokumentace vyjde delší než diff, **je to otázka, ne chyba**: dává ten ticket pořád
+smysl jako jeden kus, nebo se měl rozdělit? Odpověz si na ni a pokračuj — u průzkumné
+nebo rizikové změny je delší analýza legitimní výsledek.
 
 ---
 
 ```markdown
 ---
+id: <001>
 slug: <english-kebab-slug>
 title: <Český název>
 status: spec # spec | analysis | approved | wip | review | done | dropped

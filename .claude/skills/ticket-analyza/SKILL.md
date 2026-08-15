@@ -7,19 +7,23 @@ effort: high
 # Fáze 2 — Analýza (→ tvrdý gate)
 
 **Vstup:** sekce `B — Zadání`.
-**Výstup:** sekce `C — Analýza` (**~50 řádků**) + **TVRDÝ STOP**.
+**Výstup:** sekce `C — Analýza` + **TVRDÝ STOP**.
 
 Cíl: **vyčerpat nejednoznačnost dopředu.** Analýza je jediný human gate před psaním kódu —
 po schválení běží flow autonomně až k review.
 
 ## Tvrdé guardraily
 
-- **READ-ONLY na kód.** Jediný povolený zápis je do `tickets/<slug>.md`.
+- **READ-ONLY na kód.** Jediný povolený zápis je do `tickets/<id>-<slug>.md`.
 - **„Co & kde", ne „jak".** Cesty souborů, názvy funkcí, tvar stavu — ne hotová těla.
 - **Nehádej.** Co jsi v kódu neověřil, **není fakt** → „Otevřené otázky".
 - **Každý claim ukotvi** na `path:line`.
-- **Analýza nesmí být delší než diff, který popisuje.** Když ji nedokážeš vejít do limitu,
-  problém není v psaní — ticket je moc velký a **patří rozdělit**. Řekni to.
+- **Piš úměrně tomu, co se mění.** Běžná iterace se vejde kolem 50 řádků; nová obrazovka
+  nebo nový tvar stavu unesou víc. Měřítkem není počet řádků, ale to, jestli **každá věta
+  pomůže implementaci nebo review** — sto řádků analýzy na desetiřádkovou opravu je špatně
+  i tehdy, když je to napsané dobře. Vyjde-li analýza delší než čekaný diff, polož si
+  otázku, jestli je to pořád jeden ticket; někdy ano (průzkumná nebo riziková změna),
+  a pak je to v pořádku — jen to řekni.
 
 ## Krok 1 — Zadání a precedenty
 

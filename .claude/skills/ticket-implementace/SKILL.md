@@ -6,7 +6,7 @@ effort: high
 
 # Fáze 3 — Implementace
 
-**Předpoklad — ověř na disku, nespoléhej na kontext:** `tickets/<slug>.md` má ve frontmatteru
+**Předpoklad — ověř na disku, nespoléhej na kontext:** `tickets/<id>-<slug>.md` má ve frontmatteru
 **`status: approved`**. To je jediný důkaz, že gate proběhl. Když status není `approved`,
 **zeptej se uživatele**, i kdyby ti kontext session tvrdil, že schválení padlo.
 **Nikdy nezačínej kódit bez schválení.**

@@ -37,7 +37,7 @@ git diff main...HEAD --stat
 git diff main...HEAD
 ```
 
-Načti z `tickets/<slug>.md` **akceptační kritéria**, **plán testů** a **Předpoklady** —
+Načti z `tickets/<id>-<slug>.md` **akceptační kritéria**, **plán testů** a **Předpoklady** —
 to je měřítko, proti kterému se reviewuje.
 
 ## Krok 2 — Spusť agenty PARALELNĚ
@@ -82,7 +82,7 @@ testů → `tests`.
 
 **Nikdy nepředkládej dva protichůdné fixy na stejné řádky, aniž řekneš, který platí.**
 
-Zapiš do sekce `Review` ticketu (**~30 řádků**, jedna odrážka na nález):
+Zapiš do sekce `Review` ticketu — **jedna odrážka na nález**, ne odstavec:
 
 ```markdown
 ## Review
