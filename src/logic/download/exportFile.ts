@@ -32,9 +32,20 @@ const canShareFile = (file: File): boolean => {
   return typeof navigator.canShare === 'function' && navigator.canShare({ files: [file] })
 }
 
+/**
+ * The probe is named after its type rather than left bare, because the check
+ * looks at the extension as well - a file called `probe` is not obviously a
+ * csv to it, and the answer would then differ from the one the real file gets.
+ */
+const probeFile = (mimeType: string): File => {
+  const extension = mimeType.split(';')[0].split('/')[1] || 'txt'
+
+  return new File([''], `probe.${extension}`, { type: mimeType })
+}
+
 /** Whether {@link exportFile} will share a file of this type instead of downloading it. */
 export const willShareFile = (mimeType: string): boolean => {
-  return isTouchFirst() && canShareFile(new File([''], 'probe', { type: mimeType }))
+  return isTouchFirst() && canShareFile(probeFile(mimeType))
 }
 
 const downloadFile = (file: File): void => {
