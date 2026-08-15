@@ -1,5 +1,6 @@
 import { buildFightCsv, ExportedFight, fightCsvFileName } from '../csv'
 import { EN } from '../../translation/en'
+import { CS } from '../../translation/cs'
 import { FightEvent, FightLogEntry } from '../../../types/fightLog'
 
 
@@ -132,6 +133,40 @@ describe('buildFightCsv', () => {
     const csv = buildFightCsv(awkward, EN)
     // assert
     expect(csv).toContain('"Novák; Jan";"Ann ""Ace"""')
+  })
+})
+
+describe('buildFightCsv in another language', () => {
+  const log = [
+    entry({ kind: 'POINTS', side: 'RED', delta: 2 }),
+    entry({ kind: 'TIME_SET', from: 120, to: 82 }),
+  ]
+
+  test('translates the headers', () => {
+    // act
+    const header = rowsOf(buildFightCsv(fight({ log }), CS))[0]
+    // assert
+    expect(header.slice(0, 6)).toEqual(['Turnaj', 'AKA', 'AO', 'Čas', 'Zbývá', 'Typ'])
+    expect(header.slice(9, 11)).toEqual(['AKA body', 'AKA fauly'])
+  })
+
+  test('leaves the machine columns identical, so a file stays filterable across languages', () => {
+    // act
+    const columnsOf = (rows: string[][]): string[][] => rows.slice(1).map((row) => [row[5], row[6], row[7]])
+    const czech = columnsOf(rowsOf(buildFightCsv(fight({ log }), CS)))
+    const english = columnsOf(rowsOf(buildFightCsv(fight({ log }), EN)))
+    // assert - the kind and the corner are identifiers, only the description is prose
+    expect(czech).toEqual([['POINTS', 'AKA', '2'], ['TIME_SET', '', '82']])
+    expect(czech).toEqual(english)
+  })
+
+  test('writes the description in the language it was given', () => {
+    // act
+    const czech = rowsOf(buildFightCsv(fight({ log }), CS))[2][8]
+    const english = rowsOf(buildFightCsv(fight({ log }), EN))[2][8]
+    // assert
+    expect(czech).toBe('Čas 2:00 → 1:22')
+    expect(english).toBe('Time 2:00 → 1:22')
   })
 })
 
