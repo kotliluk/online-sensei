@@ -6,14 +6,14 @@ import { selectTranslation } from '../../../redux/page/selector'
 import { Competitor, CompetitorWithPlace, newCompetitorWithPlace } from '../../../types/groupStopwatch'
 import { OrderArrow } from '../../icons/OrderArrow'
 import { buildCsv, CSV_MIME_TYPE } from '../../../utils/csv'
-import { downloadTextFile } from '../../../logic/download/downloadFile'
+import { exportFile, willShareFile } from '../../../logic/download/exportFile'
 
 
 const NULL_TIME_REPLACE = 365 * 24 * 60 * 60 * 1000
 
 const pad = (value: number): string => value.toString().padStart(2, '0')
 
-/** Local time, so the name matches the clock of whoever downloads the file. */
+/** Local time, so the name matches the clock of whoever exports the file. */
 const csvFileName = (): string => {
   const now = new Date()
 
@@ -42,6 +42,8 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
   const [competitorsToShow, setCompetitorsToShow] = useState<CompetitorWithPlace[]>([])
   const [sortBy, setSortBy] = useState<'id' | 'name' | 'place'>('place')
   const [order, setOrder] = useState<'asc' | 'desc'>('asc')
+  // the button says what it does, and that depends on the device, not on the results
+  const [shares] = useState(() => willShareFile(CSV_MIME_TYPE))
 
   useEffect(() => {
     const newCompetitors = competitors.map((c, i) => newCompetitorWithPlace(c, i, NULL_TIME_REPLACE))
@@ -77,13 +79,13 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
   }, [sortBy, setSortBy, setOrder])
 
   // the rows are taken as they are shown, so the file keeps the chosen sorting
-  const handleDownloadCsv = useCallback(() => {
+  const handleExportCsv = useCallback(() => {
     const rows = [
       ['#', t.name, t.time, t.place],
       ...competitorsToShow.map((c) => [String(c.id), c.name, c.timeString, String(c.place)]),
     ]
 
-    downloadTextFile(csvFileName(), buildCsv(rows), CSV_MIME_TYPE)
+    exportFile(new File([buildCsv(rows)], csvFileName(), { type: CSV_MIME_TYPE }))
   }, [competitorsToShow, t])
 
   return (
@@ -129,10 +131,10 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
 
       <div className='buttons'>
         <Button
-          className='orange download-btn'
-          onClick={handleDownloadCsv}
+          className='orange export-btn'
+          onClick={handleExportCsv}
         >
-          {ct.downloadCsv}
+          {shares ? ct.shareCsv : ct.downloadCsv}
         </Button>
         <Button
           className='orange'
