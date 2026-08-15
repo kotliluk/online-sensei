@@ -167,12 +167,17 @@ Testing Library. Navíc 15 browser testů, které ale žijí mimo repo — viz b
   → `redOnLeft` a je čistě zobrazovací. `switchResultSides` (`tournament.ts:77`) se volá
   z `updateGroupTable` a zrcadlí zápas do protilehlé buňky skupiny. **Staví nový objekt
   výčtem polí**, takže cokoli nového na `FightResult` se v druhé půlce tabulky tiše ztratí.
-- Uložení turnajového zápasu **skončí na set-up obrazovce**, ne na tabulce — musí se přes
-  „Pokračovat turnaj". Ověřeno proti nasazenému mainu, takže preexistující. Zapsáno
-  v `TODO.md`.
-- Řada tlačítek časomíry (`KumiteTimerScreen.scss:45`) je flex **bez zalomení**. Se čtyřmi
-  tlačítky přetéká telefon (~544 px na 412); páté z fáze 2 to zhorší. `flex-wrap: wrap`
-  patří před fázi 2.
+- **Odchod z turnajového zápasu končil na set-up obrazovce** — a nešlo jen o uložení,
+  stejně dopadalo i tlačítko Zpět. Obě cesty navigují na tabulku správně, jenže je
+  přebil redirect efekt: `setNotActualKumiteTimer()` a `navigate()` jdou v jedné dávce,
+  takže obrazovka stihne přerenderovat s `isActual === false` ještě jako namontovaná
+  a efekt pošle uživatele na set-up **navrch** zvolené trasy. Zachyceno zásobníkem volání
+  u `history.pushState`, ne odhadem. Opraveno spolu s ostatními; ostatní čtyři feature
+  obrazovky mají stejný tvar, ale tam je cíl odchodu shodou okolností právě jejich set-up,
+  takže se to nikdy neprojevilo.
+- Řada tlačítek časomíry (`KumiteTimerScreen.scss:45`) byla flex **bez zalomení** a se
+  čtyřmi tlačítky přetékala telefon. Opraveno (`flex-wrap` + `row-gap`), změřeno na 412 px:
+  žádné tlačítko už nepřečnívá, „Zpět" se zalomí na druhý řádek.
 
 **Ověřeno na:** **Jen desktop Chrome** (Playwright, 63/63) a emulovaný viewport 412×915 —
 což je rozlišení, ne zařízení. Na reálném telefonu **neověřeno**. Prohlížečových API se
@@ -233,12 +238,12 @@ texty do obou jazyků.
   viselo jen na Playwright sadě mimo git · **✅ opraveno** (6 testů přes Testing Library
   podle vzoru `src/tests/app.test.tsx`)
 
-**Zvážit (80–89) — nechal jsem na tebe**
+**Zvážit (80–89) — rozhodnuto**
 
-- `KumiteTimerScreen.tsx:238` · po konci zápasu je `phase === 'finished'`, tlačítka času
-  jsou povolená, takže `+` a `-` vrátí hodiny na nulu a efekt zapíše **druhý** „Konec
-  zápasu". Oprava je jedna podmínka (`time === 0 && phase !== 'finished'`), ale jestli
-  má být návrat hodin na nulu vidět, je produktová otázka.
+- ✅ **rozhodnuto: ponechat.** `KumiteTimerScreen.tsx:238` · po konci zápasu jsou tlačítka
+  času povolená, takže `+` a `-` vrátí hodiny na nulu a efekt zapíše **druhý** „Konec
+  zápasu". Uživatel to potvrdil jako žádoucí — návrat hodin na nulu je událost, která se
+  u stolku stala, a log ji má ukazovat. Není to dluh.
 - `tournament.ts:134` + `fightLog.ts` · `isValidFightLog` je shovívavý jen k **chybějícímu**
   logu. Log přítomný ve špatném tvaru vrátí `false` → `isValidFight` `false` →
   `getValidatedTypeFromLS` přepíše celý klíč defaultem a **rozehraný turnaj je pryč**.

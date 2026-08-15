@@ -3,9 +3,15 @@ import userEvent from '@testing-library/user-event'
 import { Provider as ReduxProvider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 import { KumiteTimerScreen } from '../KumiteTimerScreen'
+import App from '../../../../App'
 import { store } from '../../../../redux/store'
-import { setKumiteTimer, setTournamentFight } from '../../../../redux/kumiteTimer/actions'
-import { Fight, newFight } from '../../../../types/tournament'
+import {
+  setKumiteTimer,
+  setKumiteTimerTournament,
+  setNotActualKumiteTimer,
+  setTournamentFight,
+} from '../../../../redux/kumiteTimer/actions'
+import { Fight, newCompetitor, newFight } from '../../../../types/tournament'
 import { FightLogEntry } from '../../../../types/fightLog'
 
 
@@ -130,5 +136,41 @@ describe('KumiteTimerScreen fight log', () => {
     await openLog(user)
     // assert
     expect(logLines()).toEqual([])
+  })
+})
+
+
+describe('KumiteTimerScreen navigation', () => {
+  const renderApp = (path: string): void => {
+    render(
+      <ReduxProvider store={store}>
+        <MemoryRouter initialEntries={[path]}>
+          <App />
+        </MemoryRouter>
+      </ReduxProvider>,
+    )
+  }
+
+  test('leaving a tournament fight returns to the table, not to the set-up', async () => {
+    // arrange
+    const user = userEvent.setup()
+    store.dispatch(setKumiteTimerTournament(120, 'Camp', 'GROUP', 3, [
+      newCompetitor('Aneta'), newCompetitor('Bob'), newCompetitor('Cyril'),
+    ]))
+    startSession(newFight('r', 'Aneta', 'b', 'Bob'))
+    renderApp('/kumite-timer')
+    // act
+    await user.click(screen.getByRole('button', { name: 'Back' }))
+    // assert - ending the session must not send a redirect after the chosen route
+    expect(await screen.findByRole('heading', { name: /Tournament: Camp/ })).toBeInTheDocument()
+  })
+
+  test('opening the screen without a session still lands on the set-up', async () => {
+    // arrange
+    store.dispatch(setNotActualKumiteTimer())
+    // act
+    renderApp('/kumite-timer')
+    // assert - the reason the redirect exists in the first place
+    expect(await screen.findByRole('heading', { name: 'Kumite Timer' })).toBeInTheDocument()
   })
 })
