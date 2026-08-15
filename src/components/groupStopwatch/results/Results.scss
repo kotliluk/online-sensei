@@ -42,4 +42,13 @@
     min-width: 5rem;
     text-align: center;
   }
+
+  .buttons {
+    // the label does not fit the width the play screen gives its buttons and
+    // would wrap onto a second line
+    button.download-btn {
+      width: auto;
+      min-width: $button-long-width;
+    }
+  }
 }

@@ -5,9 +5,21 @@ import { Button } from '../../atoms/button/Button'
 import { selectTranslation } from '../../../redux/page/selector'
 import { Competitor, CompetitorWithPlace, newCompetitorWithPlace } from '../../../types/groupStopwatch'
 import { OrderArrow } from '../../icons/OrderArrow'
+import { buildCsv, CSV_MIME_TYPE } from '../../../utils/csv'
+import { downloadTextFile } from '../../../logic/download/downloadFile'
 
 
 const NULL_TIME_REPLACE = 365 * 24 * 60 * 60 * 1000
+
+const pad = (value: number): string => value.toString().padStart(2, '0')
+
+/** Local time, so the name matches the clock of whoever downloads the file. */
+const csvFileName = (): string => {
+  const now = new Date()
+
+  return `group-stopwatch-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+    + `-${pad(now.getHours())}${pad(now.getMinutes())}.csv`
+}
 
 const compareOrById = (primaryResult: number, a: CompetitorWithPlace, b: CompetitorWithPlace): number => {
   if (primaryResult === 0) {
@@ -24,6 +36,7 @@ interface ResultsProps {
 export const Results = (props: ResultsProps): JSX.Element | null => {
   const { competitors, onBackToStopwatch } = props
   const translation = useSelector(selectTranslation)
+  const { groupStopwatch: { playScreen: t }, common: ct } = translation
 
   const [competitorsWithPlace, setCompetitorsWithPlace] = useState<CompetitorWithPlace[]>([])
   const [competitorsToShow, setCompetitorsToShow] = useState<CompetitorWithPlace[]>([])
@@ -63,7 +76,15 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
     setOrder(prevOrder => newSortBy === sortBy ? (prevOrder === 'asc' ? 'desc' : 'asc') : 'asc')
   }, [sortBy, setSortBy, setOrder])
 
-  const { groupStopwatch: { playScreen: t }, common: ct } = translation
+  // the rows are taken as they are shown, so the file keeps the chosen sorting
+  const handleDownloadCsv = useCallback(() => {
+    const rows = [
+      ['#', t.name, t.time, t.place],
+      ...competitorsToShow.map((c) => [String(c.id), c.name, c.timeString, String(c.place)]),
+    ]
+
+    downloadTextFile(csvFileName(), buildCsv(rows), CSV_MIME_TYPE)
+  }, [competitorsToShow, t])
 
   return (
     <div className='results-group-stopwatch-wrapper'>
@@ -107,6 +128,12 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
       </div>
 
       <div className='buttons'>
+        <Button
+          className='orange download-btn'
+          onClick={handleDownloadCsv}
+        >
+          {ct.downloadCsv}
+        </Button>
         <Button
           className='orange'
           onClick={onBackToStopwatch}

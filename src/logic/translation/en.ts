@@ -26,6 +26,7 @@ export const EN: Translation = {
     share: 'Share',
     shareCopied: 'A link with the current set up was copied to the clipboard',
     shareFailed: 'The link could not be copied to the clipboard',
+    downloadCsv: 'Download CSV',
   },
   mainPage: {
     appIntroduction: 'Train alone or with friends with OnlineSensei!',

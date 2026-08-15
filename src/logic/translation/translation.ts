@@ -29,6 +29,7 @@ export interface Translation {
     share: string,
     shareCopied: string,
     shareFailed: string,
+    downloadCsv: string,
   }
   mainPage: {
     appIntroduction: string,
