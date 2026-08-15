@@ -65,6 +65,7 @@ for a kumite fight. It supports:
 - mirroring a screen in a new browser tab
 - switching sides of aka/ao (separately for original and mirror screen)
 - a log of how the fight got to where it is
+- exporting that log, with the state of the fight, as a CSV file
 
 ### Fight log
 
@@ -87,6 +88,31 @@ carries on where it left off when the fight is reopened, with the score it was
 reopened at marked in the log. In a group table the same fight is listed twice,
 once from each corner, and the mirrored copy has aka and ao the other way round
 in its log as well as in its score.
+
+### Exporting a fight
+
+The button next to Start and Back writes the fight to a CSV file - shared through the
+system share sheet on a touch device, downloaded everywhere else, the same way the group
+stopwatch results are, and with the same encoding decisions behind it (UTF-8 with no byte
+order mark, semicolons; the reasoning is in that section).
+
+The file is flat: a header and then one row per logged event, with the fight itself
+repeated on every row. For a single fight that is redundant, and deliberately so - the
+export of a whole tournament is then a concatenation of these rather than a second format.
+Columns run identity, then event, then result:
+
+```
+Tournament;AKA;AO;Time;Remaining;Type;Side;Value;Description;AKA points;AKA fouls;AO points;AO fouls;Senchu
+Camp;Aneta;Bob;2026-08-15 22:35:24;1:58;POINTS;AKA;3;AKA +3;3;0;0;1;AKA
+```
+
+A corner is AKA or AO in every column that names one. Event kinds stay raw keys and the
+value column holds plain numbers, so a file exported in Czech can be filtered and summed
+the same way as one exported in English; only the header and the description follow the
+language of the app.
+
+The fight is exported as it stands on the screen, so a tournament fight has no winner in
+it - that is chosen a screen later, after leaving the timer.
 
 The application can also manage a tournament. It supports both group
 and tree tournament types with up to 64 competitors. There can be only

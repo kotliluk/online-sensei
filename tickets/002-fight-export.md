@@ -2,7 +2,7 @@
 id: 002
 slug: fight-export
 title: Export jednotlivého zápasu do CSV
-status: wip
+status: review
 branch: fight-export
 ---
 
@@ -193,3 +193,100 @@ aplikace. Ruční ověření na telefonu je součástí dodávky.
 3. **`hodnota` u `TIME_SET` v sekundách.** `popis` nese čitelné `2:00 → 1:22`.
 
 **Otevřené otázky:** žádné — gate uzavřen.
+
+## D — Hotovo
+
+**Co se udělalo:** Commity `3d135e0` (implementace) a druhý s opravami z review. Čistá
+funkce `buildFightCsv` v `src/logic/fightLog/csv.ts`, páté tlačítko na časomíře, hlavičky
+sloupců v obou jazycích. Sada je po review **145 testů** (ze 139), z toho 19 nad samotným
+shaperem; browser sada 66 včetně tří nových nad skutečným stažením souboru.
+
+**Odchylky od B/C:** žádné. Sloupce, jméno souboru i chybějící vítěz sedí na to, co bylo
+schváleno na gatu.
+
+**Gotchas:**
+
+- **Třída `export-btn` sama o sobě nic nedělá.** Ve vzoru u skupinových stopek k ní patří
+  pravidlo `width: auto; min-width` scopnuté pod jejich wrapper. Přenést jen třídu znamená
+  mrtvý selektor a popisek zalomený na dva řádky — což natáhne celý flex řádek z 38 na
+  60 px, protože `.buttons` má výchozí `align-items: stretch`. Našli to **tři revieweři
+  nezávisle**.
+- **Sdílený modulový `store` v testech prosakuje mezi `describe` bloky.** `setKumiteTimer`
+  nemaže `tournamentName`, takže export test „procházel" na názvu turnaje, který si
+  naaranžoval úplně jiný test o dva bloky výš. Testy obrazovky si musí stav nastavit samy.
+- **Symetrická data v testu schovají prohozené rohy.** Dokud měly oba rohy nula faulů,
+  záměna `redFouls`/`blueFouls` prošla celou sadou. Stav v testu musí být asymetrický.
+
+**Ověřeno na:** **desktop Chrome** (Playwright, 66/66) a emulované viewporty 412×915,
+412×730, 390×664, 375×667, 360×640 a na šířku. Skutečně stažený soubor přečten po bajtech:
+bez BOM, CRLF, středník, jméno souboru jen ASCII. Ověřeno i to, že `navigator.share`
+dostane `File` s typem přesně `text/csv`, že při `NotAllowedError` cesta spadne zpět na
+stažení a při `AbortError` ne, a že mimo secure context popisek čitelně degraduje na
+„Stáhnout CSV". Testy jsou ověřené mutacemi: 8 mutací, všech 8 zčervenalo.
+
+**Na reálném telefonu neověřeno** — ani stažení, ani sdílení. To je u téhle funkce zrovna
+ta část, kde se to v tomhle projektu čtyřikrát rozbilo, takže „zeleno" tady neznamená
+hotovo. Co zkusit, je v uzávěrce.
+
+## Review
+
+Branch: `fight-export` · revieweři: všichni čtyři (`correctness`, `react-state`,
+`device-ux`, `tests`), nad `git diff fight-log...HEAD`, aby znovu neprocházeli ticket 001.
+
+**Opravit — vše opraveno**
+
+- [major] `KumiteTimerScreen.tsx:383` + `KumiteTimerScreen.scss:56` · třída `export-btn`
+  přenesená ze vzoru bez svého pravidla → popisek „Stáhnout CSV" i „Download CSV" se
+  v pevných 8 rem láme na dva řádky a natáhne celý flex řádek z 38 na 60 px. **Našli
+  nezávisle tři revieweři** (korektnost 85, react-state 90, device-ux 100); přiřazeno
+  device-ux, který to změřil na 412, 375 i 360 px v obou jazycích. Ověřeno po opravě:
+  jeden řádek, 133 px cs / 141 px en · **✅ opraveno**
+- [major] dotyková větev tlačítka neměla test — mutace „popisek ignoruje `willShareFile`"
+  i „ptá se na jiný MIME, než exportuje" procházely celou sadou. Přibyl test, který
+  přepíše `matchMedia` na `(pointer: coarse)` a `navigator.canShare`, a **zároveň
+  kontroluje, na jaký typ se `willShareFile` ptal** · **✅ opraveno**
+- [major] sloupec turnaje se nikde neasertoval a jeho hodnota v testu **prosákla ze
+  sdíleného modulového `store`** z jiného `describe` — mutace „název turnaje se do souboru
+  nedostane" procházela. Export testy si teď turnaj zakládají samy, plus nový případ
+  samostatného zápasu s prázdným sloupcem · **✅ opraveno**
+- [major] nic nedokazovalo, že hlavičky jdou z překladu — `headerRow` přepsaná na anglické
+  literály i změněný český překlad procházely. Přibyly tři testy nad `CS`, které navíc
+  připínají, že `typ` a `strana` zůstávají napříč jazyky identické · **✅ opraveno**
+
+**Opraveno nad rámec bucketu (80–89), a proč**
+
+- [minor 88] fauly a senchu šlo na úrovni obrazovky prohodit i vymazat bez pádu testu —
+  oba rohy měly v testech nula faulů. **Vyřešilo se samo** s přepracováním testu výš, kde
+  stav musel být stejně asymetrický.
+- [minor 85] „tlačítko je v řadě se Start a Zpět" nemělo test; přesun tlačítka pod
+  `<FightLog />` procházel. Opraveno **ne jako review fix, ale jako uzávěrka**: je to
+  akceptační kritérium bez jediného testu, a nenaplněné kritérium je podle flow blocker.
+
+**Zvážit — nechal jsem na tobě**
+
+- [major, jistota 95] `KumiteTimerScreen.tsx:382` · **s pátým tlačítkem se řada na užších
+  telefonech láme na tři řádky a padá pod okraj.** Změřeno: 375×667 (iPhone SE/13 mini)
+  a 360×640 → tři řádky, pod okrajem „Uložit zápas", „Stáhnout CSV" i „Zpět"; na šířku
+  (667×375) je pod okrajem **celá řada včetně Start**. Na 412 px je všechno vidět, proto
+  to v mém měření neprosáklo. Neopravuju: oprava je designové rozhodnutí (užší tlačítka
+  pod nějakým breakpointem) a reviewer sám doporučuje nejdřív zkusit na zařízení. Souvisí
+  s bodem 4 v `TODO.md`.
+- [minor 85] `csv.ts:106` · **sloupec „Zbývá" je `m:ss` a tabulkové procesory ho
+  autokonvertují na hodiny:minuty** — `0:05` (pět vteřin do konce) se v Google Sheets
+  i Excelu zobrazí jako `0:05:00`, tedy pět minut. Ostatní sloupce čisté. Oprava je změna
+  schváleného formátu (sekundy jako číslo, nebo druhý číselný sloupec vedle čitelného),
+  což je přesně to, co sis chtěl doladit na dev serveru.
+- [minor 85] `KumiteTimerScreen.tsx:167` · **sdílecí sheet překryje běžící časomíru.**
+  Export je jediné tlačítko v řadě, které není vypnuté během běhu zápasu — schválně, nic
+  nemění. Jenže na telefonu `navigator.share()` vytáhne systémový sheet přes celou
+  obrazovku a hodiny odečítají vteřinu **za tick `setInterval`u**, ne z reálného času
+  (`pausableInterval.ts` sahá na `new Date()` jen v `pause()`). Co prohlížeč udělá
+  s časovači schované stránky, se propíše rovnou do zápasového času. Chce to změřit na
+  zařízení, ne hádat.
+
+**Bez nálezů:** korektnost mimo ten jeden sdílený nález — ověřila počty a pořadí sloupců,
+vyčerpávající `eventCells`, že export bere strany ze zápasu a ne ze zobrazení, a lokální
+čas přes půlnoc.
+
+**Ověření oprav:** 8 mutací spuštěno v kopii repa mimo pracovní strom, **všech 8
+zčervenalo**.

@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider as ReduxProvider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
@@ -193,6 +193,42 @@ describe('KumiteTimerScreen navigation', () => {
 
 
 describe('KumiteTimerScreen export', () => {
+  /**
+   * The store is a module singleton shared by every test in this file, and
+   * `setKumiteTimer` does not clear the tournament name. These tests arrange
+   * their own instead of reading whatever an earlier describe happened to leave.
+   */
+  const startTournamentFight = (): void => {
+    store.dispatch(setKumiteTimerTournament(120, 'Camp', 'GROUP', 2, [
+      newCompetitor('Aneta'), newCompetitor('Bob'),
+    ]))
+    startSession(newFight('r', 'Aneta', 'b', 'Bob'))
+  }
+
+  const buttonRow = (): HTMLElement => document.querySelector('.kumite-timer .buttons') as HTMLElement
+
+  const rowsOfExport = async (): Promise<string[][]> => {
+    const text = await exported[0].text()
+
+    return text.trimEnd().split('\r\n').map((row) => row.split(';'))
+  }
+
+  beforeEach(() => {
+    exported.length = 0
+  })
+
+  test('sits in the row with Start and Back', () => {
+    // arrange
+    startSession()
+    // act
+    renderScreen()
+    // assert - searched inside the row, so moving the button elsewhere fails
+    const row = within(buttonRow())
+    expect(row.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument()
+    expect(row.getByRole('button', { name: 'Start' })).toBeInTheDocument()
+    expect(row.getByRole('button', { name: 'Back' })).toBeInTheDocument()
+  })
+
   test('offers the download on a device that cannot share files', () => {
     // arrange
     startSession()
@@ -202,10 +238,38 @@ describe('KumiteTimerScreen export', () => {
     expect(screen.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument()
   })
 
+  test('offers sharing on a touch device that will take the file', () => {
+    // arrange - the only place the touch branch can be reached from a test
+    const asked: string[] = []
+    const matchMedia = window.matchMedia
+    window.matchMedia = (query: string) => ({
+      ...matchMedia(query),
+      matches: query.includes('coarse'),
+    })
+    Object.defineProperty(navigator, 'canShare', {
+      value: ({ files }: { files: File[] }) => {
+        asked.push(files[0].type)
+        return true
+      },
+      configurable: true,
+    })
+
+    try {
+      startSession()
+      // act
+      renderScreen()
+      // assert - and it asked about the type it is going to export
+      expect(screen.getByRole('button', { name: 'Share CSV' })).toBeInTheDocument()
+      expect(asked).toEqual(['text/csv'])
+    } finally {
+      window.matchMedia = matchMedia
+      Reflect.deleteProperty(navigator, 'canShare')
+    }
+  })
+
   test('hands over a csv file named by the moment it was exported', async () => {
     // arrange
     const user = userEvent.setup()
-    exported.length = 0
     startSession()
     renderScreen()
     // act
@@ -219,17 +283,32 @@ describe('KumiteTimerScreen export', () => {
   test('exports the fight as it stands on the screen, not as it was stored', async () => {
     // arrange
     const user = userEvent.setup()
-    exported.length = 0
-    startSession(fightWithLog([]))
+    startTournamentFight()
     renderScreen()
-    // act - the stored fight says 2:1, the screen is about to say 3:1
+    // act - a point to aka, two fouls to ao, senchu to aka: nothing symmetric
     await user.click(scoreButton('red', '+'))
+    await user.click(document.querySelectorAll('.__fouls.blue .foul-circle')[1])
+    await user.click(document.querySelector('.__senchu-red input') as HTMLElement)
     await user.click(screen.getByRole('button', { name: 'Download CSV' }))
-    const rows = (await exported[0].text()).trimEnd().split('\r\n')
-    // assert
-    expect(rows).toHaveLength(2)
-    expect(rows[1]).toContain('Aneta;Bob')
-    expect(rows[1]).toContain('AKA +1')
-    expect(rows[1].split(';').slice(-5)).toEqual(['3', '0', '1', '0', ''])
+    const rows = await rowsOfExport()
+    // assert - asymmetric on purpose, so swapping two corners cannot pass
+    expect(rows.slice(1).map((row) => row.at(5))).toEqual(['POINTS', 'FOULS', 'SENCHU'])
+    rows.slice(1).forEach((row) => {
+      expect(row.slice(0, 3)).toEqual(['Camp', 'Aneta', 'Bob'])
+      expect(row.slice(-5)).toEqual(['1', '0', '0', '2', 'AKA'])
+    })
+  })
+
+  test('leaves the tournament column empty for a fight played outside one', async () => {
+    // arrange
+    const user = userEvent.setup()
+    startTournamentFight()
+    startSession()
+    renderScreen()
+    // act
+    await user.click(screen.getByRole('button', { name: 'Download CSV' }))
+    const rows = await rowsOfExport()
+    // assert - the name is still in the store; it is the missing fight that decides
+    expect(rows[1].slice(0, 3)).toEqual(['', '', ''])
   })
 })
