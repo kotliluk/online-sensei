@@ -154,3 +154,9 @@ You simple set their count, optionally fill their names, and start the time. Whe
 you save their time by clicking their name. If you misclick, you can update saved time by double-click.
 You can always see the result list where you can sort the results by the time, the name or by the starting
 number.
+
+The result list can be downloaded as a CSV file. It holds exactly what the table
+shows, in the order it is shown, so the chosen sorting carries over. The file is
+semicolon separated and starts with a byte order mark - the combination that
+spreadsheets in European locales open directly, with the accented names intact
+and without an import dialog.
