@@ -5,7 +5,7 @@ import { Button } from '../../atoms/button/Button'
 import { parseTime } from '../../../utils/time'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
-import { config } from '../../../config'
+import { buildAppUrl, KUMITE_TIMER_MIRROR_PATH } from '../../../logic/urlState/appUrl'
 import { emptyFunc } from '../../../utils/function'
 import { Switch } from '../../icons/Switch'
 import { TwoMonitors } from '../../icons/TwoMonitors'
@@ -39,7 +39,7 @@ export const FightStats = ({
 }: FightStatsProps): JSX.Element | null => {
 
   const openMirrorWindow = useCallback(() => {
-    window.open(window.location.origin + config.basename + '?mirror=true', '_blank')
+    window.open(buildAppUrl(KUMITE_TIMER_MIRROR_PATH), '_blank')
   }, [])
 
   const renderCheckBox = useCallback((color: 'RED' | 'BLUE') => (
