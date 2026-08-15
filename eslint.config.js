@@ -71,7 +71,10 @@ const stylisticRules = {
 
 export default tseslint.config(
   {
-    ignores: ['build/**', 'node_modules/**', '.yarn/**', 'coverage/**'],
+    // `.claude/**` holds the hooks of the AI development flow. They are plain node
+    // scripts outside the tsconfig project, so the type-checked rules cannot run on
+    // them - they have their own fixture tests instead (`.claude/hooks/tests/run.mjs`).
+    ignores: ['build/**', 'node_modules/**', '.yarn/**', 'coverage/**', '.claude/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,

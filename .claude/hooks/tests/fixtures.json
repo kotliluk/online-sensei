@@ -1,0 +1,102 @@
+[
+  {
+    "name": "blokuje přepsání vlastního hooku",
+    "expect": "block",
+    "payload": { "tool_name": "Edit", "tool_input": { "file_path": ".claude/hooks/guard.mjs" } }
+  },
+  {
+    "name": "blokuje přepsání settings.json",
+    "expect": "block",
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": "/abs/repo/.claude/settings.json" } }
+  },
+  {
+    "name": "blokuje zápis do .env",
+    "expect": "block",
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": ".env.local" } }
+  },
+  {
+    "name": "pouští .env.example",
+    "expect": "allow",
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": ".env.example" } }
+  },
+  {
+    "name": "blokuje zápis do build/",
+    "expect": "block",
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": "build/index.html" } }
+  },
+  {
+    "name": "blokuje scratch artefakt v repu",
+    "expect": "block",
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": "src/debug-output.ts" } }
+  },
+  {
+    "name": "pouští běžný zdrojový soubor",
+    "expect": "allow",
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": "src/utils/csv.ts" } }
+  },
+  {
+    "name": "pouští ticket",
+    "expect": "allow",
+    "payload": { "tool_name": "Write", "tool_input": { "file_path": "tickets/fight-log.md" } }
+  },
+  {
+    "name": "blokuje --no-verify",
+    "expect": "block",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git commit --no-verify -m 'x'" } }
+  },
+  {
+    "name": "blokuje push --force",
+    "expect": "block",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git push --force origin fight-log" } }
+  },
+  {
+    "name": "pouští push --force-with-lease",
+    "expect": "allow",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git push --force-with-lease origin fight-log" } }
+  },
+  {
+    "name": "blokuje push do main",
+    "expect": "block",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git push origin main" } }
+  },
+  {
+    "name": "blokuje push HEAD:main",
+    "expect": "block",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git push origin HEAD:main" } }
+  },
+  {
+    "name": "pouští push feature branche",
+    "expect": "allow",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git push -u origin fight-log" } }
+  },
+  {
+    "name": "blokuje git reset --hard",
+    "expect": "block",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git reset --hard HEAD~1" } }
+  },
+  {
+    "name": "blokuje git clean -fd",
+    "expect": "block",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git clean -fd" } }
+  },
+  {
+    "name": "blokuje rm -rf na home",
+    "expect": "block",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "rm -rf ~" } }
+  },
+  {
+    "name": "pouští běžný příkaz",
+    "expect": "allow",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "yarn test" } }
+  },
+  {
+    "name": "pouští commit na feature branchi",
+    "expect": "allow",
+    "payload": { "tool_name": "Bash", "tool_input": { "command": "git commit -m 'Log the course of a kumite fight'" } }
+  },
+  {
+    "name": "pouští čtení, které guard neřeší",
+    "expect": "allow",
+    "payload": { "tool_name": "Read", "tool_input": { "file_path": ".env" } }
+  }
+]
