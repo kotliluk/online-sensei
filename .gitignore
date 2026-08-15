@@ -15,6 +15,9 @@
 # production
 /build
 
+# local notes
+/TODO.md
+
 # misc
 .DS_Store
 *.local
