@@ -3,6 +3,9 @@
 # dependencies
 /node_modules
 
+# git worktrees opened by Claude Code sessions
+/.claude/worktrees
+
 # yarn (modern) — zero-install is not used, only the release binary is kept out
 .yarn/*
 !.yarn/patches
