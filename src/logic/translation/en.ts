@@ -157,6 +157,17 @@ export const EN: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Save fight',
+      export: {
+        tournament: 'Tournament',
+        remaining: 'Remaining',
+        type: 'Type',
+        side: 'Side',
+        value: 'Value',
+        description: 'Description',
+        // follows AKA / AO, hence lower case
+        points: 'points',
+        fouls: 'fouls',
+      },
       log: {
         toggle: 'Fight log',
         empty: 'Nothing has happened yet.',

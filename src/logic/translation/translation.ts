@@ -158,6 +158,16 @@ export interface Translation {
     },
     timerScreen: {
       saveTournamentFight: string,
+      export: {
+        tournament: string,
+        remaining: string,
+        type: string,
+        side: string,
+        value: string,
+        description: string,
+        points: string,
+        fouls: string,
+      },
       log: {
         toggle: string,
         empty: string,

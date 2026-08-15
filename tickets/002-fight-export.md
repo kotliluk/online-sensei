@@ -2,7 +2,7 @@
 id: 002
 slug: fight-export
 title: Export jednotlivého zápasu do CSV
-status: approved
+status: wip
 branch: fight-export
 ---
 

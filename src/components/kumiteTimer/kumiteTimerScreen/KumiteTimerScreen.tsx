@@ -23,6 +23,9 @@ import { Senchu } from '../../../types/senchu'
 import { setModalWindow } from '../../../redux/page/actions'
 import { appendFightEvent, FightEvent, FightLogEntry } from '../../../types/fightLog'
 import { FightLog } from '../fightLog/FightLog'
+import { buildFightCsv, ExportedFight, fightCsvFileName } from '../../../logic/fightLog/csv'
+import { CSV_MIME_TYPE } from '../../../utils/csv'
+import { exportFile, willShareFile } from '../../../logic/download/exportFile'
 
 
 type PlayPhase = 'init' | 'fight' | 'finished'
@@ -71,6 +74,8 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const [log, setLog] = useState<FightLogEntry[]>([])
+  // the label says what the button does, and that depends on the device, not on the fight
+  const [shares] = useState(() => willShareFile(CSV_MIME_TYPE))
 
   /**
    * The clock is read through a ref so the handlers do not have to be rebuilt
@@ -177,6 +182,28 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     // table, and it is the one thing the reset cannot give back
     logEvent({ kind: 'RESET' })
   }, [duration, setIsPaused, setTime, setScoreRed, setFoulsRed, setScoreBlue, setFoulsBlue, setSenchu, clock, logEvent])
+
+  /**
+   * Exports what is on the screen, not what is stored: the button sits on the
+   * timer, so a tournament fight has not been saved yet and has no winner - that
+   * is chosen a screen later.
+   */
+  const handleExportCsv = useCallback(() => {
+    const fight: ExportedFight = {
+      tournamentName: tournamentFight ? tournamentName : undefined,
+      redName: tournamentFight?.redName,
+      blueName: tournamentFight?.blueName,
+      redPoints: scoreRed,
+      redFouls: foulsRed,
+      bluePoints: scoreBlue,
+      blueFouls: foulsBlue,
+      senchu,
+      log,
+    }
+    const content = buildFightCsv(fight, translation)
+
+    exportFile(new File([content], fightCsvFileName(new Date()), { type: CSV_MIME_TYPE }))
+  }, [tournamentFight, tournamentName, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu, log, translation])
 
   const handleGoBack = useCallback(() => {
     dispatch(setNotActualKumiteTimer())
@@ -352,6 +379,12 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
             {t.saveTournamentFight}
           </Button>
         )}
+        <Button
+          className='orange export-btn'
+          onClick={handleExportCsv}
+        >
+          {shares ? ct.shareCsv : ct.downloadCsv}
+        </Button>
         <Button
           className='orange'
           onClick={handleGoBack}

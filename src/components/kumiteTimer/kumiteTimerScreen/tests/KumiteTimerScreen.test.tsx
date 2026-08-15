@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider as ReduxProvider } from 'react-redux'
@@ -14,6 +15,21 @@ import {
 import { Fight, newCompetitor, newFight } from '../../../../types/tournament'
 import { FightLogEntry } from '../../../../types/fightLog'
 
+
+/**
+ * Only the last step out to the browser is replaced - `willShareFile` stays real,
+ * so the label is still decided by asking the environment. `exportFile` itself
+ * reaches for `URL.createObjectURL`, which jsdom does not have, and what is worth
+ * checking here is the file the screen hands over, not the handing over.
+ */
+const { exported } = vi.hoisted(() => ({ exported: [] as File[] }))
+
+vi.mock('../../../../logic/download/exportFile', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../../logic/download/exportFile')>()),
+  exportFile: (file: File): void => {
+    exported.push(file)
+  },
+}))
 
 /**
  * The screen preloads two audio files on mount and jsdom has no media stack -
@@ -172,5 +188,48 @@ describe('KumiteTimerScreen navigation', () => {
     renderApp('/kumite-timer')
     // assert - the reason the redirect exists in the first place
     expect(await screen.findByRole('heading', { name: 'Kumite Timer' })).toBeInTheDocument()
+  })
+})
+
+
+describe('KumiteTimerScreen export', () => {
+  test('offers the download on a device that cannot share files', () => {
+    // arrange
+    startSession()
+    // act
+    renderScreen()
+    // assert - jsdom matches no media query, which is the desktop answer
+    expect(screen.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument()
+  })
+
+  test('hands over a csv file named by the moment it was exported', async () => {
+    // arrange
+    const user = userEvent.setup()
+    exported.length = 0
+    startSession()
+    renderScreen()
+    // act
+    await user.click(screen.getByRole('button', { name: 'Download CSV' }))
+    // assert
+    expect(exported).toHaveLength(1)
+    expect(exported[0].type).toBe('text/csv')
+    expect(exported[0].name).toMatch(/^kumite-\d{4}-\d{2}-\d{2}-\d{4}\.csv$/)
+  })
+
+  test('exports the fight as it stands on the screen, not as it was stored', async () => {
+    // arrange
+    const user = userEvent.setup()
+    exported.length = 0
+    startSession(fightWithLog([]))
+    renderScreen()
+    // act - the stored fight says 2:1, the screen is about to say 3:1
+    await user.click(scoreButton('red', '+'))
+    await user.click(screen.getByRole('button', { name: 'Download CSV' }))
+    const rows = (await exported[0].text()).trimEnd().split('\r\n')
+    // assert
+    expect(rows).toHaveLength(2)
+    expect(rows[1]).toContain('Aneta;Bob')
+    expect(rows[1]).toContain('AKA +1')
+    expect(rows[1].split(';').slice(-5)).toEqual(['3', '0', '1', '0', ''])
   })
 })
