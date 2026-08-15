@@ -1,10 +1,16 @@
 /**
+ * The click only starts the download, so the object URL has to stay resolvable
+ * until the browser has read it. Desktop browsers are done within a tick,
+ * Safari on iOS is not, and a revoked URL there means a download that silently
+ * produces nothing. The blob is a few kilobytes, so holding it is cheap.
+ */
+const REVOKE_DELAY = 40000
+
+/**
  * Hands a generated file to the browser as a download.
  *
- * The anchor is put into the document before it is clicked - Firefox ignores a
- * click on a detached element - and the object URL is released on the next tick
- * rather than right after the click, because the click only starts the
- * download and the URL has to stay resolvable until the browser has read it.
+ * The anchor is put into the document before it is clicked, because Firefox
+ * ignores a click on a detached element.
  */
 export const downloadTextFile = (fileName: string, content: string, mimeType: string): void => {
   const url = URL.createObjectURL(new Blob([content], { type: mimeType }))
@@ -18,5 +24,5 @@ export const downloadTextFile = (fileName: string, content: string, mimeType: st
   link.click()
   document.body.removeChild(link)
 
-  setTimeout(() => URL.revokeObjectURL(url), 0)
+  setTimeout(() => URL.revokeObjectURL(url), REVOKE_DELAY)
 }
