@@ -29,6 +29,16 @@ klíč-hodnota plus tabulce; plochý proto, aby fáze 3 byla konkatenace, ne nov
 
 A později: „pak pokračuj exportem zápasu"
 
+### 2026-08-16 — po review
+
+„- oprav sloupec na sekundy
+- tlačítko stáhnout dej vedle tlačítka „Průběh zápasu"
+- sloupce s výslednými hodnotami v CSV jasněji pojmenovat, třeba „Výsledné AKA body" apod.
+- jinak za mě ok"
+
+(Čtvrtý bod — potvrzovací dialog na „Zpět" — je samostatný ticket, protože s exportem
+nesouvisí.)
+
 ## B — Zadání
 
 **Problém:** Průběh zápasu je od ticketu 001 zaznamenaný, ale nedá se dostat z telefonu
@@ -53,7 +63,9 @@ Kdo chce zápas rozebrat po soustředění nebo doložit sporný výsledek, nem�
 
 **Akceptační kritéria:**
 
-- [ ] Tlačítko je v řadě se Start a Zpět a je vidět u samostatného i turnajového zápasu.
+- [ ] Tlačítko je vidět u samostatného i turnajového zápasu. **Po review přesunuto z řady
+      se Start a Zpět vedle přepínače „Průběh zápasu"** — obě jsou ovládání toho, co se
+      se zápasem stalo, a řada tlačítek zápasu se tím vrací na čtyři.
 - [ ] Na dotykovém zařízení říká „Sdílet CSV" a otevře systémové sdílení; jinde říká
       „Stáhnout CSV" a soubor stáhne. (Stejné rozhodování jako u skupinových stopek.)
 - [ ] Soubor má hlavičkový řádek a pak jeden řádek na každou položku logu, v pořadí,
@@ -66,8 +78,7 @@ Kdo chce zápas rozebrat po soustředění nebo doložit sporný výsledek, nem�
 - [ ] Soubor je UTF-8 bez BOM, oddělovač středník, MIME `text/csv` — stejně jako
       u skupinových stopek, kde to bylo změřené na telefonu.
 - [ ] Popisek tlačítka je v `cs.ts` i `en.ts`.
-- [ ] Řada tlačítek se s pátým tlačítkem na telefonu nerozpadne (zalomení opravené
-      v ticketu 001).
+- [ ] Řada tlačítek zápasu zůstane čtyřprvková; export nepřidává pátou položku.
 
 **Poznámka k uloženému stavu:** tenhle ticket **nemění tvar ničeho v `localStorage`** —
 log tam ukládá už 001. Migrace se netýká.
@@ -264,18 +275,21 @@ Branch: `fight-export` · revieweři: všichni čtyři (`correctness`, `react-st
 
 **Zvážit — nechal jsem na tobě**
 
-- [major, jistota 95] `KumiteTimerScreen.tsx:382` · **s pátým tlačítkem se řada na užších
-  telefonech láme na tři řádky a padá pod okraj.** Změřeno: 375×667 (iPhone SE/13 mini)
+- ✅ **odpadlo přesunem tlačítka.** Export už v řadě není, takže je zpátky na čtyřech
+  a chová se jako před tímhle ticketem. Že se i ta čtyřka na 375 px láme na dva řádky
+  a je nízko, zůstává — ale to je bod 4 v `TODO.md`, ne tenhle ticket. Původní nález:
+  [major, jistota 95] **s pátým tlačítkem se řada na užších telefonech lámala na tři řádky
+  a padala pod okraj.** Změřeno: 375×667 (iPhone SE/13 mini)
   a 360×640 → tři řádky, pod okrajem „Uložit zápas", „Stáhnout CSV" i „Zpět"; na šířku
   (667×375) je pod okrajem **celá řada včetně Start**. Na 412 px je všechno vidět, proto
   to v mém měření neprosáklo. Neopravuju: oprava je designové rozhodnutí (užší tlačítka
   pod nějakým breakpointem) a reviewer sám doporučuje nejdřív zkusit na zařízení. Souvisí
   s bodem 4 v `TODO.md`.
-- [minor 85] `csv.ts:106` · **sloupec „Zbývá" je `m:ss` a tabulkové procesory ho
-  autokonvertují na hodiny:minuty** — `0:05` (pět vteřin do konce) se v Google Sheets
-  i Excelu zobrazí jako `0:05:00`, tedy pět minut. Ostatní sloupce čisté. Oprava je změna
-  schváleného formátu (sekundy jako číslo, nebo druhý číselný sloupec vedle čitelného),
-  což je přesně to, co sis chtěl doladit na dev serveru.
+- ✅ **rozhodnuto a opraveno.** [minor 85] `csv.ts` · sloupec „Zbývá" byl `m:ss`
+  a tabulkové procesory ho autokonvertují na hodiny:minuty — `0:05` (pět vteřin do konce)
+  se v Sheets i Excelu zobrazí jako pět minut. Teď jsou to holé sekundy a hlavička to říká:
+  „Zbývá (s)" / „Remaining (s)". Zároveň dostaly výsledkové sloupce jasnější jména
+  („Výsledné AKA body" místo „AKA body"), aby se nepletly s tím, co se stalo v té chvíli.
 - [minor 85] `KumiteTimerScreen.tsx:167` · **sdílecí sheet překryje běžící časomíru.**
   Export je jediné tlačítko v řadě, které není vypnuté během běhu zápasu — schválně, nic
   nemění. Jenže na telefonu `navigator.share()` vytáhne systémový sheet přes celou

@@ -205,7 +205,7 @@ describe('KumiteTimerScreen export', () => {
     startSession(newFight('r', 'Aneta', 'b', 'Bob'))
   }
 
-  const buttonRow = (): HTMLElement => document.querySelector('.kumite-timer .buttons') as HTMLElement
+  const logControls = (): HTMLElement => document.querySelector('.fight-log__controls') as HTMLElement
 
   const rowsOfExport = async (): Promise<string[][]> => {
     const text = await exported[0].text()
@@ -217,16 +217,15 @@ describe('KumiteTimerScreen export', () => {
     exported.length = 0
   })
 
-  test('sits in the row with Start and Back', () => {
+  test('sits next to the toggle of the fight log', () => {
     // arrange
     startSession()
     // act
     renderScreen()
-    // assert - searched inside the row, so moving the button elsewhere fails
-    const row = within(buttonRow())
-    expect(row.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument()
-    expect(row.getByRole('button', { name: 'Start' })).toBeInTheDocument()
-    expect(row.getByRole('button', { name: 'Back' })).toBeInTheDocument()
+    // assert - searched inside that row, so moving the button elsewhere fails
+    const controls = within(logControls())
+    expect(controls.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument()
+    expect(controls.getByRole('button', { name: /^Fight log/ })).toBeInTheDocument()
   })
 
   test('offers the download on a device that cannot share files', () => {

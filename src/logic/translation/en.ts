@@ -159,14 +159,17 @@ export const EN: Translation = {
       saveTournamentFight: 'Save fight',
       export: {
         tournament: 'Tournament',
-        remaining: 'Remaining',
+        // seconds, not 2:00 - a spreadsheet would read that as hours and minutes
+        remaining: 'Remaining (s)',
         type: 'Type',
         side: 'Side',
         value: 'Value',
         description: 'Description',
-        // follows AKA / AO, hence lower case
-        points: 'points',
-        fouls: 'fouls',
+        // 1 param - the corner
+        finalPoints: 'Final __{1}__ points',
+        // 1 param - the corner
+        finalFouls: 'Final __{1}__ fouls',
+        finalSenchu: 'Final senchu',
       },
       log: {
         toggle: 'Fight log',

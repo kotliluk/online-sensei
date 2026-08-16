@@ -380,12 +380,6 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
           </Button>
         )}
         <Button
-          className='orange export-btn'
-          onClick={handleExportCsv}
-        >
-          {shares ? ct.shareCsv : ct.downloadCsv}
-        </Button>
-        <Button
           className='orange'
           onClick={handleGoBack}
           disabled={dangerousButtonsDisabled}
@@ -394,7 +388,14 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
         </Button>
       </div>
 
-      <FightLog entries={log} />
+      <FightLog
+        entries={log}
+        action={(
+          <Button className='export-btn' onClick={handleExportCsv}>
+            {shares ? ct.shareCsv : ct.downloadCsv}
+          </Button>
+        )}
+      />
     </main>
   )
 }

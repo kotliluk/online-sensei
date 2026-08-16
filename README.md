@@ -91,7 +91,7 @@ in its log as well as in its score.
 
 ### Exporting a fight
 
-The button next to Start and Back writes the fight to a CSV file - shared through the
+The button next to the fight log toggle writes the fight to a CSV file - shared through the
 system share sheet on a touch device, downloaded everywhere else, the same way the group
 stopwatch results are, and with the same encoding decisions behind it (UTF-8 with no byte
 order mark, semicolons; the reasoning is in that section).
@@ -102,14 +102,15 @@ export of a whole tournament is then a concatenation of these rather than a seco
 Columns run identity, then event, then result:
 
 ```
-Tournament;AKA;AO;Time;Remaining;Type;Side;Value;Description;AKA points;AKA fouls;AO points;AO fouls;Senchu
-Camp;Aneta;Bob;2026-08-15 22:35:24;1:58;POINTS;AKA;3;AKA +3;3;0;0;1;AKA
+Tournament;AKA;AO;Time;Remaining (s);Type;Side;Value;Description;Final AKA points;…
+Camp;Aneta;Bob;2026-08-15 22:35:24;118;POINTS;AKA;3;AKA +3;3;0;0;1;AKA
 ```
 
-A corner is AKA or AO in every column that names one. Event kinds stay raw keys and the
-value column holds plain numbers, so a file exported in Czech can be filtered and summed
-the same way as one exported in English; only the header and the description follow the
-language of the app.
+A corner is AKA or AO in every column that names one. Event kinds stay raw keys and every
+number is written as one, so a file exported in Czech can be filtered and summed the same
+way as one exported in English; only the header and the description follow the language of
+the app. The clock is in seconds for the same reason: a spreadsheet reads `1:58` as an hour
+and fifty eight minutes.
 
 The fight is exported as it stands on the screen, so a tournament fight has no winner in
 it - that is chosen a screen later, after leaving the timer.

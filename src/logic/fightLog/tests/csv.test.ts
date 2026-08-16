@@ -38,8 +38,8 @@ describe('buildFightCsv', () => {
     // assert
     expect(rows).toHaveLength(4)
     expect(rows[0]).toEqual([
-      'Tournament', 'AKA', 'AO', 'Time', 'Remaining', 'Type', 'Side', 'Value', 'Description',
-      'AKA points', 'AKA fouls', 'AO points', 'AO fouls', 'Senchu',
+      'Tournament', 'AKA', 'AO', 'Time', 'Remaining (s)', 'Type', 'Side', 'Value', 'Description',
+      'Final AKA points', 'Final AKA fouls', 'Final AO points', 'Final AO fouls', 'Final senchu',
     ])
     expect(rows.slice(1).map((row) => row[5])).toEqual(['START', 'POINTS', 'END'])
   })
@@ -56,12 +56,12 @@ describe('buildFightCsv', () => {
     })
   })
 
-  test('writes the clock reading and the wall clock of the moment', () => {
+  test('writes the clock reading in seconds and the wall clock of the moment', () => {
     // act
     const rows = rowsOf(buildFightCsv(fight({ log: [entry({ kind: 'START' }, 82)] }), EN))
-    // assert
+    // assert - `1:22` would be read as an hour and twenty two minutes by a spreadsheet
     expect(rows[1][3]).toBe('2026-08-15 22:10:33')
-    expect(rows[1][4]).toBe('1:22')
+    expect(rows[1][4]).toBe('82')
   })
 
   test.each<{ name: string, event: FightEvent, side: string, value: string }>([
@@ -146,8 +146,10 @@ describe('buildFightCsv in another language', () => {
     // act
     const header = rowsOf(buildFightCsv(fight({ log }), CS))[0]
     // assert
-    expect(header.slice(0, 6)).toEqual(['Turnaj', 'AKA', 'AO', 'Čas', 'Zbývá', 'Typ'])
-    expect(header.slice(9, 11)).toEqual(['AKA body', 'AKA fauly'])
+    expect(header.slice(0, 6)).toEqual(['Turnaj', 'AKA', 'AO', 'Čas', 'Zbývá (s)', 'Typ'])
+    expect(header.slice(9)).toEqual([
+      'Výsledné AKA body', 'Výsledné AKA fauly', 'Výsledné AO body', 'Výsledné AO fauly', 'Výsledné senchu',
+    ])
   })
 
   test('leaves the machine columns identical, so a file stays filterable across languages', () => {

@@ -10,14 +10,23 @@
   max-width: 30rem;
   margin-top: 1rem;
 
-  .fight-log__toggle {
-    // wider than the buttons of the play screen, because the label carries a count
-    width: auto;
-    min-width: $button-long-width;
-    // deliberately not $grey: that is the background of the dark theme, and the
-    // buttons carry no border, so the toggle would vanish into the page and only
-    // appear on hover - which a phone does not have
-    @include button-color($grey-light);
+  .fight-log__controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+
+    // both labels are longer than the width the play screen gives its buttons and
+    // would wrap onto a second line
+    .__button {
+      width: auto;
+      min-width: $button-long-width;
+      // deliberately not $grey: that is the background of the dark theme, and the
+      // buttons carry no border, so a button would vanish into the page and only
+      // appear on hover - which a phone does not have
+      @include button-color($grey-light);
+    }
   }
 
   .fight-log__empty {

@@ -52,13 +52,6 @@
     justify-content: center;
     row-gap: 0.5rem;
 
-    // measured at 412px in both languages: "Stáhnout CSV" and "Download CSV" both
-    // take two lines inside the width the other buttons get
-    button.export-btn {
-      width: auto;
-      min-width: $button-long-width;
-    }
-
     button {
       width: $button-long-width;
       margin: 0 0.25rem;

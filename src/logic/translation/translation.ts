@@ -165,8 +165,11 @@ export interface Translation {
         side: string,
         value: string,
         description: string,
-        points: string,
-        fouls: string,
+        // 1 param - the corner
+        finalPoints: string,
+        // 1 param - the corner
+        finalFouls: string,
+        finalSenchu: string,
       },
       log: {
         toggle: string,
