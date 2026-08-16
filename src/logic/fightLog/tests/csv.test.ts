@@ -126,6 +126,23 @@ describe('buildFightCsv', () => {
     expect(rows[1][13]).toBe('')
   })
 
+  /**
+   * Spelled out in full rather than asserted field by field. The tournament export
+   * is built from the same header and the same rows, and the point of splitting
+   * them apart was that a single fight comes out unchanged - this is what says so.
+   */
+  test('writes the file exactly like this', () => {
+    // arrange
+    const log = [entry({ kind: 'START' }), entry({ kind: 'POINTS', side: 'RED', delta: 3 }, 118)]
+    // act & assert
+    expect(buildFightCsv(fight({ log }), EN)).toBe(
+      'Tournament;AKA;AO;Time;Remaining (s);Type;Side;Value;Description;'
+      + 'Final AKA points;Final AKA fouls;Final AO points;Final AO fouls;Final senchu\r\n'
+      + 'Camp;Aneta;Bob;2026-08-15 22:10:33;120;START;;;Fight started;3;1;1;0;AKA\r\n'
+      + 'Camp;Aneta;Bob;2026-08-15 22:10:33;118;POINTS;AKA;3;AKA +3;3;1;1;0;AKA\r\n',
+    )
+  })
+
   test('quotes a name that would otherwise break the row apart', () => {
     // arrange
     const awkward = fight({ redName: 'Novák; Jan', blueName: 'Ann "Ace"' })

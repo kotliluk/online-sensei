@@ -5,6 +5,7 @@ import { Senchu } from '../../types/senchu'
 import { Fight } from '../../types/tournament'
 import { buildCsv } from '../../utils/csv'
 import { insertWords } from '../translation'
+import { fileNameStamp } from '../download/fileName'
 
 
 /**
@@ -25,24 +26,17 @@ export type ExportedFight
     log: FightLogEntry[],
   }
 
-type ExportTranslation = Translation['kumiteTimer']['timerScreen']['export']
-
 const pad = (value: number): string => value.toString().padStart(2, '0')
-
-const localDate = (date: Date): string => {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
-}
 
 /** Local time throughout, so the file reads in the clock of whoever exported it. */
 const localDateTime = (at: number): string => {
   const date = new Date(at)
 
-  return `${localDate(date)} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+    + ` ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
-export const fightCsvFileName = (now: Date): string => {
-  return `kumite-${localDate(now)}-${pad(now.getHours())}${pad(now.getMinutes())}.csv`
-}
+export const fightCsvFileName = (now: Date): string => `kumite-${fileNameStamp(now)}.csv`
 
 /** Nobody holding senchu is an empty cell rather than the word for it. */
 const senchuCell = (senchu: Senchu): string => senchu === 'NONE' ? '' : sideLabel(senchu)
@@ -81,24 +75,30 @@ const eventCells = (event: FightEvent): [side: string, value: string] => {
   }
 }
 
-const headerRow = (t: ExportTranslation, time: string): string[] => [
-  t.tournament, 'AKA', 'AO',
-  time, t.remaining, t.type, t.side, t.value, t.description,
-  insertWords(t.finalPoints, 'AKA'), insertWords(t.finalFouls, 'AKA'),
-  insertWords(t.finalPoints, 'AO'), insertWords(t.finalFouls, 'AO'),
-  t.finalSenchu,
-]
+/** The one header, shared by the export of a single fight and of a whole tournament. */
+export const fightCsvHeader = (translation: Translation): string[] => {
+  const { kumiteTimer: { timerScreen: { export: t } }, common: ct } = translation
+
+  return [
+    t.tournament, 'AKA', 'AO',
+    ct.time, t.remaining, t.type, t.side, t.value, t.description,
+    insertWords(t.finalPoints, 'AKA'), insertWords(t.finalFouls, 'AKA'),
+    insertWords(t.finalPoints, 'AO'), insertWords(t.finalFouls, 'AO'),
+    t.finalSenchu,
+  ]
+}
 
 /**
- * Builds the export of one fight: a header and then a row per logged event, with
- * the fight itself repeated on each of them.
+ * The body of the export of one fight: a row per logged event, with the fight
+ * itself repeated on each of them.
  *
  * The repetition is the point rather than an oversight. It costs a few kilobytes
  * on a single fight and it makes the export of a whole tournament a concatenation
- * of these instead of a second format to design and maintain.
+ * of these instead of a second format to design and maintain - which is exactly
+ * what {@link buildTournamentLogCsv} does with them.
  */
-export const buildFightCsv = (fight: ExportedFight, translation: Translation): string => {
-  const { kumiteTimer: { timerScreen: { export: t, log: logTranslation } }, common: ct } = translation
+export const fightCsvRows = (fight: ExportedFight, translation: Translation): string[][] => {
+  const { kumiteTimer: { timerScreen: { log: logTranslation } } } = translation
 
   const fightCells = [fight.tournamentName ?? '', fight.redName ?? '', fight.blueName ?? '']
   const resultCells = [
@@ -119,8 +119,10 @@ export const buildFightCsv = (fight: ExportedFight, translation: Translation): s
     ? [['', '', '', '', '', '']]
     : fight.log.map(eventRow)
 
-  return buildCsv([
-    headerRow(t, ct.time),
-    ...bodyRows.map((event) => [...fightCells, ...event, ...resultCells]),
-  ])
+  return bodyRows.map((event) => [...fightCells, ...event, ...resultCells])
+}
+
+/** The export of one fight, as its own file. */
+export const buildFightCsv = (fight: ExportedFight, translation: Translation): string => {
+  return buildCsv([fightCsvHeader(translation), ...fightCsvRows(fight, translation)])
 }

@@ -1,7 +1,7 @@
-import { JSX, useEffect, useState } from 'react'
+import { JSX } from 'react'
 import './TournamentScreen.scss'
 import { GroupTableCell } from './GroupTableCell'
-import { Fight } from '../../../types/tournament'
+import { Fight, groupRowStats } from '../../../types/tournament'
 
 
 interface GroupTableRowProps {
@@ -12,19 +12,9 @@ interface GroupTableRowProps {
 export const GroupTableRow = (props: GroupTableRowProps): JSX.Element => {
   const { row, rowIndex } = props
 
-  const [wins, setWins] = useState(0)
-  const [draws, sedivraws] = useState(0)
-  const [losses, setLosses] = useState(0)
-  const [plusPoints, setPlusPoints] = useState(0)
-  const [minusPoints, setMinusPoints] = useState(0)
-
-  useEffect(() => {
-    setWins(row.reduce((agg, fight) => agg + (fight.winner === 'RED' ? 1 : 0), 0))
-    sedivraws(row.reduce((agg, fight) => agg + (fight.winner === 'DRAW' ? 1 : 0), 0))
-    setLosses(row.reduce((agg, fight) => agg + (fight.winner === 'BLUE' ? 1 : 0), 0))
-    setPlusPoints(row.reduce((agg, fight) => agg + fight.redPoints, 0))
-    setMinusPoints(row.reduce((agg, fight) => agg + fight.bluePoints, 0))
-  }, [row])
+  // derived, not stored: these are a function of the row and nothing else, and
+  // the exported overview works them out with the same call
+  const { wins, draws, losses, plusPoints, minusPoints } = groupRowStats(row)
 
   return (
     <div className='group-table-row'>

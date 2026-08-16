@@ -1,5 +1,7 @@
 import { vi } from 'vitest'
-import { Competitor, createTournamentTree, Fight, FightResult, switchResultSides } from '../tournament'
+import {
+  Competitor, createTournamentTree, Fight, FightResult, groupRowStats, switchResultSides,
+} from '../tournament'
 import { FightLogEntry } from '../fightLog'
 
 
@@ -109,6 +111,38 @@ describe('createTournamentTree', () => {
     const actual = createTournamentTree(competitors, 0)
     // assert
     expect(actual).toStrictEqual(expected)
+  })
+})
+
+describe('groupRowStats', () => {
+  const played = (blue: string, winner: Fight['winner'], red: number, blueScore: number): Fight => ({
+    ...fight('Aneta', blue),
+    winner,
+    redPoints: red,
+    bluePoints: blueScore,
+  })
+
+  test('counts the row from its own fighter point of view', () => {
+    // arrange - the row of Aneta: a win, a loss, a draw and her own diagonal cell
+    const row = [
+      fight('Aneta', 'Aneta'),
+      played('Bob', 'RED', 4, 1),
+      played('Cyril', 'BLUE', 2, 5),
+      played('Dana', 'DRAW', 3, 3),
+    ]
+    // act
+    const stats = groupRowStats(row)
+    // assert
+    expect(stats).toEqual({ wins: 1, draws: 1, losses: 1, plusPoints: 9, minusPoints: 9 })
+  })
+
+  test('counts an unplayed fight as nothing at all', () => {
+    // arrange
+    const row = [fight('Aneta', 'Aneta'), fight('Aneta', 'Bob')]
+    // act
+    const stats = groupRowStats(row)
+    // assert
+    expect(stats).toEqual({ wins: 0, draws: 0, losses: 0, plusPoints: 0, minusPoints: 0 })
   })
 })
 
