@@ -74,6 +74,8 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
 
   const [log, setLog] = useState<FightLogEntry[]>([])
+  /** How long the log was when this fight was opened - see {@link handleGoBack}. */
+  const [loadedLogLength, setLoadedLogLength] = useState(0)
   // the label says what the button does, and that depends on the device, not on the fight
   const [shares] = useState(() => willShareFile(CSV_MIME_TYPE))
 
@@ -205,14 +207,25 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     exportFile(new File([content], fightCsvFileName(new Date()), { type: CSV_MIME_TYPE }))
   }, [tournamentFight, tournamentName, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu, log, translation])
 
+  /**
+   * A tournament fight that has already been played is worth a question, because
+   * Back sits next to Save and throws the whole thing away. A fight nothing has
+   * happened in is not - asking about nothing is an annoyance, not a safeguard.
+   *
+   * "Something happened" is the log having grown since the fight was loaded.
+   * Every change is logged, so a longer log is exactly that, and it is the only
+   * reading that does not cry wolf on a reopened fight, whose log is not empty to
+   * begin with.
+   */
   const handleGoBack = useCallback(() => {
-    dispatch(setNotActualKumiteTimer())
-    if (tournamentFight) {
-      void navigate('/kumite-timer/tournament')
-    } else {
-      void navigate('/kumite-timer/set-up')
+    if (tournamentFight && log.length > loadedLogLength) {
+      dispatch(setModalWindow('LEAVE_FIGHT'))
+      return
     }
-  }, [dispatch, navigate, tournamentFight])
+
+    dispatch(setNotActualKumiteTimer())
+    void navigate(tournamentFight ? '/kumite-timer/tournament' : '/kumite-timer/set-up')
+  }, [dispatch, navigate, tournamentFight, log, loadedLogLength])
 
   const handleSaveTournamentFight = useCallback(() => {
     if (tournamentFight) {
@@ -251,12 +264,14 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
     // a fight opened again carries on its own log rather than starting a new one
     const previous = tournamentFight.log ?? []
-
-    setLog(previous.length === 0 ? previous : [...previous, {
+    const loaded = previous.length === 0 ? previous : [...previous, {
       at: Date.now(),
       fightTime: duration,
-      event: { kind: 'REOPEN', redPoints: tournamentFight.redPoints, bluePoints: tournamentFight.bluePoints },
-    }])
+      event: { kind: 'REOPEN' as const, redPoints: tournamentFight.redPoints, bluePoints: tournamentFight.bluePoints },
+    }]
+
+    setLoadedLogLength(loaded.length)
+    setLog(loaded)
   }, [tournamentFight, duration, setScoreRed, setFoulsRed, setScoreBlue, setFoulsBlue, setSenchu, setLog])
 
   useEffect(() => {

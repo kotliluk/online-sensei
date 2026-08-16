@@ -1,0 +1,49 @@
+@use 'src/styles' as *;
+@use '../../common/modal/mixins' as *;
+
+
+$padding: 30px;
+$btnHeight: 2.5rem;
+
+.leave-fight-modal {
+  @include modal-window();
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: $padding;
+
+    @include themed() {
+      background-color: t($primary-color);
+    }
+
+    .buttons {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    // the label spells out what is lost, so it needs more room than a modal
+    // footer button usually gets
+    .cancel-btn {
+      @include modal-footer-btn();
+      @include button-color($red);
+
+      width: auto;
+      min-width: $button-long-width;
+      height: $btnHeight;
+    }
+
+    .back-btn {
+      @include modal-footer-btn();
+      @include button-color($orange);
+
+      height: $btnHeight;
+    }
+  }
+}

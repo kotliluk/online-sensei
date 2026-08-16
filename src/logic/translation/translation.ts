@@ -158,6 +158,11 @@ export interface Translation {
     },
     timerScreen: {
       saveTournamentFight: string,
+      leaveFightModal: {
+        title: string,
+        text: string,
+        confirm: string,
+      },
       export: {
         tournament: string,
         remaining: string,

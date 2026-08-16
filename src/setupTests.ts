@@ -19,3 +19,17 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
     dispatchEvent: () => false,
   })
 }
+
+/**
+ * `index.html` carries a second root that modals are portalled into. jsdom starts
+ * from an empty document, and `ModalContainer` reads the element once at mount -
+ * so without this a test that opens a modal fails on a null portal target.
+ */
+beforeEach(() => {
+  if (!document.getElementById('modal-root')) {
+    const modalRoot = document.createElement('div')
+
+    modalRoot.id = 'modal-root'
+    document.body.appendChild(modalRoot)
+  }
+})

@@ -157,6 +157,11 @@ export const EN: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Save fight',
+      leaveFightModal: {
+        title: 'Unsaved fight',
+        text: 'Really leave without saving?',
+        confirm: 'Leave without saving',
+      },
       export: {
         tournament: 'Tournament',
         // seconds, not 2:00 - a spreadsheet would read that as hours and minutes

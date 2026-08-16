@@ -9,6 +9,7 @@ import { SaveAdvancedSeries } from '../../../intervalTimer/saveAdvancedSeriesMod
 import { CancelTournamentModal } from '../../../kumiteTimer/tournamentScreen/CancelTournamentModal'
 import { FightResultModal } from '../../../kumiteTimer/kumiteTimerScreen/FightResultModal'
 import { ReopenTreeFightModal } from '../../../kumiteTimer/tournamentScreen/ReopenTreeFightModal'
+import { LeaveFightModal } from '../../../kumiteTimer/kumiteTimerScreen/LeaveFightModal'
 
 
 export const ModalContainer = (): JSX.Element | null => {
@@ -42,6 +43,8 @@ export const ModalContainer = (): JSX.Element | null => {
     modalWindow = <FightResultModal />
   } else if (modalType === 'REOPEN_TREE_FIGHT') {
     modalWindow = <ReopenTreeFightModal />
+  } else if (modalType === 'LEAVE_FIGHT') {
+    modalWindow = <LeaveFightModal />
   }
 
   return ReactDOM.createPortal((

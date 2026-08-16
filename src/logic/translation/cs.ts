@@ -157,6 +157,11 @@ export const CS: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Uložit zápas',
+      leaveFightModal: {
+        title: 'Neuložený zápas',
+        text: 'Opravdu odejít bez uložení?',
+        confirm: 'Odejít bez uložení',
+      },
       export: {
         tournament: 'Turnaj',
         // sekundy, ne 2:00 - tabulkový procesor by si z toho udělal hodiny a minuty

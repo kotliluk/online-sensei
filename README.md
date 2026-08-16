@@ -89,6 +89,17 @@ reopened at marked in the log. In a group table the same fight is listed twice,
 once from each corner, and the mirrored copy has aka and ao the other way round
 in its log as well as in its score.
 
+### Leaving a fight
+
+Back on a tournament fight sits right next to Save, and it throws the whole fight away -
+score, fouls and log. So it asks first, but only when there is something to lose: a fight
+nothing has happened in yet is left without a question, and so is a reopened fight until
+something new happens in it. What counts as "something happened" is the log having grown
+since the fight was opened, which is exactly what the log is for.
+
+A fight played outside a tournament is never asked about. It is not saved anywhere, so
+there is nothing to lose by leaving it.
+
 ### Exporting a fight
 
 The button next to the fight log toggle writes the fight to a CSV file - shared through the
