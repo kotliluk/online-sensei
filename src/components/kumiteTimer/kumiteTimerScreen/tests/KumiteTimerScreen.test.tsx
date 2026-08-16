@@ -5,6 +5,7 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 import { KumiteTimerScreen } from '../KumiteTimerScreen'
 import App from '../../../../App'
+import { ModalContainer } from '../../../common/modal/modalContainer/ModalContainer'
 import { store } from '../../../../redux/store'
 import {
   setKumiteTimer,
@@ -14,6 +15,7 @@ import {
 } from '../../../../redux/kumiteTimer/actions'
 import { Fight, newCompetitor, newFight } from '../../../../types/tournament'
 import { FightLogEntry } from '../../../../types/fightLog'
+import { setModalWindow } from '../../../../redux/page/actions'
 
 
 /**
@@ -309,5 +311,117 @@ describe('KumiteTimerScreen export', () => {
     const rows = await rowsOfExport()
     // assert - the name is still in the store; it is the missing fight that decides
     expect(rows[1].slice(0, 3)).toEqual(['', '', ''])
+  })
+})
+
+
+describe('leaving a tournament fight', () => {
+  /** `index.tsx` mounts the modal container beside the app, so the test does too. */
+  const renderApp = (): void => {
+    render(
+      <ReduxProvider store={store}>
+        <MemoryRouter initialEntries={['/kumite-timer']}>
+          <App />
+          <ModalContainer />
+        </MemoryRouter>
+      </ReduxProvider>,
+    )
+  }
+
+  const enterTournamentFight = (fight: Fight): void => {
+    store.dispatch(setKumiteTimerTournament(120, 'Camp', 'GROUP', 2, [
+      newCompetitor('Aneta'), newCompetitor('Bob'),
+    ]))
+    startSession(fight)
+  }
+
+  const table = (): Promise<HTMLElement> => screen.findByRole('heading', { name: /Tournament: Camp/ })
+
+  /** The screen's own Back - the modal has one too, and both are on the page at once. */
+  const backButton = (): HTMLElement => within(
+    document.querySelector('.kumite-timer .buttons') as HTMLElement,
+  ).getByRole('button', { name: 'Back' })
+
+  // the modal lives in the shared store, so an open one would leak into the next test
+  beforeEach(() => {
+    store.dispatch(setModalWindow('NONE'))
+  })
+
+  test('leaves without asking when nothing has happened yet', async () => {
+    // arrange
+    const user = userEvent.setup()
+    enterTournamentFight(newFight('r', 'Aneta', 'b', 'Bob'))
+    renderApp()
+    // act
+    await user.click(backButton())
+    // assert - asking about nothing is an annoyance, not a safeguard
+    expect(await table()).toBeInTheDocument()
+  })
+
+  test('asks before throwing away a fight that has been played', async () => {
+    // arrange
+    const user = userEvent.setup()
+    enterTournamentFight(newFight('r', 'Aneta', 'b', 'Bob'))
+    renderApp()
+    // act
+    await user.click(scoreButton('red', '+'))
+    await user.click(backButton())
+    // assert
+    expect(await screen.findByText('Really leave without saving?')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Unsaved fight' })).toBeInTheDocument()
+  })
+
+  test('stays on the fight when the question is declined', async () => {
+    // arrange
+    const user = userEvent.setup()
+    enterTournamentFight(newFight('r', 'Aneta', 'b', 'Bob'))
+    renderApp()
+    await user.click(scoreButton('red', '+'))
+    await user.click(backButton())
+    // act
+    await user.click(within(
+      document.querySelector('.leave-fight-modal') as HTMLElement,
+    ).getByRole('button', { name: 'Back' }))
+    // assert - the fight is still there, score and all
+    expect(screen.queryByText('Really leave without saving?')).not.toBeInTheDocument()
+    expect(document.querySelector('.__score.__red .__score__value')).toHaveTextContent('1')
+  })
+
+  test('leaves for the table when the question is confirmed', async () => {
+    // arrange
+    const user = userEvent.setup()
+    enterTournamentFight(newFight('r', 'Aneta', 'b', 'Bob'))
+    renderApp()
+    await user.click(scoreButton('red', '+'))
+    await user.click(backButton())
+    // act
+    await user.click(screen.getByRole('button', { name: 'Leave without saving' }))
+    // assert
+    expect(await table()).toBeInTheDocument()
+  })
+
+  test('does not ask about a reopened fight until something new happens', async () => {
+    // arrange - its log is not empty to begin with, which is the trap
+    const user = userEvent.setup()
+    enterTournamentFight(fightWithLog([
+      { at: 1, fightTime: 120, event: { kind: 'POINTS', side: 'RED', delta: 2 } },
+    ]))
+    renderApp()
+    // act
+    await user.click(backButton())
+    // assert
+    expect(await table()).toBeInTheDocument()
+  })
+
+  test('never asks about a fight played outside a tournament', async () => {
+    // arrange
+    const user = userEvent.setup()
+    startSession()
+    renderApp()
+    // act - there is nothing to save it to, so there is nothing to lose
+    await user.click(scoreButton('red', '+'))
+    await user.click(backButton())
+    // assert
+    expect(await screen.findByRole('heading', { name: 'Kumite Timer' })).toBeInTheDocument()
   })
 })
