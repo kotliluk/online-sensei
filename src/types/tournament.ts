@@ -134,6 +134,35 @@ export const isValidFight = (x: any): x is Fight => {
     && isValidFightLog(x.log)
 }
 
+export type GroupRowStats = {
+  wins: number,
+  draws: number,
+  losses: number,
+  plusPoints: number,
+  minusPoints: number,
+}
+
+/**
+ * The tally at the end of one row of a group table.
+ *
+ * Over the **whole** row, mirrored half included: every fight of that competitor
+ * is listed in their row with them in the red corner, which is what the mirror is
+ * for. (The export of the fights themselves takes the opposite view and reads only
+ * the upper triangle, because there each fight is listed once - see
+ * `logic/tournament/collect.ts`.)
+ *
+ * A pure function rather than a calculation inside the row component, because the
+ * exported overview has to show the same numbers as the screen, and the only way
+ * to be sure they cannot drift apart is to have one place that works them out.
+ */
+export const groupRowStats = (row: Fight[]): GroupRowStats => ({
+  wins: row.reduce((agg, fight) => agg + (fight.winner === 'RED' ? 1 : 0), 0),
+  draws: row.reduce((agg, fight) => agg + (fight.winner === 'DRAW' ? 1 : 0), 0),
+  losses: row.reduce((agg, fight) => agg + (fight.winner === 'BLUE' ? 1 : 0), 0),
+  plusPoints: row.reduce((agg, fight) => agg + fight.redPoints, 0),
+  minusPoints: row.reduce((agg, fight) => agg + fight.bluePoints, 0),
+})
+
 export const isFinal = (fight: Fight): boolean => fight.depth === 0 && fight.type === 'MAIN'
 
 export const isSemifinal = (fight: Fight): boolean => fight.depth === 1 && fight.type === 'MAIN'
