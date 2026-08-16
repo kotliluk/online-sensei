@@ -155,6 +155,24 @@ export const CS: Translation = {
         },
       },
     },
+    tournamentScreen: {
+      export: {
+        downloadLog: 'Stáhnout průběh',
+        shareLog: 'Sdílet průběh',
+        downloadOverview: 'Stáhnout přehled',
+        shareOverview: 'Sdílet přehled',
+        round: 'Kolo',
+        final: 'Finále',
+        semifinal: 'Semifinále',
+        // 1 param - číslo kola
+        nthRound: '__{1}__. kolo',
+        // 1 param - číslo větve repasáže
+        repechageLine: 'Repasáž __{1}__',
+        // 1 param - roh
+        points: 'Body __{1}__',
+        winner: 'Vítěz',
+      },
+    },
     timerScreen: {
       saveTournamentFight: 'Uložit zápas',
       leaveFightModal: {

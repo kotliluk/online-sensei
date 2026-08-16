@@ -8,6 +8,27 @@ $fixed-row-height: $cell-size;
 .tournament-screen {
   @include app-screen();
   @include with-buttons();
+
+  // its own row above Cancel / Back: four buttons on one line wrap into a mess on
+  // a phone, and these two belong together anyway
+  .tournament-export {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+
+    margin-top: 1rem;
+
+    .export-btn {
+      // both labels are longer than the width a screen button is given
+      width: auto;
+      min-width: $button-long-width;
+      // deliberately not $grey: that is the background of the dark theme, and the
+      // buttons carry no border, so a button would vanish into the page
+      @include button-color($grey-light);
+    }
+  }
 }
 
 .fixed-table-wrapper {

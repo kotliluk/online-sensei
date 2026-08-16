@@ -156,6 +156,24 @@ export interface Translation {
         },
       },
     },
+    tournamentScreen: {
+      export: {
+        downloadLog: string,
+        shareLog: string,
+        downloadOverview: string,
+        shareOverview: string,
+        round: string,
+        final: string,
+        semifinal: string,
+        // 1 param - the number of the round
+        nthRound: string,
+        // 1 param - the number of the repechage line
+        repechageLine: string,
+        // 1 param - the corner
+        points: string,
+        winner: string,
+      },
+    },
     timerScreen: {
       saveTournamentFight: string,
       leaveFightModal: {
