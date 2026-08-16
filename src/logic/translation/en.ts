@@ -155,6 +155,24 @@ export const EN: Translation = {
         },
       },
     },
+    tournamentScreen: {
+      export: {
+        downloadLog: 'Download log',
+        shareLog: 'Share log',
+        downloadOverview: 'Download overview',
+        shareOverview: 'Share overview',
+        round: 'Round',
+        final: 'Final',
+        semifinal: 'Semifinal',
+        // 1 param - the number of the round
+        nthRound: 'Round __{1}__',
+        // 1 param - the number of the repechage line
+        repechageLine: 'Repechage __{1}__',
+        // 1 param - the corner
+        points: '__{1}__ points',
+        winner: 'Winner',
+      },
+    },
     timerScreen: {
       saveTournamentFight: 'Save fight',
       leaveFightModal: {
