@@ -4,7 +4,7 @@ import { FightEvent, FightLogEntry } from '../../types/fightLog'
 import { Senchu } from '../../types/senchu'
 import { Fight } from '../../types/tournament'
 import { buildCsv } from '../../utils/csv'
-import { parseTime } from '../../utils/time'
+import { insertWords } from '../translation'
 
 
 /**
@@ -84,7 +84,9 @@ const eventCells = (event: FightEvent): [side: string, value: string] => {
 const headerRow = (t: ExportTranslation, time: string): string[] => [
   t.tournament, 'AKA', 'AO',
   time, t.remaining, t.type, t.side, t.value, t.description,
-  `AKA ${t.points}`, `AKA ${t.fouls}`, `AO ${t.points}`, `AO ${t.fouls}`, 'Senchu',
+  insertWords(t.finalPoints, 'AKA'), insertWords(t.finalFouls, 'AKA'),
+  insertWords(t.finalPoints, 'AO'), insertWords(t.finalFouls, 'AO'),
+  t.finalSenchu,
 ]
 
 /**
@@ -105,8 +107,10 @@ export const buildFightCsv = (fight: ExportedFight, translation: Translation): s
     senchuCell(fight.senchu),
   ]
 
+  // seconds rather than `1:22`: a spreadsheet reads that shape as hours and
+  // minutes, so five seconds left would come out as five minutes
   const eventRow = (entry: FightLogEntry): string[] => [
-    localDateTime(entry.at), parseTime(entry.fightTime), entry.event.kind,
+    localDateTime(entry.at), String(entry.fightTime), entry.event.kind,
     ...eventCells(entry.event), formatFightEvent(entry.event, logTranslation),
   ]
 

@@ -159,14 +159,17 @@ export const CS: Translation = {
       saveTournamentFight: 'Uložit zápas',
       export: {
         tournament: 'Turnaj',
-        remaining: 'Zbývá',
+        // sekundy, ne 2:00 - tabulkový procesor by si z toho udělal hodiny a minuty
+        remaining: 'Zbývá (s)',
         type: 'Typ',
         side: 'Strana',
         value: 'Hodnota',
         description: 'Popis',
-        // navazuje na AKA / AO, proto malým písmenem
-        points: 'body',
-        fouls: 'fauly',
+        // 1 param - roh
+        finalPoints: 'Výsledné __{1}__ body',
+        // 1 param - roh
+        finalFouls: 'Výsledné __{1}__ fauly',
+        finalSenchu: 'Výsledné senchu',
       },
       log: {
         toggle: 'Průběh zápasu',

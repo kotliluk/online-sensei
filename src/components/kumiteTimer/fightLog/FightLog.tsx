@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useRef, useState } from 'react'
+import { JSX, ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import './FightLog.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
@@ -10,6 +10,12 @@ import { parseTime } from '../../../utils/time'
 
 interface FightLogProps {
   entries: FightLogEntry[]
+  /**
+   * Rendered next to the toggle. The panel does not decide what belongs there -
+   * exporting the fight is the screen's business, not the log's - it only knows
+   * that the two controls read as a pair and sit on one line.
+   */
+  action?: ReactNode
 }
 
 /**
@@ -19,7 +25,7 @@ interface FightLogProps {
  * the scoreboard is what matters; the log is for afterwards, when somebody asks
  * how the score got where it is.
  */
-export const FightLog = ({ entries }: FightLogProps): JSX.Element => {
+export const FightLog = ({ entries, action }: FightLogProps): JSX.Element => {
   const { kumiteTimer: { timerScreen: { log: t } } } = useSelector(selectTranslation)
 
   const [isOpen, setIsOpen] = useState(false)
@@ -38,9 +44,12 @@ export const FightLog = ({ entries }: FightLogProps): JSX.Element => {
 
   return (
     <section className='fight-log'>
-      <Button className='fight-log__toggle' onClick={handleToggle}>
-        {`${t.toggle} (${entries.length})`}
-      </Button>
+      <div className='fight-log__controls'>
+        <Button className='fight-log__toggle' onClick={handleToggle}>
+          {`${t.toggle} (${entries.length})`}
+        </Button>
+        {action}
+      </div>
 
       {isOpen && (
         entries.length === 0
