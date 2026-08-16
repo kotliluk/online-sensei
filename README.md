@@ -173,6 +173,33 @@ Last 6 columns show:
 - number of wins, draws, losses
 - given points, received points, points difference (+/-)
 
+### Exporting a tournament
+
+The tournament screen offers two files, one button each - shared or downloaded exactly as a
+single fight is. Two files rather than one download of both, because a single click that
+produces two files means an "allow multiple downloads?" prompt on a desktop and two
+attachments in one share sheet on a phone.
+
+**The log** is every fight that was played, in the format one fight already has: one header,
+then each fight's rows behind each other, oldest first by when the fight started. So a file
+of one fight and a file of a whole tournament open the same way, and a filter written for one
+works on the other. A fight nobody has stepped into yet is not in it.
+
+**The overview** is the tournament as the screen shows it, and its shape follows the system
+because the data has different shapes. A group comes out as the cross table, tally included:
+
+```
+;Aneta;Bob;Cyril;W;D;L;+;-;+/-
+Aneta;;3:1;;1;0;0;3;1;2
+```
+
+A bracket is not a table, so it comes out as a row per fight - the round it belongs to, both
+competitors, the score and the winner by name. Only the last two rounds have names of their
+own; below that they are counted from the first one, because the bracket of a small
+tournament is rarely a full one and "quarterfinal" would be a guess. Repechage lines are
+named as such. Fights that have not happened are listed with their results left empty, the
+same way the screen shows a dash.
+
 ## Reactions
 
 This feature is for reaction exercises where random signals are needed. The signal is both visual

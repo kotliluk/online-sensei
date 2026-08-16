@@ -2,7 +2,7 @@
 id: 004
 slug: tournament-export
 title: Export celého turnaje
-status: approved
+status: review
 branch: tournament-export
 ---
 
@@ -204,3 +204,59 @@ v ticketu 002: bez BOM, `text/csv` bez `;charset`, revoke blobu se zpožděním.
   průběhu a přehledu a se jménem turnaje, pokud nějaké je.
 
 **Otevřené otázky:** žádné — všechny tři byly zodpovězené na gatu, viz `B`.
+
+## D — Hotovo
+
+**Co se udělalo:** Dva commity. `eafd4e0` vytáhne hlavičku a řádky z `buildFightCsv`
+a tally z `GroupTableRow` — nic nového, jen dosažitelné odjinud. `049870a` staví na tom
+sběr zápasů z obou systémů (`logic/tournament/collect.ts`), tři stavitele CSV
+(`logic/tournament/csv.ts`) a řádek dvou tlačítek na turnajové obrazovce. Sada je
+188 unit testů (ze 151) a 81 browser testů (ze 71).
+
+**Odchylky od C:** dvě.
+
+- **Přehled skupiny nebere jména z `competitors`, ale z tabulky samotné.** Analýza počítala
+  se seznamem závodníků; čtení jmen z `group[i][0].redName` je o jeden vstup míň a hlavně
+  se soubor nemůže rozejít s tím, čeho je kopií.
+- **`fileNameStamp` a `fileNameSlug` vznikly jako sdílený `logic/download/fileName.ts`**,
+  místo aby si každý export razítko skládal sám. `groupStopwatch` má pořád vlastní kopii —
+  vědomě, přepisovat cizí feature v tomhle ticketu nebylo v rozsahu.
+
+**Gotchas:**
+
+- **`react-d3-tree` v jsdom nespustíš.** Mountuje d3 zoom, který čte šířku z rozvrženého
+  `<svg>`, a jsdom nerozvrhuje nic — obrazovka spadne dřív, než se dojde k assertu.
+  Shimnout rozměry by dokázalo jen ten shim; pavouk patří do prohlížečové sady.
+- **`store.dispatch` je otypovaný na prosté akce.** Uložení výsledku je thunk, takže
+  v testu musí přes `AppThunkDispatch`. A pozor na ASI: řádek začínající `(store.dispatch
+  as …)` se v repu bez středníků přilepí na předchozí `const` a rozbije se to na
+  „this expression is not callable".
+- **Repasážní zápasy mají všechny `depth === 0`**, protože je staví `newFight`, který depth
+  neřeší. Uložená hloubka má význam jen v hlavním stromě — proto se úroveň při průchodu
+  počítá, ne čte.
+- **Dvě poloviny skupinové tabulky se používají opačně.** Do logu jen horní trojúhelník
+  (dolní je zrcadlo s otočeným logem, diagonála je zápas sám se sebou), do statistik naopak
+  celý řádek — právě proto, že to zrcadlo existuje. Mutace „horní trojúhelník → celá
+  tabulka" shodí osm testů, takže to sedí, ale je to místo, kde se dá tiše šlápnout vedle.
+
+**Ověřeno na:** desktop Chrome (Playwright, 81/81) a emulovaný viewport 375×667 v obou
+jazycích. Změřeno, ne odhadnuto: obě tlačítka se vejdou na jeden řádek bez zalomení
+(`lines: 1`, shodné `top`), nic nepřetéká, stránka nemá vodorovný scroll; v tmavém motivu
+je tlačítko `rgb(163,165,168)` proti pozadí `rgb(82,82,86)`, tedy nezmizí — to je přesně
+past, na kterou naletěl ticket 002.
+
+**Testy ověřené mutacemi:** 17 mutací, **15 zčervenalo**. Dvě přežily a obě z dobrého
+důvodu, ne kvůli díře v pokrytí:
+
+- `Number.MAX_SAFE_INTEGER` → `Infinity` v porovnávači. `Infinity - Infinity` je `NaN`
+  a jazyk nechává `NaN` komparátor na implementaci, jenže **V8 ho čte jako nulu**, takže
+  výsledek je nerozeznatelný. Je to pojistka, ne oprava; komentář v kódu to teď říká
+  na rovinu, protože původně tvrdil víc, než bylo pravda.
+- Strážka diagonály v přehledu skupiny. Do buňky sám-se-sebou se nedá kliknout, takže
+  nemá vítěze a vyšla by prázdná i bez ní. Nedosažitelná obrana, stejný případ jako
+  `TIME_SET` v `BREAKS_GROUPING` u ticketu 001 — nechána a označena.
+
+**Na telefonu neověřeno.** Dle zadání to dělá uživatel. Stojí za to zkusit: `yarn dev:https`,
+odehrát dva zápasy, obě tlačítka, a hlavně **jestli si Google Sheets nepřečte `3:1`
+v přehledu jako čas** — je to stejná past jako u sloupce „Zbývá", jen se projeví viditelně,
+ne tiše. Když ano, oprava je jiný oddělovač skóre.

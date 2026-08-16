@@ -145,6 +145,30 @@ describe('playedFights', () => {
     expect(namesOf(fights)).toEqual(['Bob-Cyril', 'Aneta-Bob'])
   })
 
+  /**
+   * Two of them, not one. With a single such fight the comparator never subtracts
+   * one sentinel from another, so a sentinel of `Infinity` - whose difference with
+   * itself is `NaN` - would pass unnoticed and leave the whole array in whatever
+   * order it happened to be in.
+   */
+  test('still orders the logged fights when more than one has nothing to go by', () => {
+    // arrange - two fights saved without the clock ever running, two fought
+    let group = createGroup(competitors('Aneta', 'Bob', 'Cyril', 'Dana'))
+    group = play(group, 2, 3, 9000)
+    group = play(group, 0, 1, 4000)
+    group = group.map((row) => row.map((fight) => (
+      (fight.redName === 'Aneta' && fight.blueName === 'Cyril')
+      || (fight.redName === 'Bob' && fight.blueName === 'Dana')
+        ? { ...fight, winner: 'RED' as const, log: [] }
+        : fight
+    )))
+    // act
+    const fights = playedFights(groupSource(group))
+    // assert - the fought ones lead, oldest first; the two without a log follow
+    expect(namesOf(fights).slice(0, 2)).toEqual(['Aneta-Bob', 'Cyril-Dana'])
+    expect(namesOf(fights).slice(2).sort()).toEqual(['Aneta-Cyril', 'Bob-Dana'])
+  })
+
   test('carries the tournament name onto every fight, so the rows stand on their own', () => {
     // arrange
     const group = play(createGroup(roster), 0, 1, 1000)

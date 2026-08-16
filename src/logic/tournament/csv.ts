@@ -59,7 +59,9 @@ const buildGroupOverviewCsv = (source: TournamentSource, translation: Translatio
 
     return [
       names[rowIndex],
-      // a fighter has no fight against themselves, however the table is laid out
+      // A fighter has no fight against themselves. Belt and braces: the diagonal
+      // cannot be stepped into, so it has no winner and would come out empty
+      // anyway - saying so is for the reader, and for the day the table changes.
       ...row.map((fight, columnIndex) => rowIndex === columnIndex ? '' : scoreCell(fight)),
       String(stats.wins), String(stats.draws), String(stats.losses),
       String(stats.plusPoints), String(stats.minusPoints), String(stats.plusPoints - stats.minusPoints),
