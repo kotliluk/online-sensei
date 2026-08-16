@@ -70,9 +70,13 @@ const isPlayed = (fight: Fight): boolean => (fight.log?.length ?? 0) > 0 || figh
  *
  * A fight saved without the clock ever running has nothing to go by, so it sorts
  * last rather than first - it is the exception, and the exception belongs at the
- * end. Note the sentinel is a real number: `Infinity - Infinity` is `NaN`, and a
- * comparator that returns `NaN` silently leaves the array in whatever order it
- * happened to be in.
+ * end.
+ *
+ * The sentinel is a real number rather than `Infinity` because two such fights
+ * would then be compared as `Infinity - Infinity`, which is `NaN`, and the
+ * language leaves a `NaN` comparator up to the implementation. Measured, not
+ * assumed: V8 happens to read it as zero and the order comes out the same, so
+ * this is insurance rather than a fix - a mutation swapping it back survives.
  */
 const startedAt = (fight: Fight): number => fight.log?.[0]?.at ?? Number.MAX_SAFE_INTEGER
 

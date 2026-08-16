@@ -89,6 +89,24 @@ describe('TournamentScreen export', () => {
     expect(screen.getByRole('button', { name: 'Download overview' })).toBeInTheDocument()
   })
 
+  test('says share instead of download on a touch device that will take the file', () => {
+    // arrange - the only place the touch branch can be reached from a test
+    const matchMedia = window.matchMedia
+    window.matchMedia = (query: string) => ({ ...matchMedia(query), matches: query.includes('coarse') })
+    Object.defineProperty(navigator, 'canShare', { value: () => true, configurable: true })
+
+    try {
+      // act
+      renderScreen()
+      // assert
+      expect(screen.getByRole('button', { name: 'Share log' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Share overview' })).toBeInTheDocument()
+    } finally {
+      window.matchMedia = matchMedia
+      Reflect.deleteProperty(navigator, 'canShare')
+    }
+  })
+
   test('writes the fights that were played into the log file', async () => {
     // arrange
     const user = userEvent.setup()
