@@ -12,10 +12,16 @@ import {
   selectGroupStopwatchIsActual,
 } from '../../../redux/groupStopwatch/selector'
 import { setNotActualGroupStopwatch } from '../../../redux/groupStopwatch/actions'
-import { parseMinTime } from '../../../utils/time'
-import { Competitor, newCompetitor } from '../../../types/groupStopwatch'
+import { LeadingTimeUnit, parseMinTime } from '../../../utils/time'
+import {
+  clearCompetitorTime,
+  Competitor,
+  newCompetitor,
+  shiftCompetitorTime,
+} from '../../../types/groupStopwatch'
 import { PausableStopwatch } from '../../../logic/timing/pausableStopwatch'
 import { Results } from '../results/Results'
+import { CompetitorCard } from './CompetitorCard'
 
 
 type PlayPhase = 'init' | 'running' | 'paused' | 'results'
@@ -29,7 +35,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
 
   // current time in milliseconds
   const [currTime, setCurrTime] = useState(0)
-  const [actualLeadingTimeUnit, setActualLeadingTimeUnit] = useState<'seconds' | 'minutes' | 'hours'>('seconds')
+  const [actualLeadingTimeUnit, setActualLeadingTimeUnit] = useState<LeadingTimeUnit>('seconds')
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [clock] = useState<PausableStopwatch>(new PausableStopwatch(emptyFunc, 0))
   const [competitors, setCompetitors] = useState<Competitor[]>(
@@ -62,7 +68,19 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
     }))
   }, [setCompetitors, actualLeadingTimeUnit])
 
-  const recomputeCompetitorTimeStrings = useCallback((leadingTimeUnit: 'seconds' | 'minutes' | 'hours') => {
+  const handleShiftTime = useCallback((id: number, deltaMs: number) => {
+    setCompetitors(prevCompetitors => prevCompetitors.map((c) => (
+      c.id === id ? shiftCompetitorTime(c, deltaMs, actualLeadingTimeUnit) : c
+    )))
+  }, [setCompetitors, actualLeadingTimeUnit])
+
+  const handleClearTime = useCallback((id: number) => {
+    setCompetitors(prevCompetitors => prevCompetitors.map((c) => (
+      c.id === id ? clearCompetitorTime(c, actualLeadingTimeUnit) : c
+    )))
+  }, [setCompetitors, actualLeadingTimeUnit])
+
+  const recomputeCompetitorTimeStrings = useCallback((leadingTimeUnit: LeadingTimeUnit) => {
     setCompetitors(prevCompetitors => prevCompetitors.map((c) => ({
       ...c,
       timeString: parseMinTime(c.time !== null ? c.time / 1000 : null, 2, leadingTimeUnit),
@@ -106,11 +124,8 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   const handleReset = useCallback(() => {
     setPhase('init')
     setCurrTime(0)
-    setCompetitors(prevCompetitors => prevCompetitors.map((c) => ({
-      ...c,
-      time: null,
-      timeString: '--.--',
-    })))
+    // back to seconds along with the clock, which starts from zero again
+    setCompetitors(prevCompetitors => prevCompetitors.map((c) => clearCompetitorTime(c, 'seconds')))
     clock.stop()
   }, [setPhase, setCurrTime, setCompetitors])
 
@@ -138,6 +153,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   const { groupStopwatch: { playScreen: t }, common: ct } = translation
 
   const inProgress = phase === 'running' || phase === 'paused'
+  const finishedCount = competitors.filter((c) => c.time !== null).length
 
   if (phase === 'results') {
     return (
@@ -156,6 +172,9 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
         <div>
           <span className='time'>{parseMinTime(currTime / 1000, 2, actualLeadingTimeUnit)}</span>
         </div>
+
+        {/* who is still out there, in numbers only - it needs no word in either language */}
+        <div className='finished-count'>{finishedCount} / {competitors.length}</div>
 
         <div className='buttons'>
           <Button
@@ -192,15 +211,13 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
       <div className='play-group-stopwatch-competitors-wrapper'>
         <div className='play-group-stopwatch-competitors'>
           {competitors.map((competitor) => (
-            <div
-              className={`competitor-card ${competitor.time !== null ? 'finished' : ''}`}
+            <CompetitorCard
               key={competitor.id}
-              onClick={() => handleCompetitorClick(competitor.id, currTime)}
-              style={{ backgroundColor: competitor.color, color: competitor.contrastColor }}
-            >
-              <p className='competitor-name'>{competitor.id}) {competitor.name}</p>
-              <p className='competitor-time'>{competitor.timeString}</p>
-            </div>
+              competitor={competitor}
+              onSaveTime={() => handleCompetitorClick(competitor.id, currTime)}
+              onClearTime={() => handleClearTime(competitor.id)}
+              onShiftTime={(deltaMs) => handleShiftTime(competitor.id, deltaMs)}
+            />
           ))}
         </div>
       </div>
