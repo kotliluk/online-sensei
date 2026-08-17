@@ -1,4 +1,4 @@
-import { Box, cropBox, pictureScale } from './picture'
+import { Box, cropBox, PICTURE_PADDING, pictureScale } from './picture'
 
 
 /**
@@ -7,9 +7,6 @@ import { Box, cropBox, pictureScale } from './picture'
  * The three things this has to get right were each found by measuring rather
  * than by reading, and each of them fails silently when left out.
  */
-
-/** Room around the content, so nothing touches the edge of the picture. */
-const PADDING = 16
 
 /**
  * Styles that reach the elements through the stylesheet rather than through
@@ -50,7 +47,7 @@ const contentBox = (svg: SVGSVGElement): Box | null => {
 
   const matrix = root.transform.baseVal.consolidate()?.matrix ?? null
 
-  return cropBox(root.getBBox(), matrix, PADDING)
+  return cropBox(root.getBBox(), matrix, PICTURE_PADDING)
 }
 
 const loadImage = (source: string): Promise<HTMLImageElement | null> => {

@@ -2,7 +2,7 @@
 id: 005
 slug: tournament-picture
 title: Přehled turnaje jako obrázek
-status: approved
+status: review
 branch: tournament-picture
 ---
 
@@ -233,3 +233,45 @@ se s obrazovkou nemůžou rozejít.
   `log` a `overview` z ticketu 004.
 
 **Otevřené otázky:** obě jsou v `B` (třetí tlačítko vs. náhrada CSV, a rozlišení).
+
+## D — Hotovo
+
+**Co se udělalo:** Třetí tlačítko na turnajové obrazovce, které stáhne turnaj jako PNG —
+[pavouk](./assets/005-tree-picture.png) serializací vykresleného SVG,
+[skupinová tabulka](./assets/005-group-picture.png) nakreslením z dat. Sada je 208 unit
+testů (ze 188) a 86 browser testů (z 81). **Žádná nová závislost.**
+
+**Odchylky od C:** dvě.
+
+- **`dom-to-image` nebylo potřeba ani u skupiny.** Analýza s tím počítala jako s možností;
+  ve výsledku se tabulka kreslí z řádků, které staví CSV přehled, takže se obrázek a soubor
+  nemůžou rozejít. `groupOverviewRows` je kvůli tomu vytažené z `csv.ts` ven.
+- **`tournamentCsvFileName` se rozpadlo na sdílené `tournamentFileName`**, aby obrázek
+  dostal jméno stejným pravidlem jako obě CSV, jen s jinou příponou.
+
+**Gotchas:**
+
+- **jsdom nemá 2D kontext ani `getBBox`.** `getContext('2d')` vrací `null` s hláškou
+  „without installing the canvas npm package". Kód je proto dělený podle toho, co jde
+  otestovat: `pictureScale` a `cropBox` berou čísla a vrací čísla, `tableLayout` bere
+  měřicí funkci jako argument. Obrázek samotný ověřuje jen prohlížeč.
+- **Změna velikosti canvasu resetuje celý jeho kontext.** `scale`, `font` a `translate`
+  musí přijít až po nastavení `width`/`height`, jinak se tiše zahodí.
+- **Blob URL může canvas zašpinit**, a zašpiněný canvas nejde přečíst zpátky. Proto
+  `data:` URL, i když je delší.
+- **Volný práh v testu je horší než žádný.** První verze testu „spojnice jsou čáry"
+  měřila podíl neprázdných pixelů v rozmezí 0,02–0,3 — a mutace, která vypnula vlepování
+  stylů, tím rozmezím prošla (0,1225 → 0,1791). Rozliší to až podíl **černé**:
+  1,7 % u čar proti 7,1 % u kaněk. Práh je teď z toho měření, ne z odhadu.
+
+**Ověřeno na:** desktop Chrome (Playwright, 86/86), oba motivy, skupina i pavouk,
+diakritika. Doměřeno až na 64 lidí — obrázek se sám zmenší pod rozpočet místo aby vrátil
+prázdnou plochu.
+
+**Testy ověřené mutacemi: 11 mutací, všech 11 zčervenalo.** Čtyři z nich šly proti kódu,
+který umí prověřit jen prohlížeč, takže běžely proti druhému dev serveru nad zmutovanou
+kopií.
+
+**Na telefonu neověřeno.** `navigator.share` s `image/png` je jiný případ než `text/csv`
+a headless prohlížeč o tom nic neřekne. Zkusit: `yarn dev:https`, turnaj, třetí tlačítko —
+jestli se obrázek nabídne ke sdílení a jestli ho příjemce dostane celý.
