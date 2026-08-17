@@ -1,4 +1,4 @@
-import { PointerEvent, useCallback, useRef } from 'react'
+import { MouseEvent, PointerEvent, useCallback, useRef } from 'react'
 
 
 /** Long enough not to be hit while tapping, short enough not to feel stuck. */
@@ -18,6 +18,7 @@ export interface PressHandlers {
   onPointerUp: () => void
   onPointerLeave: () => void
   onPointerCancel: () => void
+  onContextMenu: (event: MouseEvent) => void
 }
 
 /**
@@ -47,6 +48,11 @@ export const useLongPress = (
   }, [])
 
   const handlePointerDown = useCallback((event: PointerEvent) => {
+    // the right button opens a menu, it does not press anything
+    if (event.button !== 0) {
+      return
+    }
+
     clearTimeout(timeout.current)
     origin.current = { x: event.clientX, y: event.clientY }
 
@@ -65,6 +71,27 @@ export const useLongPress = (
     }
   }, [cancel])
 
+  /**
+   * Android decided this is a hold before we did.
+   *
+   * Measured on a phone: Chrome answers a long press with its own menu at around half a
+   * second, and opening it cancels the pointer stream - so a hold on a slower threshold
+   * never fires at all, and the person gets a print and share menu instead of the thing
+   * they were holding. Rather than racing the platform to a shorter number, the platform's
+   * own verdict is taken as the answer.
+   *
+   * Only while a press is under way, so a plain right click still opens the menu it should.
+   */
+  const handleContextMenu = useCallback((event: MouseEvent) => {
+    if (origin.current === undefined) {
+      return
+    }
+
+    event.preventDefault()
+    cancel()
+    onLongPress()
+  }, [cancel, onLongPress])
+
   const handlePointerUp = useCallback(() => {
     const wasPressing = origin.current !== undefined
     cancel()
@@ -80,5 +107,6 @@ export const useLongPress = (
     onPointerUp: handlePointerUp,
     onPointerLeave: cancel,
     onPointerCancel: cancel,
+    onContextMenu: handleContextMenu,
   }
 }
