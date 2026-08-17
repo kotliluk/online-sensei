@@ -34,7 +34,7 @@ nebo rizikové změny je delší analýza legitimní výsledek.
 id: <001>
 slug: <english-kebab-slug>
 title: <Český název>
-status: spec # spec | analysis | approved | wip | review | done | dropped
+status: idea # idea | spec | analysis | approved | wip | review | done | dropped
 branch: <slug>
 ---
 
