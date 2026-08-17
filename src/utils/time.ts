@@ -8,6 +8,15 @@ export enum TimeUnit {
   TENTHS = 3
 }
 
+/**
+ * The largest unit a written time always shows, even when it is zero.
+ *
+ * A stopwatch grows into it: under a minute `12.34`, past one `01:12.34`. Everything
+ * written next to that clock has to be padded the same way, or a corrected time would
+ * suddenly look unlike the one above it.
+ */
+export type LeadingTimeUnit = 'hours' | 'minutes' | 'seconds'
+
 // [from][to]
 const castTable = [
   [1,                  60,            60 * 60, 60 * 60 * 10],
@@ -78,7 +87,7 @@ export const parseTime = (
 
 export const createTimePlaceholder = (
   withDecimals = 0,
-  alwaysPad: 'hours' | 'minutes' | 'seconds' = 'seconds',
+  alwaysPad: LeadingTimeUnit = 'seconds',
 ): string => {
   const padHours = alwaysPad === 'hours'
   const padMinutes = alwaysPad === 'hours' || alwaysPad === 'minutes'
@@ -95,7 +104,7 @@ export const createTimePlaceholder = (
 export const parseMinTime = (
   sec: number | null,
   withDecimals = 0,
-  alwaysPad?: 'hours' | 'minutes' | 'seconds'
+  alwaysPad?: LeadingTimeUnit
 ): string => {
   if (sec === null) {
     return createTimePlaceholder(withDecimals, alwaysPad)
