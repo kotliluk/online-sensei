@@ -1,4 +1,4 @@
-import { padBox, PICTURE_MAX_SCALE, PICTURE_PIXEL_BUDGET, pictureScale } from '../picture'
+import { padBox, PICTURE_MAX_SCALE, PICTURE_PIXEL_BUDGET, pictureScale, stackBlocks } from '../picture'
 
 
 describe('pictureScale', () => {
@@ -41,6 +41,45 @@ describe('pictureScale', () => {
   test('has an answer for a tournament with nothing in it', () => {
     // act & assert - no content means no reason to shrink anything
     expect(pictureScale(0, 0)).toBe(PICTURE_MAX_SCALE)
+  })
+})
+
+describe('stackBlocks', () => {
+  test('puts one block under another and is as wide as the widest', () => {
+    // arrange
+    const items = [
+      { width: 600, height: 200, heading: false },
+      { width: 300, height: 100, heading: false },
+    ]
+    // act
+    const layout = stackBlocks(items, 44)
+    // assert
+    expect(layout).toEqual({ width: 600, height: 300, tops: [0, 200] })
+  })
+
+  test('leaves room above a block that is labelled', () => {
+    // arrange - the repechage is the labelled one, as on screen
+    const items = [
+      { width: 600, height: 200, heading: false },
+      { width: 300, height: 100, heading: true },
+    ]
+    // act
+    const layout = stackBlocks(items, 44)
+    // assert - the second block starts below its heading, and the picture grew by it
+    expect(layout.tops).toEqual([0, 244])
+    expect(layout.height).toBe(344)
+  })
+
+  test('counts a heading on the first block too', () => {
+    // act
+    const layout = stackBlocks([{ width: 100, height: 50, heading: true }], 44)
+    // assert
+    expect(layout).toEqual({ width: 100, height: 94, tops: [44] })
+  })
+
+  test('has an answer for a picture with no blocks', () => {
+    // act & assert
+    expect(stackBlocks([], 44)).toEqual({ width: 0, height: 0, tops: [] })
   })
 })
 

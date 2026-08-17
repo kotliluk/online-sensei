@@ -299,3 +299,25 @@ Ověřený mutací zpět na původní tvar — padá právě on. Sada je 206 uni
 **Poučení do příště:** analýza tohle nezachytila, protože všechna měření při psaní `C`
 proběhla na čerstvě otevřené obrazovce, kde je zoom vždycky `scale(1)`. Měřit stav,
 do kterého se uživatel dostane až gestem, chce ten stav napřed vyrobit.
+
+### 2026-08-17 — nadpis nad repasáží
+
+Z ruční zkoušky: obrázek neměl nadpis „Repasáž", který obrazovka nad tou částí má
+(`TreeTournamentScreen.tsx:74`, `<h2>`). Obrázek má být tím, co obrazovka ukazuje, takže
+tam patří.
+
+`svgsToPngBlob` teď nebere `SVGSVGElement[]`, ale `PictureBlock[]` — kreslený obsah plus
+volitelně, jak se ta část jmenuje. Skládání dostalo čistou funkci `stackBlocks`, takže
+aritmetika (kolik místa nadpis ubere a kde který blok začne) jde otestovat bez plátna.
+Hlavní strom nadpis nedostává, protože ho nemá ani na obrazovce.
+
+Testy: čtyři unit testy na `stackBlocks` a browser test, který porovná obrázek s nadpisem
+a bez něj — musí být vyšší, stejně široký, a v tom přibylém pruhu musí něco být. Ověřeno
+třemi mutacemi (nekreslit text, nakreslit ho přes pavouka, nerezervovat místo), všechny tři
+padly právě na něm. Sada je 210 unit a 88 browser testů.
+
+**Zbývá nedořešené:** repasáž má v obrázku kolem sebe hodně prázdna. Změřeno — její
+`getBBox()` je 500×280, ale samotný zápas zabírá kolem 200×70. Nafukuje ji neviditelný
+`rect` s třídou `repechage-root` (`TreeNode.tsx:35`), který slouží jako rozvržení a cíl
+kliknutí, ale do bboxu se počítá. Do obrázku by se dal vynechat; zatím jsem to nechal, je
+to nad rámec zadání.

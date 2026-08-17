@@ -69,6 +69,31 @@ export const pictureScale = (
 
 export type Box = { x: number, y: number, width: number, height: number }
 
+export type StackItem = { width: number, height: number, heading: boolean }
+
+export type StackedLayout = { width: number, height: number, tops: number[] }
+
+/**
+ * Where each part of a picture goes when they are stacked one under the other.
+ *
+ * A part that is labelled - the repechage, which the screen puts a heading over -
+ * is pushed down to leave room for it, and `tops` is where the drawing starts
+ * rather than where the block starts, so the caller does not have to subtract the
+ * heading back out again.
+ */
+export const stackBlocks = (items: StackItem[], headingHeight: number): StackedLayout => {
+  const tops: number[] = []
+  let height = 0
+
+  items.forEach((item) => {
+    height += item.heading ? headingHeight : 0
+    tops.push(height)
+    height += item.height
+  })
+
+  return { width: Math.max(0, ...items.map((item) => item.width)), height, tops }
+}
+
 /** The same box with room left around it on every side. */
 export const padBox = (box: Box, padding: number): Box => ({
   x: box.x - padding,
