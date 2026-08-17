@@ -69,26 +69,10 @@ export const pictureScale = (
 
 export type Box = { x: number, y: number, width: number, height: number }
 
-/** The parts of an `SVGMatrix` that a translate-and-zoom needs. */
-export type Transform = { a: number, d: number, e: number, f: number }
-
-/**
- * Where the content of an svg actually sits, in the coordinates its viewBox uses.
- *
- * `getBBox()` answers in the element's own space, from **before** its transform,
- * while the bracket carries d3's pan and zoom on exactly that element. Cropping
- * to the raw box therefore points the viewBox at empty space and the picture
- * comes out blank - measured, and the reason this is a function of its own with
- * tests rather than three lines inlined somewhere.
- */
-export const cropBox = (box: Box, transform: Transform | null, padding: number): Box => {
-  const scaleX = transform?.a ?? 1
-  const scaleY = transform?.d ?? 1
-
-  return {
-    x: box.x * scaleX + (transform?.e ?? 0) - padding,
-    y: box.y * scaleY + (transform?.f ?? 0) - padding,
-    width: box.width * scaleX + padding * 2,
-    height: box.height * scaleY + padding * 2,
-  }
-}
+/** The same box with room left around it on every side. */
+export const padBox = (box: Box, padding: number): Box => ({
+  x: box.x - padding,
+  y: box.y - padding,
+  width: box.width + padding * 2,
+  height: box.height + padding * 2,
+})

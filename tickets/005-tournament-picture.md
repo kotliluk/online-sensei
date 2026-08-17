@@ -187,13 +187,13 @@ se s obrazovkou nemůžou rozejít.
 - **Velikost — a je to jiná velikost, než se čekalo.** Změřeno až do 64 lidí, což je
   strop aplikace, při 2×:
 
-  | lidí | canvas | Mpx | PNG | JPG q90 |
-  | ---- | ------ | --- | --- | ------- |
-  | 4 | 1264×484 | 0,6 | 32 kB | 34 kB |
-  | 8 | 2064×1324 | 2,7 | 97 kB | 84 kB |
-  | 16 | 2864×3004 | 8,6 | 255 kB | 195 kB |
-  | 32 | 3664×6364 | 23,3 | 632 kB | 443 kB |
-  | 64 | 4464×13084 | **58,4** | 1,5 MB | 979 kB |
+  | lidí | canvas     | Mpx      | PNG    | JPG q90 |
+  | ---- | ---------- | -------- | ------ | ------- |
+  | 4    | 1264×484   | 0,6      | 32 kB  | 34 kB   |
+  | 8    | 2064×1324  | 2,7      | 97 kB  | 84 kB   |
+  | 16   | 2864×3004  | 8,6      | 255 kB | 195 kB  |
+  | 32   | 3664×6364  | 23,3     | 632 kB | 443 kB  |
+  | 64   | 4464×13084 | **58,4** | 1,5 MB | 979 kB  |
 
   **Datová velikost problém není.** I plný turnaj o 64 lidech je 1,5 MB, což je běžná
   fotka. **Problém je pixelová plocha:** prohlížeče mají strop na velikost canvasu
@@ -275,3 +275,27 @@ kopií.
 **Na telefonu neověřeno.** `navigator.share` s `image/png` je jiný případ než `text/csv`
 a headless prohlížeč o tom nic neřekne. Zkusit: `yarn dev:https`, turnaj, třetí tlačítko —
 jestli se obrázek nabídne ke sdílení a jestli ho příjemce dostane celý.
+
+### 2026-08-17 — nález z ručního testu
+
+Uživatel při zkoušení narazil na to, že **obrázek nesl aktuální přiblížení** a že se
+hlavní pavouk a repasáž stáhly v různých velikostech.
+
+Změřeno a potvrzeno: po odzoomování vyšel obrázek 291×144 místo 1264×484. Příčina byla
+v tom, že se ořez počítal **skrz** transformaci, kterou d3 drží pan a zoom — a protože
+strom a repasáž jsou dvě samostatná `<svg>` s vlastním stavem zoomu, vyšla každá půlka
+jinak velká.
+
+**Oprava je zároveň zjednodušení:** transformace se nemá kompenzovat, má se z kopie
+zahodit. `getBBox()` odpovídá v souřadnicích *před* ní, což je přesně ta přirozená
+velikost, o kterou jde. Tím z kódu zmizel celý `cropBox` i s maticí a zbylo `padBox`.
+Obrázek je teď stejný bez ohledu na to, jakým gestem obrazovku někdo opustil —
+[strom s repasáží](./assets/005-tree-repechage-picture.png) má v obou půlkách stejně
+velké uzly.
+
+Regresní test: „the picture is the same whatever the bracket has been zoomed to".
+Ověřený mutací zpět na původní tvar — padá právě on. Sada je 206 unit a 87 browser testů.
+
+**Poučení do příště:** analýza tohle nezachytila, protože všechna měření při psaní `C`
+proběhla na čerstvě otevřené obrazovce, kde je zoom vždycky `scale(1)`. Měřit stav,
+do kterého se uživatel dostane až gestem, chce ten stav napřed vyrobit.

@@ -1,4 +1,4 @@
-import { Box, cropBox, PICTURE_PADDING, pictureScale } from './picture'
+import { Box, padBox, PICTURE_PADDING, pictureScale } from './picture'
 
 
 /**
@@ -37,17 +37,22 @@ const withInlinedStyles = (svg: SVGSVGElement): SVGSVGElement => {
   return copy
 }
 
-/** Where the content sits, once d3's pan and zoom on the root group is accounted for. */
+/**
+ * Where the content sits at its own size, with the panning and zooming ignored.
+ *
+ * The bracket on screen can be dragged and pinched, and d3 keeps that as a
+ * transform on the root group. The picture deliberately does not follow it: a
+ * download should give the same file whatever the last gesture happened to be,
+ * and a bracket and its repechage are two separate svgs with two separate zoom
+ * states, so following them meant the two halves of one picture came out at
+ * different sizes. `getBBox()` answers from before that transform, which is
+ * exactly the natural size wanted here - so the transform is dropped from the
+ * copy rather than compensated for.
+ */
 const contentBox = (svg: SVGSVGElement): Box | null => {
   const root = svg.querySelector('g')
 
-  if (!root) {
-    return null
-  }
-
-  const matrix = root.transform.baseVal.consolidate()?.matrix ?? null
-
-  return cropBox(root.getBBox(), matrix, PICTURE_PADDING)
+  return root === null ? null : padBox(root.getBBox(), PICTURE_PADDING)
 }
 
 const loadImage = (source: string): Promise<HTMLImageElement | null> => {
@@ -77,6 +82,12 @@ const renderSvg = async (svg: SVGSVGElement): Promise<Rendered | null> => {
   }
 
   const copy = withInlinedStyles(svg)
+  const copyRoot = copy.querySelector('g')
+
+  // the pan and zoom go with it, so the picture is of the bracket rather than
+  // of the view somebody happened to leave the screen in
+  copyRoot?.removeAttribute('transform')
+  copyRoot?.style.removeProperty('transform')
 
   copy.setAttribute('width', String(box.width))
   copy.setAttribute('height', String(box.height))
