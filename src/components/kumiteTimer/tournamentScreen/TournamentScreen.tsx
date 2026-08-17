@@ -16,9 +16,14 @@ import { Button } from '../../atoms/button/Button'
 import { useDispatch } from '../../../redux/useDispatch'
 import { setModalWindow } from '../../../redux/page/actions'
 import { TournamentSource } from '../../../logic/tournament/collect'
-import { buildTournamentLogCsv, buildTournamentOverviewCsv, tournamentCsvFileName } from '../../../logic/tournament/csv'
+import {
+  buildTournamentLogCsv, buildTournamentOverviewCsv, groupOverviewRows, tournamentCsvFileName,
+} from '../../../logic/tournament/csv'
 import { exportFile, willShareFile } from '../../../logic/download/exportFile'
 import { CSV_MIME_TYPE } from '../../../utils/csv'
+import { svgsToPngBlob } from '../../../logic/download/svgPicture'
+import { groupPictureBlob } from '../../../logic/tournament/groupPicture'
+import { PICTURE_BACKGROUND, PNG_MIME_TYPE, tournamentPictureFileName } from '../../../logic/download/picture'
 
 
 export const TournamentScreen = (): JSX.Element => {
@@ -67,6 +72,36 @@ export const TournamentScreen = (): JSX.Element => {
   const handleExportLog = useCallback(() => exportCsv('log'), [exportCsv])
   const handleExportOverview = useCallback(() => exportCsv('overview'), [exportCsv])
 
+  /**
+   * The picture is made from what is drawn, not from the state, so this reaches
+   * for the rendered bracket rather than taking it as a prop. A query in a click
+   * handler is cheaper than a ref threaded through a screen that has no other
+   * reason to expose one - and there is nothing to keep in sync, since the answer
+   * is only wanted at the moment the button is pressed.
+   */
+  const handleExportPicture = useCallback(() => {
+    const source: TournamentSource = { name: tournamentName, type: tournamentType, group, tree, repechage }
+
+    const blob = tournamentType === 'TREE'
+      ? svgsToPngBlob(
+        Array.from(document.querySelectorAll<SVGSVGElement>('.tree-wrapper svg, .repechage-wrapper svg')),
+        PICTURE_BACKGROUND,
+      )
+      : groupPictureBlob(groupOverviewRows(source, translation), PICTURE_BACKGROUND)
+
+    void blob.then((content) => {
+      if (content === null) {
+        return
+      }
+
+      exportFile(new File(
+        [content],
+        tournamentPictureFileName(tournamentName, new Date()),
+        { type: PNG_MIME_TYPE },
+      ))
+    })
+  }, [tournamentName, tournamentType, group, tree, repechage, translation])
+
   return (
     <main className='tournament-screen'>
       <h1>{translation.kumiteTimer.setUpScreen.tournament.label}: {tournamentName}</h1>
@@ -80,6 +115,10 @@ export const TournamentScreen = (): JSX.Element => {
 
         <Button className='export-btn' onClick={handleExportOverview}>
           {shares ? t.shareOverview : t.downloadOverview}
+        </Button>
+
+        <Button className='export-btn' onClick={handleExportPicture}>
+          {shares ? t.sharePicture : t.downloadPicture}
         </Button>
       </div>
 

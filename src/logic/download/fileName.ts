@@ -31,3 +31,15 @@ export const fileNameSlug = (name: string): string => {
     .slice(0, 40)
     .replace(/-+$/, '')
 }
+
+/**
+ * `kumite-camp-log-2026-08-15-0905.csv`.
+ *
+ * The tournament is named in the file as well as in it, because the two files of
+ * one tournament land in the same folder as the two files of the next one.
+ */
+export const tournamentFileName = (part: string, name: string, now: Date, extension: string): string => {
+  const slug = fileNameSlug(name)
+
+  return `kumite${slug === '' ? '' : `-${slug}`}-${part}-${fileNameStamp(now)}.${extension}`
+}
