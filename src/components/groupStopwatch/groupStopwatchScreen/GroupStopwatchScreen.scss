@@ -17,6 +17,11 @@
     .time {
       font-size: 15vw;
     }
+
+    .finished-count {
+      font-size: $text-middle;
+      margin-bottom: 0.5rem;
+    }
   }
 
   .buttons {
@@ -52,15 +57,42 @@
     .competitor-card {
       min-width: 150px;
       height: 120px;
-      padding: 1rem;
+
+      display: flex;
+      flex-direction: column;
 
       border-radius: 4px;
+      overflow: hidden;
 
       &.finished {
         opacity: 0.5;
       }
+    }
+
+    .competitor-press {
+      flex: 1;
+      min-height: 0;
+      padding: 0.75rem;
 
       cursor: pointer;
+
+      // holding a card is a gesture here, not an attempt to select a name - without this
+      // iOS answers a long press with its selection callout instead
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    .competitor-adjust {
+      display: flex;
+
+      button {
+        flex: 1;
+        padding: 0.25rem;
+        border-radius: 0;
+        font-size: $text-small;
+
+        @include button-color($orange);
+      }
     }
 
     .competitor-name {
@@ -68,7 +100,7 @@
     }
 
     .competitor-time {
-      margin: 1rem 0 0 0;
+      margin: 0.5rem 0 0 0;
       text-align: center;
       font-size: 2rem;
     }
