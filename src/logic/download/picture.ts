@@ -27,6 +27,9 @@ export const tournamentPictureFileName = (name: string, now: Date): string => {
  */
 export const PICTURE_BACKGROUND = '#ffffff'
 
+/** Room around the content, so nothing in the picture touches its own edge. */
+export const PICTURE_PADDING = 16
+
 /** Sharp enough to zoom into in a chat and to print, without being silly about it. */
 export const PICTURE_MAX_SCALE = 2
 

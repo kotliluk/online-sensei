@@ -200,6 +200,18 @@ tournament is rarely a full one and "quarterfinal" would be a guess. Repechage l
 named as such. Fights that have not happened are listed with their results left empty, the
 same way the screen shows a dash.
 
+**The picture** is a third button, and it is the tournament as something to look at rather
+than to filter - to send to a club chat, to print and pin up by the tatami. It holds the
+whole tournament, not the part that happens to be on screen: a bracket is captured wherever
+it has been panned and zoomed to, repechage included, and a group table is drawn in full
+rather than photographed through its scrolling frame. The background is light whatever theme
+the app is in, since a chat or a print does not inherit one.
+
+Its resolution is capped by area rather than fixed. Browsers limit how large a canvas may be
+and **exceeding that limit returns a blank image instead of an error**, so a small tournament
+is drawn at double resolution while a bracket of 64 - which would otherwise come to 58
+megapixels, against the roughly 17 iOS Safari allows - scales itself down instead.
+
 ## Reactions
 
 This feature is for reaction exercises where random signals are needed. The signal is both visual

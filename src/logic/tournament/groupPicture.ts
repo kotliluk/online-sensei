@@ -1,4 +1,4 @@
-import { pictureScale } from '../download/picture'
+import { PICTURE_PADDING, pictureScale } from '../download/picture'
 
 
 /**
@@ -120,16 +120,22 @@ export const groupPictureBlob = async (rows: string[][], background: string): Pr
   // layout is worked out on the same context that will draw it
   context.font = FONT
   const layout = tableLayout(rows, (text) => context.measureText(text).width)
-  const scale = pictureScale(layout.width, layout.height)
 
-  canvas.width = Math.round(layout.width * scale)
-  canvas.height = Math.round(layout.height * scale)
+  // the same margin the bracket picture gets, so a table does not sit flush
+  // against the edge of its own image
+  const width = layout.width + PICTURE_PADDING * 2
+  const height = layout.height + PICTURE_PADDING * 2
+  const scale = pictureScale(width, height)
+
+  canvas.width = Math.round(width * scale)
+  canvas.height = Math.round(height * scale)
 
   // sizing a canvas resets everything about its context, so the scale and the
   // font are set after, not before
   context.scale(scale, scale)
   context.fillStyle = background
-  context.fillRect(0, 0, layout.width, layout.height)
+  context.fillRect(0, 0, width, height)
+  context.translate(PICTURE_PADDING, PICTURE_PADDING)
 
   drawTable(rows, context, layout)
 
