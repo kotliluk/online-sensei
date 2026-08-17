@@ -237,8 +237,8 @@ se s obrazovkou nemůžou rozejít.
 ## D — Hotovo
 
 **Co se udělalo:** Třetí tlačítko na turnajové obrazovce, které stáhne turnaj jako PNG —
-[pavouk](./assets/005-tree-picture.png) serializací vykresleného SVG,
-[skupinová tabulka](./assets/005-group-picture.png) nakreslením z dat. Sada je 208 unit
+pavouk serializací vykresleného SVG, skupinová tabulka
+nakreslením z dat. Sada je 208 unit
 testů (ze 188) a 86 browser testů (z 81). **Žádná nová závislost.**
 
 **Odchylky od C:** dvě.
@@ -294,8 +294,7 @@ jinak velká.
 zahodit. `getBBox()` odpovídá v souřadnicích *před* ní, což je přesně ta přirozená
 velikost, o kterou jde. Tím z kódu zmizel celý `cropBox` i s maticí a zbylo `padBox`.
 Obrázek je teď stejný bez ohledu na to, jakým gestem obrazovku někdo opustil —
-[strom s repasáží](./assets/005-tree-repechage-picture.png) má v obou půlkách stejně
-velké uzly.
+strom s repasáží má v obou půlkách stejně velké uzly.
 
 Regresní test: „the picture is the same whatever the bracket has been zoomed to".
 Ověřený mutací zpět na původní tvar — padá právě on. Sada je 206 unit a 87 browser testů.
