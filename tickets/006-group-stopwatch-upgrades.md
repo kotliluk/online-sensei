@@ -185,28 +185,28 @@ který nedorazil, jde v nastavení jen přepsat, ne odebrat.
 
 ## D — Hotovo
 
-**Co se udělalo:** Šest commitů (`b4d84d6`..`129cbb7`). Čisté `shiftCompetitorTime`
+**Co se udělalo:** Osm commitů (`b4d84d6`..`99cc452`). Čisté `shiftCompetitorTime`
 a `clearCompetitorTime` nad závodníkem, hook `useLongPress`, karta jako vlastní komponenta
-s počítadlem a tlačítky ±, křížek v nastavení. Sada je **241 unit testů** (z 210), z toho
-26 nových. Žádná nová závislost, **žádný nový text do překladů**.
+s počítadlem a tlačítky ±, křížek v nastavení. Sada je **246 unit testů** (z 210), z toho
+31 nových. Žádná nová závislost, **žádný nový text do překladů**.
 
 **Akceptační kritéria — všech třináct splněno:**
 
-| Kritérium | Čím |
-| --------- | ---- |
-| ± jen na kartě s časem | `CompetitorCard.tsx:37` · test „offers the buttons only once there is a time to move" |
-| `+1 s` posune jen ten čas | `groupStopwatch.ts:shiftCompetitorTime` · test „moves that one time by a second and leaves everything else alone" |
-| `−1 s` neklesne pod nulu | test „stops at zero instead of going negative" |
-| ± se nepočítá jako klik na kartu | tlačítka jsou sourozenci stisknuté plochy · test „does not save the running time along the way" |
-| počítadlo `0 / 8` → `1 / 8` | `GroupStopwatchScreen.tsx` · test „starts at nobody and counts every saved time" |
-| vynulování i reset vrátí počítadlo | testy „counts back down…" a „is back to nobody after a reset" |
-| křížek u druhého ze tří | test „takes out the one whose cross was pressed and closes the gap" |
-| při dvou je křížek disabled | test „refuses to leave fewer competitors than the stopwatch takes" |
-| smazání zahodí odkaz z URL | test „is an edit, so a shared link stops describing the screen" |
-| podržení 600 ms maže a puštění neukládá | testy hooku + „a hold clears that card…" + ověřeno v prohlížeči |
-| stisk pod 600 ms ukládá | test „a short press is a press" |
-| podržení prázdné karty nedělá nic | test „a hold on a card without a time does nothing" |
-| krátký klik funguje jako dřív | testy v „what the screen already did" |
+| Kritérium                               | Čím                                                                                                               |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| ± jen na kartě s časem                  | `CompetitorCard.tsx:37` · test „offers the buttons only once there is a time to move"                             |
+| `+1 s` posune jen ten čas               | `groupStopwatch.ts:shiftCompetitorTime` · test „moves that one time by a second and leaves everything else alone" |
+| `−1 s` neklesne pod nulu                | test „stops at zero instead of going negative"                                                                    |
+| ± se nepočítá jako klik na kartu        | tlačítka jsou sourozenci stisknuté plochy · test „does not save the running time along the way"                   |
+| počítadlo `0 / 8` → `1 / 8`             | `GroupStopwatchScreen.tsx` · test „starts at nobody and counts every saved time"                                  |
+| vynulování i reset vrátí počítadlo      | testy „counts back down…" a „is back to nobody after a reset"                                                     |
+| křížek u druhého ze tří                 | test „takes out the one whose cross was pressed and closes the gap"                                               |
+| při dvou je křížek disabled             | test „refuses to leave fewer competitors than the stopwatch takes"                                                |
+| smazání zahodí odkaz z URL              | test „is an edit, so a shared link stops describing the screen"                                                   |
+| podržení 600 ms maže a puštění neukládá | testy hooku + „a hold clears that card…" + ověřeno v prohlížeči                                                   |
+| stisk pod 600 ms ukládá                 | test „a short press is a press"                                                                                   |
+| podržení prázdné karty nedělá nic       | test „a hold on a card without a time does nothing"                                                               |
+| krátký klik funguje jako dřív           | testy v „what the screen already did"                                                                             |
 
 Kritérium s `12,34 s → 13,34 s` je splněné na hodnotách `12,46 → 13,46`: `parseMinTime`
 ořezává a plovoucí čárka posouvá o setinu (viz Předpoklady), takže `12,34` je řetězec,
@@ -229,7 +229,7 @@ který appka nikdy nenapíše. Aritmetika sedí na milisekundách.
   všech osm testů hooku vytimeoutovalo na pěti sekundách. `fireEvent` pošle tytéž pointer
   eventy synchronně, nese souřadnice a dojde i na React `onPointerLeave`.
 - **`fireEvent.click` neposílá pointer eventy.** Test postavený jen na kliku nerozliší
-  tlačítko *vedle* stisknuté plochy od tlačítka *uvnitř* ní — a uvnitř by každá oprava
+  tlačítko _vedle_ stisknuté plochy od tlačítka _uvnitř_ ní — a uvnitř by každá oprava
   cestou ven uložila čas. Odhalila to až mutace; test teď posílá down/up/click.
 - **Posun „všem kartám" je nerozeznatelný od „jedné", dokud má čas jen jeden závodník** —
   `shiftCompetitorTime` totiž kartu bez času vrací beze změny. Dvě mutace kvůli tomu
@@ -259,13 +259,30 @@ pohyb.
 **Testy ověřené mutacemi: 21 mutací, všech 21 zčervenalo.** Dvě z nich přežily první kolo
 a obě odhalily díru v testu, ne rovnocenný kód — viz Gotchas.
 
-**Na telefonu neověřeno.** Zbývá jediná věc, kterou odsud vidět nejde: jestli iOS na
-podržení karty nevytáhne výběr textu a callout menu. `-webkit-touch-callout` Chromium ani
-nevrací ve spočtených stylech, takže headless prohlížeč na to odpovědět neumí. Karta má
-`user-select: none` (změřeno) a `-webkit-touch-callout: none` (v CSS je, ověřit jde jen
-na Safari).
+**Na Androidu ověřeno 2026-08-17** (uživatel, přes `yarn dev:https`) — a napoprvé to
+neprošlo, viz níž. Po opravě podržení maže čas, tažení ho nechá být a na ± se dá trefit
+prstem. Na iOS neověřeno; tam se callout tlumí `-webkit-touch-callout: none`, což se dá
+potvrdit jen na Safari (Chromium tu vlastnost nevrací ani ve spočtených stylech).
 
-**Co zkusit na telefonu** (`yarn dev:https`): rozjet stopky se třemi lidmi, jednomu uložit
-čas, kartu podržet — má zmizet čas, ne vyskočit lupa s výběrem jména. Pak zkusit seznam
-karet **posunout tahem, který začne na kartě** — čas musí zůstat. A ťuknout na ±, jestli
-se trefí prst.
+### 2026-08-17 — nález z ručního testu: podržení na Androidu vůbec nefungovalo
+
+Uživatel hlásil, že podržení karty čas nesmaže a místo toho vyskočí nabídka „tisk,
+sdílet…". Není to o délce prahu: **Chrome na Androidu vyhlásí dlouhý stisk dřív než my**,
+kolem půl sekundy, a otevřením svého menu **zruší proud pointer eventů**. Hook to bere
+jako „gesto převzal prohlížeč" — což je přesně to, co má dělat, když začne scrollování —
+a stisku se vzdá. Zkracovat práh je závod, který se vyhrát nedá: každé zařízení má tu
+hranici jinde.
+
+**Oprava bere verdikt platformy jako odpověď.** Přijde-li `contextmenu` během stisku,
+je to podržení: hook vystřelí dlouhou větev a menu potlačí. Časovač zůstává pro všechno,
+co takový event neposílá — držená myš a iOS. Potlačuje se **jen menu vyvolané během
+stisku**, takže obyčejný pravý klik menu pořád otevře; a pravé tlačítko nově stisk vůbec
+nezakládá, jinak by pravý klik mazal čas, což zadání vědomě zamítlo.
+
+Testy: čtyři nové nad hookem a jeden nad obrazovkou (246 unit testů z 241). Ověřeno
+i v prohlížeči přes ten samý https server — uložený čas `01.48`, po menu `--.--`, menu
+potlačené, počítadlo zpět na `0 / 3`, a klepnutí pak zase ukládá.
+
+**Poučení do příště:** headless prohlížeč tenhle druh chyby neukáže, protože desktopový
+Chromium žádné menu na podržení nedělá. Analýza past pojmenovala správně (iOS callout),
+ale minula tu, která spustila jako první — a byla na druhé platformě.
