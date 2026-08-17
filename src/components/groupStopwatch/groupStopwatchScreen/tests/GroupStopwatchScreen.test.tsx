@@ -69,6 +69,21 @@ const press = (label: string): void => {
   fireEvent.click(screen.getByRole('button', { name: label }))
 }
 
+/**
+ * A real tap on a correction button, pointer events and all.
+ *
+ * `fireEvent.click` alone would not do: it sends no pointer events, so it could not tell
+ * a button that sits beside the pressed area of the card from one that sits inside it -
+ * and inside, every correction would save a time on its way out.
+ */
+const tapButton = (name: string, label: string): void => {
+  const button = within(card(name)).getByRole('button', { name: label })
+
+  fireEvent.pointerDown(button, { clientX: 100, clientY: 100 })
+  fireEvent.pointerUp(button)
+  fireEvent.click(button)
+}
+
 /** Starts the clock and lets it run, so the times saved after this are not zero. */
 const runFor = (ticks: number): void => {
   press('Start')
@@ -142,7 +157,7 @@ describe('GroupStopwatchScreen', () => {
       tap('Aneta')
       expect(timeOf('Aneta')).toBe('12.46')
       // act
-      fireEvent.click(within(card('Aneta')).getByRole('button', { name: '+1 s' }))
+      tapButton('Aneta', '+1 s')
       // assert
       expect(timeOf('Aneta')).toBe('13.46')
       expect(timeOf('Bob')).toBe('--.--')
@@ -155,7 +170,7 @@ describe('GroupStopwatchScreen', () => {
       runFor(277)
       tap('Aneta')
       // act
-      fireEvent.click(within(card('Aneta')).getByRole('button', { name: '−1 s' }))
+      tapButton('Aneta', '−1 s')
       // assert
       expect(timeOf('Aneta')).toBe('11.46')
     })
@@ -168,7 +183,7 @@ describe('GroupStopwatchScreen', () => {
       tap('Aneta')
       wait(200 * TICK)
       // act
-      fireEvent.click(within(card('Aneta')).getByRole('button', { name: '+1 s' }))
+      tapButton('Aneta', '+1 s')
       // assert - the finish, moved by a second; not the clock as it is now
       expect(timeOf('Aneta')).toBe('13.46')
     })
