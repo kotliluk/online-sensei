@@ -316,8 +316,15 @@ a bez něj — musí být vyšší, stejně široký, a v tom přibylém pruhu m
 třemi mutacemi (nekreslit text, nakreslit ho přes pavouka, nerezervovat místo), všechny tři
 padly právě na něm. Sada je 210 unit a 88 browser testů.
 
-**Zbývá nedořešené:** repasáž má v obrázku kolem sebe hodně prázdna. Změřeno — její
-`getBBox()` je 500×280, ale samotný zápas zabírá kolem 200×70. Nafukuje ji neviditelný
-`rect` s třídou `repechage-root` (`TreeNode.tsx:35`), který slouží jako rozvržení a cíl
-kliknutí, ale do bboxu se počítá. Do obrázku by se dal vynechat; zatím jsem to nechal, je
-to nad rámec zadání.
+**Prázdné místo kolem repasáže — vědomě ponecháno.** Její `getBBox()` je 500×280, ale
+samotný zápas zabírá 200×70; nafukuje ji neviditelný `rect` s třídou `repechage-root`
+(`TreeNode.tsx:35`, 400×280 na `y: -140`), který slouží jako rozvržení a cíl kliknutí, ale
+do bboxu se počítá.
+
+Rozhodnutí uživatele: **repasáž má vždy méně kol než hlavní pavouk, takže její rozšíření
+je v pohodě.** U šířky to platí bez výhrad — obrázek je široký jako nejširší blok, takže
+těch +400 jednotek nestojí nic, dokud je repasáž užší než strom (u osmi lidí 500 proti
+1000). U **výšky** to neplatí stejně, protože bloky se skládají pod sebe a výška se sčítá:
+v ukázkovém obrázku je z 2044 px zhruba 420 px prázdna pod nadpisem. Měřeno na repasáži
+o jednom zápase, což je nejhorší případ — u delší repasážní větve si obsah tu výšku vezme
+sám. Delší větev změřená nebyla.
