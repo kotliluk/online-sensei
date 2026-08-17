@@ -2,7 +2,7 @@
 id: 005
 slug: tournament-picture
 title: Přehled turnaje jako obrázek
-status: analysis
+status: approved
 branch: tournament-picture
 ---
 
@@ -75,20 +75,23 @@ skupinová tabulka má zamrzlý řádek a sloupec a scrolluje.
       a všech šest dopočtených sloupců — se stejnými čísly, jaká ukazuje obrazovka.
 - [ ] Diakritika ve jménech je v obrázku správně.
 - [ ] Obrázek má světlé pozadí i tehdy, když appka běží v tmavém motivu.
+- [ ] **Turnaj o 64 lidech vrátí obrázek, ne prázdnou plochu** — násobek rozlišení se
+      podle velikosti stromu sám sníží.
 - [ ] Turnaj, ve kterém se ještě nic neodehrálo, se stáhnout dá a nespadne.
 - [ ] Soubor je `image/png` a jmenuje se ve stejném duchu jako ostatní exporty.
 - [ ] Texty v `cs.ts` i `en.ts`.
 - [ ] Na telefonu ověří uživatel — sdílení obrázku je jiný MIME než CSV.
 
-**Otevřené otázky:**
+**Rozhodnuto (2026-08-17):**
 
-1. **Třetí tlačítko, nebo nahradit CSV přehled?** Doporučuju **třetí**. U pavouka je
-   obrázek skoro jistě lepší než CSV seznam kol, ale u skupiny je CSV tabulka pořád
-   to, v čem jde řadit a sčítat — a to obrázek nikdy neumí. Na 375 px se řada zalomí
-   na dva řádky, což je v pořádku (`flex-wrap` tam už je), ale je to viditelná změna.
-2. **Rozlišení.** Doporučuju **2×**, ať je to čitelné po zvětšení v chatu a v tisku;
-   změřeno na 4 lidech to dělá 1264×484 px a 27 kB, takže velikost není důvod šetřit.
-   U 16 lidí to poroste — viz „Rizika".
+1. **Třetí tlačítko**, CSV přehled zůstává. U pavouka je obrázek skoro jistě lepší než
+   CSV seznam kol, ale u skupiny je tabulka pořád to, v čem jde řadit a sčítat — a to
+   obrázek nikdy neumí. Na 375 px se řada zalomí na dva řádky; `flex-wrap` tam už je,
+   takže nic nepřeteče.
+2. **Rozlišení 2×**, ale **shora omezené plochou canvasu**, ne napevno. Doměřeno až
+   na 64 lidí: datová velikost není důvod šetřit (1,5 MB v nejhorším), zato pixelová
+   plocha ano, protože její překročení vrací prázdný obrázek bez chyby. Detaily
+   a tabulka měření jsou v `C` → „Rizika a zařízení".
 
 ## C — Analýza
 
@@ -99,16 +102,16 @@ a produkuje [tenhle obrázek](./assets/005-bracket-light.png).
 
 **Reuse / gap:**
 
-| Dílčí věc | Stav | Kde to žije / co reusnu |
-| --------- | ---- | ----------------------- |
+| Dílčí věc                            | Stav        | Kde to žije / co reusnu                                                                                         |
+| ------------------------------------ | ----------- | --------------------------------------------------------------------------------------------------------------- |
 | Doručení souboru (sdílet / stáhnout) | ✅ existuje | `logic/download/exportFile.ts:69`; `willShareFile` bere MIME jako parametr, takže `image/png` projde beze změny |
-| Popisek podle zařízení | ✅ existuje | `TournamentScreen.tsx:38` (`shares`) — třetí tlačítko se přidá do stejné podmínky |
-| Razítko a slug do jména souboru | ✅ existuje | `logic/download/fileName.ts` z ticketu 004 |
-| Řádek tlačítek | ✅ existuje | `.tournament-export` v `TournamentScreen.scss:12`, `flex-wrap` už tam je |
-| Data skupinové tabulky | ✅ existuje | `selectKumiteTimerTournamentGroup` + `groupRowStats` z ticketu 004 |
-| Vykreslený pavouk | ✅ existuje | `<svg>` uvnitř `.tree-wrapper` (`TreeTournamentScreen.tsx:61`) |
-| SVG → PNG | ❌ chybí | nové, `logic/download/` |
-| Kreslení tabulky do canvasu | ❌ chybí | nové |
+| Popisek podle zařízení               | ✅ existuje | `TournamentScreen.tsx:38` (`shares`) — třetí tlačítko se přidá do stejné podmínky                               |
+| Razítko a slug do jména souboru      | ✅ existuje | `logic/download/fileName.ts` z ticketu 004                                                                      |
+| Řádek tlačítek                       | ✅ existuje | `.tournament-export` v `TournamentScreen.scss:12`, `flex-wrap` už tam je                                        |
+| Data skupinové tabulky               | ✅ existuje | `selectKumiteTimerTournamentGroup` + `groupRowStats` z ticketu 004                                              |
+| Vykreslený pavouk                    | ✅ existuje | `<svg>` uvnitř `.tree-wrapper` (`TreeTournamentScreen.tsx:61`)                                                  |
+| SVG → PNG                            | ❌ chybí    | nové, `logic/download/`                                                                                         |
+| Kreslení tabulky do canvasu          | ❌ chybí    | nové                                                                                                            |
 
 **Kam to přijde:**
 
@@ -129,8 +132,8 @@ a produkuje [tenhle obrázek](./assets/005-bracket-light.png).
    všechno, co je nastavené CSS a ne atributem, se ztratí. Konkrétně spojnice: `<path>`
    nemá `fill` ani `stroke` v atributu, na obrazovce mu je dává CSS (`fill: none`,
    `stroke: rgb(0,0,0)`) — a bez nich se `<path>` vykreslí s výchozím `fill: black`,
-   takže **z čar jsou vyplněné plochy**. Změřeno; ukazuje to [`assets/005-links-as-blobs.png`](./assets/005-links-as-blobs.png)
-   to ukazuje. Stačí projít `[svg, ...svg.querySelectorAll('*')]` a naklonovaným prvkům
+   takže **z čar jsou vyplněné plochy**. Změřeno; ukazuje to
+   [`assets/005-links-as-blobs.png`](./assets/005-links-as-blobs.png). Stačí projít `[svg, ...svg.querySelectorAll('*')]` a naklonovaným prvkům
    nastavit `fill`, `stroke`, `stroke-width`, `font-family`, `font-size`, `font-weight`
    z `getComputedStyle`. **Písmo se tím vyřeší taky** — `font-family` je jen v CSS.
 3. **Spočítat ořez z bbox _a_ transformace.** Tohle je krok, jehož vynechání dělá prázdný
@@ -171,6 +174,9 @@ se s obrazovkou nemůžou rozejít.
       `89 50 4E 47`) a rozměry z IHDR; ověřit, že šířka odpovídá celému stromu,
       ne šířce okna.
 - [ ] Browser test v tmavém motivu → pozadí obrázku je světlé.
+- [ ] Násobek rozlišení: malý strom dostane 2×, strom nad rozpočet dostane méně —
+      testováno na čisté funkci, ne přes vykreslování.
+- [ ] Browser test na 64 lidech → obrázek má neprázdné pixely a plocha je pod rozpočtem.
 
 **Rizika a zařízení:**
 
@@ -178,9 +184,37 @@ se s obrazovkou nemůžou rozejít.
   nedá — headless Chromium `canShare` na obrázek odpověděl `false`, ale ten stejně
   nesdílí nic, takže to nic neříká. **Patří to na telefon**, a je to přesně ta třída
   věcí, na které se tenhle projekt už spálil.
-- **Velikost.** Na 4 lidech 1264×484 px a 27 kB při 2×. Šestnáctka bude řádově větší
-  a pavouk roste hlavně do šířky; stojí za to změřit, než se to pustí, a případně
-  omezit násobek rozlišení podle šířky stromu.
+- **Velikost — a je to jiná velikost, než se čekalo.** Změřeno až do 64 lidí, což je
+  strop aplikace, při 2×:
+
+  | lidí | canvas | Mpx | PNG | JPG q90 |
+  | ---- | ------ | --- | --- | ------- |
+  | 4 | 1264×484 | 0,6 | 32 kB | 34 kB |
+  | 8 | 2064×1324 | 2,7 | 97 kB | 84 kB |
+  | 16 | 2864×3004 | 8,6 | 255 kB | 195 kB |
+  | 32 | 3664×6364 | 23,3 | 632 kB | 443 kB |
+  | 64 | 4464×13084 | **58,4** | 1,5 MB | 979 kB |
+
+  **Datová velikost problém není.** I plný turnaj o 64 lidech je 1,5 MB, což je běžná
+  fotka. **Problém je pixelová plocha:** prohlížeče mají strop na velikost canvasu
+  a **jeho překročení nevyhodí chybu — vrátí prázdný obrázek.** Na desktopovém Chrome
+  je limit hodně vysoko (proto tabulka výš vůbec vznikla), ale **iOS Safari má
+  dokumentovaný strop kolem 16,7 Mpx**, což při 2× překročí už turnaj o 32 lidech.
+  Zároveň je i pavouk sám o sobě dost nepoužitelný obrázek — poměr stran u 64 lidí
+  je 1:3 a je to dlouhý úzký pruh; výška roste lineárně s počtem lidí, šířka jen
+  s počtem kol.
+
+  **Řešení: strop na plochu, ne na násobek.** Násobek se spočítá jako
+  `min(2, sqrt(ROZPOČET / (šířka * výška)))`, takže malý turnaj dostane plné 2×
+  a velký se sám zmenší místo toho, aby tiše vrátil bílý obdélník. Rozpočet
+  konzervativně pod ten iOS limit.
+
+- **JPG tady nepomůže**, i když by to znělo logicky. Ušetří 20–35 %, a to až od osmi
+  lidí — **u čtyř je dokonce větší než PNG** (34,4 vs 32,4 kB), protože je to plochá
+  grafika s ostrými hranami, přesně to, na co je PNG stavěné a JPG ne. Ztrátová
+  komprese by navíc dělala artefakty kolem drobných jmen, tedy kolem toho jediného,
+  co se v obrázku musí přečíst. A hlavně: **neřeší to skutečné omezení** — na prázdný
+  canvas se narazí dřív, než se vůbec začne kódovat.
 - **Písmo.** Vlepení `font-family` z `getComputedStyle` vrátí `"Open Sans", sans-serif`.
   Jestli je Open Sans načtené přes `@font-face`, **v serializované kopii k dispozici
   nebude** a spadne to na `sans-serif`. Na přiloženém obrázku to vypadá dobře, ale je to
