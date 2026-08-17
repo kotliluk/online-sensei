@@ -151,17 +151,21 @@ describe('GroupStopwatchScreen', () => {
     })
 
     test('moves that one time by a second and leaves everything else alone', () => {
-      // arrange - 12465 ms in, Aneta finishes
+      // arrange - two competitors in, because a correction that hit every card would look
+      // exactly like a correct one as long as only one of them has a time
       renderScreen()
       runFor(277)
       tap('Aneta')
       expect(timeOf('Aneta')).toBe('12.46')
+      wait(100 * TICK)
+      tap('Bob')
+      expect(timeOf('Bob')).toBe('16.96')
       // act
       tapButton('Aneta', '+1 s')
       // assert
       expect(timeOf('Aneta')).toBe('13.46')
-      expect(timeOf('Bob')).toBe('--.--')
-      expect(clock()).toBe('12.46')
+      expect(timeOf('Bob')).toBe('16.96')
+      expect(clock()).toBe('16.96')
     })
 
     test('takes a second off', () => {
@@ -190,15 +194,18 @@ describe('GroupStopwatchScreen', () => {
   })
 
   describe('throwing a time away', () => {
-    test('a hold clears the card and the release does not save it again', () => {
-      // arrange
+    test('a hold clears that card and the release does not save it again', () => {
+      // arrange - again two of them, so clearing the wrong card as well would show
       renderScreen()
       runFor(277)
       tap('Aneta')
+      wait(100 * TICK)
+      tap('Bob')
       // act
       hold('Aneta')
       // assert
       expect(timeOf('Aneta')).toBe('--.--')
+      expect(timeOf('Bob')).toBe('16.96')
       expect(within(card('Aneta')).queryByRole('button', { name: '+1 s' })).not.toBeInTheDocument()
     })
 
