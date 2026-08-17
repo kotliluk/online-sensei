@@ -161,6 +161,8 @@ export const CS: Translation = {
         shareLog: 'Sdílet průběh',
         downloadOverview: 'Stáhnout přehled',
         shareOverview: 'Sdílet přehled',
+        downloadPicture: 'Stáhnout obrázek',
+        sharePicture: 'Sdílet obrázek',
         round: 'Kolo',
         final: 'Finále',
         semifinal: 'Semifinále',

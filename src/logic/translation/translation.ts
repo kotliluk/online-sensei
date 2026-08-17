@@ -162,6 +162,8 @@ export interface Translation {
         shareLog: string,
         downloadOverview: string,
         shareOverview: string,
+        downloadPicture: string,
+        sharePicture: string,
         round: string,
         final: string,
         semifinal: string,

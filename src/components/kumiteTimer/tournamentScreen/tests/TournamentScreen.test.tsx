@@ -79,14 +79,15 @@ describe('TournamentScreen export', () => {
     store.dispatch(setKumiteTimerTournament(120, 'Camp', 'GROUP', 3, roster))
   })
 
-  test('offers both files, in their own row above cancel and back', () => {
+  test('offers all three files, in their own row above cancel and back', () => {
     // act
     renderScreen()
     // assert - inside that row, so moving a button elsewhere fails the test
     const row = document.querySelector('.tournament-export') as HTMLElement
-    expect(row.querySelectorAll('button')).toHaveLength(2)
+    expect(row.querySelectorAll('button')).toHaveLength(3)
     expect(screen.getByRole('button', { name: 'Download log' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Download overview' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Download picture' })).toBeInTheDocument()
   })
 
   test('says share instead of download on a touch device that will take the file', () => {
@@ -101,6 +102,7 @@ describe('TournamentScreen export', () => {
       // assert
       expect(screen.getByRole('button', { name: 'Share log' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Share overview' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Share picture' })).toBeInTheDocument()
     } finally {
       window.matchMedia = matchMedia
       Reflect.deleteProperty(navigator, 'canShare')
@@ -159,6 +161,24 @@ describe('TournamentScreen export', () => {
     const rows = await rowsOf(exported[0])
     // assert - the header on its own, and the draw sheet still worth having
     expect(rows).toHaveLength(1)
+  })
+
+  /**
+   * The picture itself cannot be built here - jsdom has no 2d context at all, so
+   * `getContext` answers null and the export gives up rather than handing over an
+   * empty file. What is worth pinning down at this level is that it gives up
+   * quietly instead of throwing at the person pressing the button; the picture is
+   * checked for real in the browser suite.
+   */
+  test('does not fall over where a canvas cannot be had', async () => {
+    // arrange
+    const user = userEvent.setup()
+    playFirstFight()
+    renderScreen()
+    // act
+    await user.click(screen.getByRole('button', { name: 'Download picture' }))
+    // assert
+    expect(exported).toHaveLength(0)
   })
 
   /*

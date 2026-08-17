@@ -5,7 +5,7 @@ import { insertWords } from '../translation'
 import { Fight, getTreeDepth } from '../../types/tournament'
 import { groupRowStats } from '../../types/tournament'
 import { buildCsv } from '../../utils/csv'
-import { fileNameSlug, fileNameStamp } from '../download/fileName'
+import { tournamentFileName } from '../download/fileName'
 
 
 type ExportTranslation = Translation['kumiteTimer']['tournamentScreen']['export']
@@ -47,7 +47,7 @@ const scoreCell = (fight: Fight): string => {
  * The names are read off the table rather than taken from the competitor list,
  * so the file cannot disagree with the thing it is a copy of.
  */
-const buildGroupOverviewCsv = (source: TournamentSource, translation: Translation): string => {
+export const groupOverviewRows = (source: TournamentSource, translation: Translation): string[][] => {
   const { kumiteTimer: { setUpScreen: { tournament: { tableStatsLabels: t } } } } = translation
   const group = source.group
   const names = group.map((row) => row[0].redName)
@@ -68,7 +68,7 @@ const buildGroupOverviewCsv = (source: TournamentSource, translation: Translatio
     ]
   })
 
-  return buildCsv([header, ...bodyRows])
+  return [header, ...bodyRows]
 }
 
 /**
@@ -134,18 +134,10 @@ const buildTreeOverviewCsv = (source: TournamentSource, translation: Translation
 /** The tournament as it looks on screen - a table for a group, a list of rounds for a bracket. */
 export const buildTournamentOverviewCsv = (source: TournamentSource, translation: Translation): string => {
   return source.type === 'GROUP'
-    ? buildGroupOverviewCsv(source, translation)
+    ? buildCsv(groupOverviewRows(source, translation))
     : buildTreeOverviewCsv(source, translation)
 }
 
-/**
- * `kumite-camp-log-2026-08-15-0905.csv`.
- *
- * The tournament is named in the file as well as in it, because the two files of
- * one tournament land in the same folder as the two files of the next one.
- */
 export const tournamentCsvFileName = (part: 'log' | 'overview', name: string, now: Date): string => {
-  const slug = fileNameSlug(name)
-
-  return `kumite${slug === '' ? '' : `-${slug}`}-${part}-${fileNameStamp(now)}.csv`
+  return tournamentFileName(part, name, now, 'csv')
 }

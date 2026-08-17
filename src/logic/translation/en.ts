@@ -161,6 +161,8 @@ export const EN: Translation = {
         shareLog: 'Share log',
         downloadOverview: 'Download overview',
         shareOverview: 'Share overview',
+        downloadPicture: 'Download picture',
+        sharePicture: 'Share picture',
         round: 'Round',
         final: 'Final',
         semifinal: 'Semifinal',
