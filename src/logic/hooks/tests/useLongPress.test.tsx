@@ -121,6 +121,55 @@ describe('useLongPress', () => {
     expect(press).not.toHaveBeenCalled()
   })
 
+  describe('when the browser calls it a long press first', () => {
+    test('takes that as the hold and keeps its menu out of the way', () => {
+      // arrange - Chrome on Android opens a menu at around half a second, sooner than the
+      // hold would fire, and opening it cancels the pointer stream
+      const target = setUp()
+      // act
+      fireEvent.pointerDown(target, { clientX: 100, clientY: 100 })
+      const notPrevented = fireEvent.contextMenu(target)
+      // assert
+      expect(longPress).toHaveBeenCalledTimes(1)
+      expect(notPrevented).toBe(false)
+    })
+
+    test('does not then press when the finger comes up', () => {
+      // arrange
+      const target = setUp()
+      // act
+      fireEvent.pointerDown(target, { clientX: 100, clientY: 100 })
+      fireEvent.contextMenu(target)
+      wait(LONG_PRESS_MS + 200)
+      fireEvent.pointerUp(target)
+      // assert - and the timer that was still running must not fire a second time
+      expect(longPress).toHaveBeenCalledTimes(1)
+      expect(press).not.toHaveBeenCalled()
+    })
+
+    test('leaves a plain right click to open the menu it should', () => {
+      // arrange - nothing is being held here, somebody just right clicked
+      const target = setUp()
+      // act
+      const notPrevented = fireEvent.contextMenu(target)
+      // assert
+      expect(longPress).not.toHaveBeenCalled()
+      expect(notPrevented).toBe(true)
+    })
+
+    test('the right button does not start a press at all', () => {
+      // arrange
+      const target = setUp()
+      // act
+      fireEvent.pointerDown(target, { clientX: 100, clientY: 100, button: 2 })
+      wait(LONG_PRESS_MS)
+      fireEvent.pointerUp(target)
+      // assert
+      expect(longPress).not.toHaveBeenCalled()
+      expect(press).not.toHaveBeenCalled()
+    })
+  })
+
   test('a second gesture works the same as the first', () => {
     // arrange - whatever the hook keeps between events has to be put back afterwards
     const target = setUp()

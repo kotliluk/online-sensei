@@ -209,6 +209,20 @@ describe('GroupStopwatchScreen', () => {
       expect(within(card('Aneta')).queryByRole('button', { name: '+1 s' })).not.toBeInTheDocument()
     })
 
+    test('clears the card when the browser calls the hold a long press first', () => {
+      // arrange - what Android actually does: its own menu opens before our timer, and
+      // opening it cancels the pointer stream, so this is the only signal there is
+      renderScreen()
+      runFor(277)
+      tap('Aneta')
+      // act
+      fireEvent.pointerDown(pressable('Aneta'), { clientX: 100, clientY: 100 })
+      const notPrevented = fireEvent.contextMenu(pressable('Aneta'))
+      // assert - and no print and share menu on top of it
+      expect(timeOf('Aneta')).toBe('--.--')
+      expect(notPrevented).toBe(false)
+    })
+
     test('a hold on a card without a time does nothing', () => {
       // arrange
       renderScreen()
