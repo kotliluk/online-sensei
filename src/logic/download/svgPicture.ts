@@ -1,4 +1,4 @@
-import { Box, padBox, PICTURE_PADDING, pictureScale } from './picture'
+import { Box, padBox, PICTURE_PADDING, pictureScale, stackBlocks } from './picture'
 
 
 /**
@@ -104,30 +104,45 @@ const toBlob = (canvas: HTMLCanvasElement): Promise<Blob | null> => {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
 }
 
+/** Matches the `<h2>` the screen puts over the repechage. */
+const HEADING_HEIGHT = 48
+const HEADING_FONT = 'bold 28px "Open Sans", sans-serif'
+const HEADING_COLOUR = '#0a0a0a'
+
+/** One part of the picture: something drawn, and optionally what to call it. */
+export type PictureBlock = { svg: SVGSVGElement, heading?: string }
+
 /**
  * Several svgs stacked into one picture - a bracket has its repechage drawn
- * below it, and the picture keeps them together the way the screen does.
+ * below it, and the picture keeps them together the way the screen does,
+ * heading and all.
  *
  * The background is painted rather than left transparent, and it is painted
  * light whatever theme the app is in: the picture leaves for a chat, a print or
  * a file preview, and none of those inherit a dark theme. Left transparent, the
  * black text would land on whatever the viewer happens to use.
  */
-export const svgsToPngBlob = async (svgs: SVGSVGElement[], background: string): Promise<Blob | null> => {
-  const rendered = (await Promise.all(svgs.map(renderSvg))).filter((one) => one !== null)
+export const svgsToPngBlob = async (blocks: PictureBlock[], background: string): Promise<Blob | null> => {
+  const rendered = (await Promise.all(blocks.map(async (block) => {
+    const image = await renderSvg(block.svg)
+
+    return image === null ? null : { ...image, heading: block.heading }
+  }))).filter((one) => one !== null)
 
   if (rendered.length === 0) {
     return null
   }
 
-  const width = Math.max(...rendered.map((one) => one.width))
-  const height = rendered.reduce((total, one) => total + one.height, 0)
-  const scale = pictureScale(width, height)
+  const layout = stackBlocks(
+    rendered.map((one) => ({ width: one.width, height: one.height, heading: one.heading !== undefined })),
+    HEADING_HEIGHT,
+  )
+  const scale = pictureScale(layout.width, layout.height)
 
   const canvas = document.createElement('canvas')
 
-  canvas.width = Math.round(width * scale)
-  canvas.height = Math.round(height * scale)
+  canvas.width = Math.round(layout.width * scale)
+  canvas.height = Math.round(layout.height * scale)
 
   const context = canvas.getContext('2d')
 
@@ -137,14 +152,22 @@ export const svgsToPngBlob = async (svgs: SVGSVGElement[], background: string): 
 
   context.fillStyle = background
   context.fillRect(0, 0, canvas.width, canvas.height)
+  context.scale(scale, scale)
 
-  let top = 0
-  rendered.forEach((one) => {
+  rendered.forEach((one, index) => {
+    const top = layout.tops[index]
     // centred, so a narrow repechage sits under the middle of the bracket
-    const left = (width - one.width) / 2
+    const left = (layout.width - one.width) / 2
 
-    context.drawImage(one.image, left * scale, top * scale, one.width * scale, one.height * scale)
-    top += one.height
+    if (one.heading !== undefined) {
+      context.font = HEADING_FONT
+      context.fillStyle = HEADING_COLOUR
+      context.textAlign = 'center'
+      context.textBaseline = 'middle'
+      context.fillText(one.heading, layout.width / 2, top - HEADING_HEIGHT / 2)
+    }
+
+    context.drawImage(one.image, left, top, one.width, one.height)
   })
 
   return toBlob(canvas)

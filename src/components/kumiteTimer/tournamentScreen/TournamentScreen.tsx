@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import './TournamentScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
+import { Translation } from '../../../logic/translation/translation'
 import {
   selectKumiteTimerRepechageTree,
   selectKumiteTimerTournamentGroup,
@@ -21,10 +22,27 @@ import {
 } from '../../../logic/tournament/csv'
 import { exportFile, willShareFile } from '../../../logic/download/exportFile'
 import { CSV_MIME_TYPE } from '../../../utils/csv'
-import { svgsToPngBlob } from '../../../logic/download/svgPicture'
+import { PictureBlock, svgsToPngBlob } from '../../../logic/download/svgPicture'
 import { groupPictureBlob } from '../../../logic/tournament/groupPicture'
 import { PICTURE_BACKGROUND, PNG_MIME_TYPE, tournamentPictureFileName } from '../../../logic/download/picture'
 
+
+/**
+ * The parts of a bracket to put in the picture, labelled the way the screen
+ * labels them - the repechage carries an `<h2>` there, so it carries a heading
+ * here. The main tree has none on screen and gets none in the picture.
+ */
+const treePictureBlocks = (translation: Translation): PictureBlock[] => {
+  const tree = document.querySelector<SVGSVGElement>('.tree-wrapper svg')
+  const repechage = document.querySelector<SVGSVGElement>('.repechage-wrapper svg')
+
+  return [
+    ...(tree === null ? [] : [{ svg: tree }]),
+    ...(repechage === null
+      ? []
+      : [{ svg: repechage, heading: translation.kumiteTimer.setUpScreen.tournament.repechage }]),
+  ]
+}
 
 export const TournamentScreen = (): JSX.Element => {
   const translation = useSelector(selectTranslation)
@@ -83,10 +101,7 @@ export const TournamentScreen = (): JSX.Element => {
     const source: TournamentSource = { name: tournamentName, type: tournamentType, group, tree, repechage }
 
     const blob = tournamentType === 'TREE'
-      ? svgsToPngBlob(
-        Array.from(document.querySelectorAll<SVGSVGElement>('.tree-wrapper svg, .repechage-wrapper svg')),
-        PICTURE_BACKGROUND,
-      )
+      ? svgsToPngBlob(treePictureBlocks(translation), PICTURE_BACKGROUND)
       : groupPictureBlob(groupOverviewRows(source, translation), PICTURE_BACKGROUND)
 
     void blob.then((content) => {
