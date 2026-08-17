@@ -16,6 +16,7 @@ import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { LIMITS, VALIDATOR } from '../../../redux/groupStopwatch/utils'
 import { insertWords } from '../../../logic/translation'
 import { CompetitorSetup, newCompetitorSetup } from '../../../types/groupStopwatch'
+import { Cross } from '../../icons/Cross'
 import { ShareButton } from '../../common/shareButton/ShareButton'
 import { buildAppUrl } from '../../../logic/urlState/appUrl'
 import {
@@ -52,6 +53,12 @@ export const SetUpScreen = (): JSX.Element => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  // what the screen shows while the typed number is out of range or being typed
+  const validCompetitorsCount = Math.min(
+    LIMITS.competitorsCount.max,
+    Math.max(LIMITS.competitorsCount.min, competitorsCount),
+  )
+
   useEffect(() => {
     if (isCompetitorsCountValid && competitorsCount > competitors.length) {
       const newCompetitors = [...competitors]
@@ -78,6 +85,16 @@ export const SetUpScreen = (): JSX.Element => {
     setCompetitors(newCompetitors)
   }, [setCompetitors])
 
+  /**
+   * Somebody did not turn up. The competitors below move up a place, and the count goes
+   * down with them - otherwise the effect above would fill the freed place with an empty
+   * competitor, or a name that was set up and then counted out would slide into view.
+   */
+  const handleCompetitorDelete = useCallback((index: number) => {
+    setCompetitors((prevCompetitors) => prevCompetitors.filter((_, i) => i !== index))
+    setCompetitorsCount(validCompetitorsCount - 1)
+  }, [setCompetitors, setCompetitorsCount, validCompetitorsCount])
+
   const handleCompetitorColorEdit = useCallback((competitors: CompetitorSetup[], index: number, value: string) => {
     const newCompetitors = competitors.map((c) => newCompetitorSetup(c.name, c.color))
     newCompetitors[index].color = value
@@ -100,11 +117,6 @@ export const SetUpScreen = (): JSX.Element => {
     dispatch(setNotActualGroupStopwatch())
     void navigate('/')
   }, [dispatch])
-
-  const validCompetitorsCount = Math.min(
-    LIMITS.competitorsCount.max,
-    Math.max(LIMITS.competitorsCount.min, competitorsCount),
-  )
 
   const { groupStopwatch: { setUpScreen: t } } = translation
 
@@ -146,6 +158,13 @@ export const SetUpScreen = (): JSX.Element => {
                 value={competitor.color}
                 onChange={(value) => handleCompetitorColorEdit(competitors, index, value)}
               />
+              <Button
+                className='competitor-del-btn'
+                onClick={() => handleCompetitorDelete(index)}
+                disabled={validCompetitorsCount <= LIMITS.competitorsCount.min}
+              >
+                <Cross />
+              </Button>
             </div>
           </li>
         ))}
