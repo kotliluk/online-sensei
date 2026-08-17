@@ -256,7 +256,14 @@ důvodu, ne kvůli díře v pokrytí:
   nemá vítěze a vyšla by prázdná i bez ní. Nedosažitelná obrana, stejný případ jako
   `TIME_SET` v `BREAKS_GROUPING` u ticketu 001 — nechána a označena.
 
-**Na telefonu neověřeno.** Dle zadání to dělá uživatel. Stojí za to zkusit: `yarn dev:https`,
-odehrát dva zápasy, obě tlačítka, a hlavně **jestli si Google Sheets nepřečte `3:1`
-v přehledu jako čas** — je to stejná past jako u sloupce „Zbývá", jen se projeví viditelně,
-ne tiše. Když ano, oprava je jiný oddělovač skóre.
+**Na telefonu ověřeno 2026-08-17** (uživatel, přes `yarn dev:https`): **oba soubory
+v pořádku** — průběh i přehled. **Sheets si `3:1` nepřečetl jako čas**, takže obava
+ze skóre v jedné buňce se nenaplnila a oddělovač zůstává.
+
+Jedna věc zůstala nedořešená: **v přehledu vyšla na mobilu špatně diakritika**, kdežto
+v zápase i v průběhu správně. Změřeno na bajtech, že **to není souborem** — všechny tři
+exporty kódují `á` jako `c3 a1` a `Ř` jako `c5 98`, bez BOM, a staví je stejný `buildCsv`
+se stejným MIME. Rozdíl je tedy v tom, jak se soubor otevřel: Sheets na Androidu čte
+*lokální* CSV jako jednobajtové, kdežto přes sdílení do Drive se převod udělá serverově
+(README, sekce o exportu výsledků). Zbývá potvrdit, že přehled šel jinou cestou než zápas;
+pokud šel stejnou, je to nález a je potřeba ho dohledat.

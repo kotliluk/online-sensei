@@ -235,9 +235,10 @@ dostane `File` s typem přesně `text/csv`, že při `NotAllowedError` cesta spa
 stažení a při `AbortError` ne, a že mimo secure context popisek čitelně degraduje na
 „Stáhnout CSV". Testy jsou ověřené mutacemi: 8 mutací, všech 8 zčervenalo.
 
-**Na reálném telefonu neověřeno** — ani stažení, ani sdílení. To je u téhle funkce zrovna
-ta část, kde se to v tomhle projektu čtyřikrát rozbilo, takže „zeleno" tady neznamená
-hotovo. Co zkusit, je v uzávěrce.
+**Na reálném telefonu ověřeno 2026-08-17** (uživatel, přes `yarn dev:https`): **sdílení
+funguje a diakritika v Google Sheets vyšla správně.** Tím padá poslední otevřená věc
+z uzávěrky — cesta přes sdílení do Drive převádí kódování serverově, přesně jak to popisuje
+README, takže háčky přežijí.
 
 ## Review
 
