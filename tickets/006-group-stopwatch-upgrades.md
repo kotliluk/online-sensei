@@ -2,7 +2,7 @@
 id: 006
 slug: group-stopwatch-upgrades
 title: Vylepšení skupinových stopek
-status: approved # idea | spec | analysis | approved | wip | review | done | dropped
+status: review # idea | spec | analysis | approved | wip | review | done | dropped
 branch: group-stopwatch-upgrades
 ---
 
@@ -182,3 +182,90 @@ který nedorazil, jde v nastavení jen přepsat, ne odebrat.
   neopravuje**.
 
 **Otevřené otázky:** žádné — všechny tři z fáze zadání jsou zodpovězené na gatu `B`.
+
+## D — Hotovo
+
+**Co se udělalo:** Šest commitů (`b4d84d6`..`129cbb7`). Čisté `shiftCompetitorTime`
+a `clearCompetitorTime` nad závodníkem, hook `useLongPress`, karta jako vlastní komponenta
+s počítadlem a tlačítky ±, křížek v nastavení. Sada je **241 unit testů** (z 210), z toho
+26 nových. Žádná nová závislost, **žádný nový text do překladů**.
+
+**Akceptační kritéria — všech třináct splněno:**
+
+| Kritérium | Čím |
+| --------- | ---- |
+| ± jen na kartě s časem | `CompetitorCard.tsx:37` · test „offers the buttons only once there is a time to move" |
+| `+1 s` posune jen ten čas | `groupStopwatch.ts:shiftCompetitorTime` · test „moves that one time by a second and leaves everything else alone" |
+| `−1 s` neklesne pod nulu | test „stops at zero instead of going negative" |
+| ± se nepočítá jako klik na kartu | tlačítka jsou sourozenci stisknuté plochy · test „does not save the running time along the way" |
+| počítadlo `0 / 8` → `1 / 8` | `GroupStopwatchScreen.tsx` · test „starts at nobody and counts every saved time" |
+| vynulování i reset vrátí počítadlo | testy „counts back down…" a „is back to nobody after a reset" |
+| křížek u druhého ze tří | test „takes out the one whose cross was pressed and closes the gap" |
+| při dvou je křížek disabled | test „refuses to leave fewer competitors than the stopwatch takes" |
+| smazání zahodí odkaz z URL | test „is an edit, so a shared link stops describing the screen" |
+| podržení 600 ms maže a puštění neukládá | testy hooku + „a hold clears that card…" + ověřeno v prohlížeči |
+| stisk pod 600 ms ukládá | test „a short press is a press" |
+| podržení prázdné karty nedělá nic | test „a hold on a card without a time does nothing" |
+| krátký klik funguje jako dřív | testy v „what the screen already did" |
+
+Kritérium s `12,34 s → 13,34 s` je splněné na hodnotách `12,46 → 13,46`: `parseMinTime`
+ořezává a plovoucí čárka posouvá o setinu (viz Předpoklady), takže `12,34` je řetězec,
+který appka nikdy nenapíše. Aritmetika sedí na milisekundách.
+
+**Odchylky od C:** dvě, obě zjednodušení.
+
+- **`Button` se rozšiřovat nemusel.** Analýza počítala s obalovým divem, který zastaví
+  `onClick` i `onPointerDown`, protože atom event nepředává; uživatel navíc odsouhlasil
+  přidání parametru do callbacku. Ani jedno nebylo potřeba: tlačítka ± jsou **sourozenci**
+  stisknuté plochy, ne její potomci, takže není co zastavovat. Sdílený atom zůstal beze
+  změny.
+- **Karta je vlastní komponenta** (`CompetitorCard.tsx`), což analýza neřekla. Vynucují to
+  pravidla hooků — rozlišení klepnutí a podržení potřebuje stav na každou kartu a hook
+  nejde volat v cyklu. Styly zůstaly ve stylesheetu obrazovky, kde jsou zanořené v mřížce.
+
+**Gotchas:**
+
+- **`userEvent` se pod fake timers nikdy nedočká.** Čeká na hodiny, kterými hýbe jen test;
+  všech osm testů hooku vytimeoutovalo na pěti sekundách. `fireEvent` pošle tytéž pointer
+  eventy synchronně, nese souřadnice a dojde i na React `onPointerLeave`.
+- **`fireEvent.click` neposílá pointer eventy.** Test postavený jen na kliku nerozliší
+  tlačítko *vedle* stisknuté plochy od tlačítka *uvnitř* ní — a uvnitř by každá oprava
+  cestou ven uložila čas. Odhalila to až mutace; test teď posílá down/up/click.
+- **Posun „všem kartám" je nerozeznatelný od „jedné", dokud má čas jen jeden závodník** —
+  `shiftCompetitorTime` totiž kartu bez času vrací beze změny. Dvě mutace kvůli tomu
+  přežily, než testy dostaly druhého doběhlého.
+- **`parseMinTime` ořezává a plovoucí čárka bere setinu:** 12 340 ms se píše `12.33`.
+  Platí to pro celou appku včetně velkého času, není to nic, co by ± přineslo.
+- **Mřížka karet přetéká na 375 px už dnes.** Změřeno na `main` i na větvi shodně
+  (478 px obsahu v 375 px mřížce), třetí sloupec je useknutý. Není to z tohohle ticketu
+  a neopravuje se tady.
+- **`NumberInput` je pod kapotou textový input**, takže `getAllByRole('textbox')` vrátí
+  i počet závodníků. Jména se v testu berou z `.group-inputs`.
+- Mazací tlačítko intervalů má styly zanořené pod svým wrapperem — potvrzeno, takže tady
+  má vlastní pravidlo. Ticket 002 na tomhle už jednou zaplatil.
+
+**Ověřeno na:** desktop Chrome (Playwright) na 375×667, 412×915, 667×375 a 1280×800.
+Změřeno, ne odhadnuto: karta 150×120 se stisknutou plochou 150×98 a tlačítky 75×22,
+nic není useknuté ani nepřetéká přes kartu, stránka nemá vodorovný scroll a počítadlo je
+vidět ve všech čtyřech rozměrech. V tmavém motivu bílé počítadlo `rgb(255,255,255)` na
+pozadí `rgb(82,82,86)` a tlačítko `rgb(245,124,0)` s černým textem — past z ticketu 002
+tady nehrozí.
+
+Skutečné chování v prohlížeči, ne jen v jsdom: klepnutí uloží čas, **podržení ho smaže
+ještě před puštěním** (`--.--` v okamžiku, kdy je tlačítko pořád dole), puštění ho neuloží
+zpátky, a **tažení po kartě čas nechá být** — což je ten scénář, kvůli kterému hook hlídá
+pohyb.
+
+**Testy ověřené mutacemi: 21 mutací, všech 21 zčervenalo.** Dvě z nich přežily první kolo
+a obě odhalily díru v testu, ne rovnocenný kód — viz Gotchas.
+
+**Na telefonu neověřeno.** Zbývá jediná věc, kterou odsud vidět nejde: jestli iOS na
+podržení karty nevytáhne výběr textu a callout menu. `-webkit-touch-callout` Chromium ani
+nevrací ve spočtených stylech, takže headless prohlížeč na to odpovědět neumí. Karta má
+`user-select: none` (změřeno) a `-webkit-touch-callout: none` (v CSS je, ověřit jde jen
+na Safari).
+
+**Co zkusit na telefonu** (`yarn dev:https`): rozjet stopky se třemi lidmi, jednomu uložit
+čas, kartu podržet — má zmizet čas, ne vyskočit lupa s výběrem jména. Pak zkusit seznam
+karet **posunout tahem, který začne na kartě** — čas musí zůstat. A ťuknout na ±, jestli
+se trefí prst.

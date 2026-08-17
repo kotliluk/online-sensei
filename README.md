@@ -261,6 +261,23 @@ you save their time by clicking their name. If you misclick, you can update save
 You can always see the result list where you can sort the results by the time, the name or by the starting
 number.
 
+A cross next to a competitor in the set up removes them; everybody below moves up
+and the count goes down with them. Two competitors is the minimum, so at two the
+crosses are disabled.
+
+While the clock runs, the number under it says how many competitors already have
+a time out of how many there are, so it is clear who is still out there without
+counting the cards.
+
+A saved time can be corrected in two ways. The card of somebody who has finished
+carries a **−1 s** and a **+1 s** button, which move that one time without touching
+the clock or anybody else; a time never goes below zero, and it may end up past the
+running clock, because it is a written down measurement rather than a reading of it.
+**Holding the card** for over half a second throws its time away and puts the
+competitor back among those still running. The hold reacts while the finger is still
+down, and a press that travels more than a few pixels is taken as scrolling the list
+rather than as a hold - otherwise dragging the list would wipe a time.
+
 The result list can be exported as a CSV file. It holds exactly what the table
 shows, in the order it is shown, so the chosen sorting carries over. The file is
 UTF-8 without a byte order mark and semicolon separated - spreadsheets do not
