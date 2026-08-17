@@ -9,4 +9,18 @@
     flex-direction: row;
     align-items: center;
   }
+
+  // its own rule and not the interval timer's class: those declarations are nested inside
+  // the interval wrapper, so the class alone would be a dead selector here (ticket 002)
+  .competitor-del-btn {
+    @include center-content();
+
+    width: 2rem;
+    height: 2rem;
+
+    margin-left: 1rem;
+    overflow: hidden;
+
+    @include button-color($red);
+  }
 }
