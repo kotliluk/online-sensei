@@ -272,9 +272,13 @@ prázdnou plochu.
 který umí prověřit jen prohlížeč, takže běžely proti druhému dev serveru nad zmutovanou
 kopií.
 
-**Na telefonu neověřeno.** `navigator.share` s `image/png` je jiný případ než `text/csv`
-a headless prohlížeč o tom nic neřekne. Zkusit: `yarn dev:https`, turnaj, třetí tlačítko —
-jestli se obrázek nabídne ke sdílení a jestli ho příjemce dostane celý.
+**Na telefonu ověřeno 2026-08-17** (uživatel, přes `yarn dev:https`): **sdílení obrázku
+funguje.** Tím padá poslední otevřená otázka ticketu — `image/png` prochází
+`navigator.share` stejně jako `text/csv`, což se odsud změřit nedalo a headless prohlížeč
+na to odpovídal `false` jen proto, že sám nesdílí nic.
+
+Ze stejné zkoušky vzešly dvě opravy, obě popsané níž: zoom v obrázku a chybějící nadpis
+nad repasáží.
 
 ### 2026-08-17 — nález z ručního testu
 
