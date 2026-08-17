@@ -1,4 +1,4 @@
-import { cropBox, PICTURE_MAX_SCALE, PICTURE_PIXEL_BUDGET, pictureScale } from '../picture'
+import { padBox, PICTURE_MAX_SCALE, PICTURE_PIXEL_BUDGET, pictureScale } from '../picture'
 
 
 describe('pictureScale', () => {
@@ -44,38 +44,18 @@ describe('pictureScale', () => {
   })
 })
 
-describe('cropBox', () => {
+describe('padBox', () => {
   const box = { x: -500, y: -105, width: 600, height: 210 }
 
-  test('follows the transform the bracket is panned by', () => {
-    // arrange - the pan d3 applies to the root group, measured on a real bracket
-    const matrix = { a: 1, d: 1, e: 800, f: 140 }
+  test('leaves room on every side', () => {
     // act
-    const crop = cropBox(box, matrix, 0)
-    // assert - without this the crop points at empty space and the picture comes out blank
-    expect(crop).toEqual({ x: 300, y: 35, width: 600, height: 210 })
+    const padded = padBox(box, 16)
+    // assert - the origin moves back by the padding and the size grows by twice it
+    expect(padded).toEqual({ x: -516, y: -121, width: 632, height: 242 })
   })
 
-  test('scales the box by the zoom as well as moving it', () => {
-    // arrange
-    const matrix = { a: 2, d: 2, e: 0, f: 0 }
-    // act
-    const crop = cropBox(box, matrix, 0)
-    // assert
-    expect(crop).toEqual({ x: -1000, y: -210, width: 1200, height: 420 })
-  })
-
-  test('adds the padding on every side', () => {
-    // act
-    const crop = cropBox(box, { a: 1, d: 1, e: 0, f: 0 }, 16)
-    // assert
-    expect(crop).toEqual({ x: -516, y: -121, width: 632, height: 242 })
-  })
-
-  test('copes with a bracket that carries no transform at all', () => {
-    // act
-    const crop = cropBox(box, null, 0)
-    // assert
-    expect(crop).toEqual(box)
+  test('is the box itself when nothing is asked for', () => {
+    // act & assert
+    expect(padBox(box, 0)).toEqual(box)
   })
 })
