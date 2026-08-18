@@ -2,7 +2,7 @@
 id: 003
 slug: leave-fight-guard
 title: Potvrzení odchodu z rozehraného turnajového zápasu
-status: review
+status: done
 branch: leave-fight-guard
 ---
 

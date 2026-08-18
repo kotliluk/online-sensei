@@ -2,7 +2,7 @@
 id: 006
 slug: group-stopwatch-upgrades
 title: Vylepšení skupinových stopek
-status: review # idea | spec | analysis | approved | wip | review | done | dropped
+status: done # idea | spec | analysis | approved | wip | review | done | dropped
 branch: group-stopwatch-upgrades
 ---
 

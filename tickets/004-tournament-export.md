@@ -2,7 +2,7 @@
 id: 004
 slug: tournament-export
 title: Export celého turnaje
-status: review
+status: done
 branch: tournament-export
 ---
 
@@ -102,17 +102,17 @@ Podle rozhodnutí v `B`: **oba soubory jako CSV, obrázek až vlastním ticketem
 
 **Reuse / gap:**
 
-| Dílčí věc | Stav | Kde to žije / co reusnu |
-| --------- | ---- | ----------------------- |
-| Sloupce a řádky exportu zápasu | ✅ existuje | `src/logic/fightLog/csv.ts:84` (`headerRow`), `:112` (`eventRow`) — jen se rozdělí, aby šly použít dvakrát |
-| Popis události textem | ✅ existuje | `src/logic/fightLog/format.ts:23` |
-| Zápis CSV (`;`, bez BOM, quoting) | ✅ existuje | `src/utils/csv.ts:41` |
-| Doručení souboru (sdílet / stáhnout) | ✅ existuje | `src/logic/download/exportFile.ts:69`, popisek přes `willShareFile` |
-| Řádek tlačítek pod obsahem | ✅ existuje | `FightLog.tsx:47` `.fight-log__controls` — stejný vzor, samostatná řada |
-| Data turnaje | ✅ existuje | `selectKumiteTimerTournamentGroup`, `…Tree`, `…RepechageTree`, `…Competitors`, `…TournamentName` |
-| Výběr zápasů z turnaje (bez duplicit a placeholderů) | ❌ chybí | nové, `src/logic/tournament/` |
-| Statistiky řádku skupiny (V/R/P/+/−/+−) | ⚠️ jen v komponentě | `GroupTableRow.tsx:21` — spočítané v `useEffect` do pěti `useState`; vytáhnout do čisté funkce |
-| Název kola v pavouku | ❌ chybí | nové; `isFinal`/`isSemifinal` v `types/tournament.ts:137` pokrývají jen dvě nejvyšší |
+| Dílčí věc                                            | Stav                | Kde to žije / co reusnu                                                                                    |
+| ---------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Sloupce a řádky exportu zápasu                       | ✅ existuje         | `src/logic/fightLog/csv.ts:84` (`headerRow`), `:112` (`eventRow`) — jen se rozdělí, aby šly použít dvakrát |
+| Popis události textem                                | ✅ existuje         | `src/logic/fightLog/format.ts:23`                                                                          |
+| Zápis CSV (`;`, bez BOM, quoting)                    | ✅ existuje         | `src/utils/csv.ts:41`                                                                                      |
+| Doručení souboru (sdílet / stáhnout)                 | ✅ existuje         | `src/logic/download/exportFile.ts:69`, popisek přes `willShareFile`                                        |
+| Řádek tlačítek pod obsahem                           | ✅ existuje         | `FightLog.tsx:47` `.fight-log__controls` — stejný vzor, samostatná řada                                    |
+| Data turnaje                                         | ✅ existuje         | `selectKumiteTimerTournamentGroup`, `…Tree`, `…RepechageTree`, `…Competitors`, `…TournamentName`           |
+| Výběr zápasů z turnaje (bez duplicit a placeholderů) | ❌ chybí            | nové, `src/logic/tournament/`                                                                              |
+| Statistiky řádku skupiny (V/R/P/+/−/+−)              | ⚠️ jen v komponentě | `GroupTableRow.tsx:21` — spočítané v `useEffect` do pěti `useState`; vytáhnout do čisté funkce             |
+| Název kola v pavouku                                 | ❌ chybí            | nové; `isFinal`/`isSemifinal` v `types/tournament.ts:137` pokrývají jen dvě nejvyšší                       |
 
 **Kam to přijde:**
 
@@ -229,7 +229,7 @@ sběr zápasů z obou systémů (`logic/tournament/collect.ts`), tři stavitele 
   Shimnout rozměry by dokázalo jen ten shim; pavouk patří do prohlížečové sady.
 - **`store.dispatch` je otypovaný na prosté akce.** Uložení výsledku je thunk, takže
   v testu musí přes `AppThunkDispatch`. A pozor na ASI: řádek začínající `(store.dispatch
-  as …)` se v repu bez středníků přilepí na předchozí `const` a rozbije se to na
+as …)` se v repu bez středníků přilepí na předchozí `const` a rozbije se to na
   „this expression is not callable".
 - **Repasážní zápasy mají všechny `depth === 0`**, protože je staví `newFight`, který depth
   neřeší. Uložená hloubka má význam jen v hlavním stromě — proto se úroveň při průchodu
@@ -264,6 +264,6 @@ Jedna věc zůstala nedořešená: **v přehledu vyšla na mobilu špatně diakr
 v zápase i v průběhu správně. Změřeno na bajtech, že **to není souborem** — všechny tři
 exporty kódují `á` jako `c3 a1` a `Ř` jako `c5 98`, bez BOM, a staví je stejný `buildCsv`
 se stejným MIME. Rozdíl je tedy v tom, jak se soubor otevřel: Sheets na Androidu čte
-*lokální* CSV jako jednobajtové, kdežto přes sdílení do Drive se převod udělá serverově
+_lokální_ CSV jako jednobajtové, kdežto přes sdílení do Drive se převod udělá serverově
 (README, sekce o exportu výsledků). Zbývá potvrdit, že přehled šel jinou cestou než zápas;
 pokud šel stejnou, je to nález a je potřeba ho dohledat.

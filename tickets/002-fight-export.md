@@ -2,7 +2,7 @@
 id: 002
 slug: fight-export
 title: Export jednotlivého zápasu do CSV
-status: review
+status: done
 branch: fight-export
 ---
 
@@ -32,6 +32,7 @@ A později: „pak pokračuj exportem zápasu"
 ### 2026-08-16 — po review
 
 „- oprav sloupec na sekundy
+
 - tlačítko stáhnout dej vedle tlačítka „Průběh zápasu"
 - sloupce s výslednými hodnotami v CSV jasněji pojmenovat, třeba „Výsledné AKA body" apod.
 - jinak za mě ok"
@@ -127,8 +128,15 @@ na zařízení, ne na datech. Přebírám to beze změny.
 Vstupem shaperu je **strukturální podmnožina `Fight`**, ne `Fight` sám a ne nezávislý typ:
 
 ```ts
-type ExportedFight = Pick<Fight, 'redPoints' | 'redFouls' | 'bluePoints' | 'blueFouls' | 'senchu'>
-  & { tournamentName?: string, redName?: string, blueName?: string, log: FightLogEntry[] }
+type ExportedFight = Pick<
+  Fight,
+  "redPoints" | "redFouls" | "bluePoints" | "blueFouls" | "senchu"
+> & {
+  tournamentName?: string;
+  redName?: string;
+  blueName?: string;
+  log: FightLogEntry[];
+};
 ```
 
 Samostatný zápas entitu `Fight` nemá, takže obrazovka záznam poskládá z lokálního stavu;
@@ -199,7 +207,7 @@ aplikace. Ruční ověření na telefonu je součástí dodávky.
 1. **Sloupce a pořadí schváleny** tak, jak jsou navržené výš. Zůstávají výchozím bodem
    k doladění na dev serveru.
 2. **Vítěz v souboru zatím nebude.** Do budoucna se ale má volba vítěze přesunout jinam,
-   aby šla započítat do logu — včetně podrobností k *hantei*. Zapsáno do backlogu
+   aby šla započítat do logu — včetně podrobností k _hantei_. Zapsáno do backlogu
    (`TODO.md`, „Product backlog"), tenhle ticket se toho nedotýká.
 3. **`hodnota` u `TIME_SET` v sekundách.** `popis` nese čitelné `2:00 → 1:22`.
 

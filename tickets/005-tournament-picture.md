@@ -2,7 +2,7 @@
 id: 005
 slug: tournament-picture
 title: Přehled turnaje jako obrázek
-status: review
+status: done
 branch: tournament-picture
 ---
 
@@ -291,7 +291,7 @@ strom a repasáž jsou dvě samostatná `<svg>` s vlastním stavem zoomu, vyšla
 jinak velká.
 
 **Oprava je zároveň zjednodušení:** transformace se nemá kompenzovat, má se z kopie
-zahodit. `getBBox()` odpovídá v souřadnicích *před* ní, což je přesně ta přirozená
+zahodit. `getBBox()` odpovídá v souřadnicích _před_ ní, což je přesně ta přirozená
 velikost, o kterou jde. Tím z kódu zmizel celý `cropBox` i s maticí a zbylo `padBox`.
 Obrázek je teď stejný bez ohledu na to, jakým gestem obrazovku někdo opustil —
 strom s repasáží má v obou půlkách stejně velké uzly.

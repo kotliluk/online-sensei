@@ -2,7 +2,7 @@
 id: 001
 slug: fight-log
 title: Log průběhu kumite zápasu
-status: review
+status: done
 branch: fight-log
 ---
 
@@ -79,15 +79,15 @@ průběhu nemá co exportovat fáze 2 a 3.
 
 **Reuse / gap:**
 
-| Dílčí věc              | Stav        | Kde to žije / co reusnu                                     |
-| ---------------------- | ----------- | ----------------------------------------------------------- |
-| Entita zápasu          | ✅ existuje | `src/types/tournament.ts:32` — `Fight`, plus operace v témže souboru (vzor „typy a jejich operace pohromadě") |
-| Persistence s fallbackem | ✅ existuje | `src/logic/localStorage/access.ts:77` — `getValidatedTypeFromLS` |
-| Validace uloženého tvaru | ✅ existuje | `isValidFight` `tournament.ts:116`                          |
-| Formátování času        | ✅ existuje | `parseTime` `src/utils/time.ts:23`                          |
-| Doplňování parametrů do textů | ✅ existuje | `insertWords` `src/logic/translation/index.ts:25`      |
-| Kontrolovaný state      | ⚠️ částečně | `useControlledState` hodnotu mimo limit tiše zahodí a neřekne to |
-| Sběr událostí           | ❌ chybí    | nový `src/types/fightLog.ts`                                |
+| Dílčí věc                     | Stav        | Kde to žije / co reusnu                                                                                       |
+| ----------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------- |
+| Entita zápasu                 | ✅ existuje | `src/types/tournament.ts:32` — `Fight`, plus operace v témže souboru (vzor „typy a jejich operace pohromadě") |
+| Persistence s fallbackem      | ✅ existuje | `src/logic/localStorage/access.ts:77` — `getValidatedTypeFromLS`                                              |
+| Validace uloženého tvaru      | ✅ existuje | `isValidFight` `tournament.ts:116`                                                                            |
+| Formátování času              | ✅ existuje | `parseTime` `src/utils/time.ts:23`                                                                            |
+| Doplňování parametrů do textů | ✅ existuje | `insertWords` `src/logic/translation/index.ts:25`                                                             |
+| Kontrolovaný state            | ⚠️ částečně | `useControlledState` hodnotu mimo limit tiše zahodí a neřekne to                                              |
+| Sběr událostí                 | ❌ chybí    | nový `src/types/fightLog.ts`                                                                                  |
 
 **Kam to přijde:**
 
@@ -221,7 +221,7 @@ texty do obou jazyků.
 - [minor] `FightLog.tsx:49` · scrollovací seznam bez třídy `with-scrollbar`, kterou mají
   všechny ostatní scrollovací seznamy v appce · **✅ opraveno**
 - [major] `tournament.ts:88` · mutace `log: switchFightLogSides(fight.log)` → `log:
-  fight.log` **prošla celou sadou** — prohození logu v zrcadlené buňce nehlídalo nic ·
+fight.log` **prošla celou sadou** — prohození logu v zrcadlené buňce nehlídalo nic ·
   **✅ opraveno** (3 testy nad `switchResultSides`, kryjí i `switchSenchu` pro `BLUE`)
 - [major] `fightLog.ts:50` · `BREAKS_GROUPING` bez `'START'` prošlo celou sadou ·
   **✅ opraveno** (viz poznámka k `TIME_SET` níž)
