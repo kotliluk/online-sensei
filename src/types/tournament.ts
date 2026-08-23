@@ -163,6 +163,39 @@ export const groupRowStats = (row: Fight[]): GroupRowStats => ({
   minusPoints: row.reduce((agg, fight) => agg + fight.bluePoints, 0),
 })
 
+/**
+ * Who the result dialog offers as the winner before anybody touches it.
+ *
+ * It is a suggestion, not a verdict - the referee at the table can override it. But it is
+ * the last thing between a fight and the tournament tree, and the whole point of offering
+ * it is that it usually gets confirmed rather than read, so it has to be right.
+ *
+ * Order matters: five fouls settle the fight whatever the score, points beat senchu, and
+ * only a group may end level.
+ */
+export const defaultWinner = (fight: Fight, tournamentType: TournamentType): FightWinner => {
+  if (fight.redFouls === 5) {
+    return 'BLUE'
+  }
+  if (fight.blueFouls === 5) {
+    return 'RED'
+  }
+  if (fight.redPoints > fight.bluePoints) {
+    return 'RED'
+  }
+  if (fight.bluePoints > fight.redPoints) {
+    return 'BLUE'
+  }
+  if (fight.senchu === 'RED') {
+    return 'RED'
+  }
+  if (fight.senchu === 'BLUE') {
+    return 'BLUE'
+  }
+
+  return tournamentType === 'GROUP' ? 'DRAW' : 'RED'
+}
+
 export const isFinal = (fight: Fight): boolean => fight.depth === 0 && fight.type === 'MAIN'
 
 export const isSemifinal = (fight: Fight): boolean => fight.depth === 1 && fight.type === 'MAIN'

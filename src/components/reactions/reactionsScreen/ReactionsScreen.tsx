@@ -41,6 +41,8 @@ export const ReactionsScreen = (): JSX.Element | null => {
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(false)
   const [curSignal, setCurSignal] = useState(0)
+  // bumped by reset, so a fresh run is a change even when the phase is the same one
+  const [runId, setRunId] = useState(0)
   const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
 
   const dispatch = useDispatch()
@@ -64,7 +66,13 @@ export const ReactionsScreen = (): JSX.Element | null => {
     setPhase('start')
     setIsPaused(false)
     setRound(0)
-  }, [isPaused, setIsPaused, setRound])
+    // Starting over has to be said out loud rather than inferred from the phase. Reset
+    // pressed during the very first wait sets the phase it already holds, React sees no
+    // change, and the effect that arms the next signal never runs again - leaving a screen
+    // that claims to be running with a paused timer behind it, and with reset and back
+    // both disabled there is no way out of it.
+    setRunId((prev) => prev + 1)
+  }, [setIsPaused, setRound, setRunId])
 
   const handleGoBack = useCallback(() => {
     dispatch(setNotActualReactions())
@@ -96,7 +104,7 @@ export const ReactionsScreen = (): JSX.Element | null => {
         setPhase('waiting')
       }, signalDuration)
     }
-  }, [phase])
+  }, [phase, runId])
 
   useEffect(() => {
     if (!isActual) {
