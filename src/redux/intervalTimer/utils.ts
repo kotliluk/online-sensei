@@ -24,7 +24,10 @@ export const VALIDATOR: Validator<State> = {
   simpleWork: isBetweenValidator(LIMITS.simpleWork),
   simplePause: isBetweenValidator(LIMITS.simplePause),
 
-  advancedRoundIntervals: (arr) => arr.every(isValidInterval),
+  // a series of nothing is not a series - the play screen reads `intervals[0]` before it
+  // renders anything, so an empty list from an older version of the data has to be refused
+  // here rather than crash there. The URL layer already refuses it.
+  advancedRoundIntervals: (arr) => Array.isArray(arr) && arr.length > 0 && arr.every(isValidInterval),
   advancedRounds: isBetweenValidator(LIMITS.advancedRounds),
   advancedSavedSeries: (arr) => arr.every(isValidSeries),
   advancedLastLoadTime: anythingIsValid,
