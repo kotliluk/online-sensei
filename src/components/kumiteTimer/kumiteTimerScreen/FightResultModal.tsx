@@ -10,7 +10,7 @@ import { saveTournamentFight } from '../../../redux/kumiteTimer/actions'
 import { useNavigate } from 'react-router-dom'
 import { selectKumiteTimerTournamentFight, selectKumiteTimerTournamentType } from '../../../redux/kumiteTimer/selector'
 import { Select } from '../../atoms/select/Select'
-import { FightWinner } from '../../../types/tournament'
+import { defaultWinner, FightWinner } from '../../../types/tournament'
 
 
 export const FightResultModal = (): JSX.Element | null => {
@@ -31,23 +31,7 @@ export const FightResultModal = (): JSX.Element | null => {
     if (!tournamentFight) {
       close()
     } else {
-      if (tournamentFight.redFouls === 5) {
-        setWinner('BLUE')
-      } else if (tournamentFight.blueFouls === 5) {
-        setWinner('RED')
-      } else if (tournamentFight.redPoints > tournamentFight.bluePoints) {
-        setWinner('RED')
-      } else if (tournamentFight.bluePoints > tournamentFight.redPoints) {
-        setWinner('BLUE')
-      } else if (tournamentFight.senchu === 'RED') {
-        setWinner('RED')
-      } else if (tournamentFight.senchu === 'BLUE') {
-        setWinner('RED')
-      } else if (tournamentType === 'GROUP') {
-        setWinner('DRAW')
-      } else {
-        setWinner('RED')
-      }
+      setWinner(defaultWinner(tournamentFight, tournamentType))
     }
   }, [tournamentFight, tournamentType, setWinner])
 

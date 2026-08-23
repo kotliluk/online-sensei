@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import {
   Competitor, createTournamentTree, Fight, FightResult, groupRowStats, switchResultSides,
-  TournamentTreeNode, updateGroupTable, updateTournamentTree,
+  defaultWinner, TournamentTreeNode, updateGroupTable, updateTournamentTree,
 } from '../tournament'
 import { FightLogEntry } from '../fightLog'
 
@@ -336,5 +336,38 @@ describe('updateTournamentTree', () => {
     const updated = updateTournamentTree(tree, resultOf(deeper, 1, 7), 'MAIN')
     // assert
     expect(updated?.children[0].attributes.fight.winner).toBeUndefined()
+  })
+})
+
+describe('defaultWinner', () => {
+  const scored = (
+    redPoints: number, bluePoints: number, senchu: Fight['senchu'] = 'NONE',
+    redFouls = 0, blueFouls = 0,
+  ): Fight => ({ ...fight('Aneta', 'Bob'), redPoints, bluePoints, senchu, redFouls, blueFouls })
+
+  test.each([
+    { label: 'more points for aka', f: scored(5, 3), type: 'TREE' as const, expected: 'RED' },
+    { label: 'more points for ao', f: scored(3, 5), type: 'TREE' as const, expected: 'BLUE' },
+    { label: 'five fouls on aka', f: scored(8, 0, 'NONE', 5, 0), type: 'TREE' as const, expected: 'BLUE' },
+    { label: 'five fouls on ao', f: scored(0, 8, 'NONE', 0, 5), type: 'TREE' as const, expected: 'RED' },
+    { label: 'level, senchu aka', f: scored(2, 2, 'RED'), type: 'TREE' as const, expected: 'RED' },
+    { label: 'level, senchu ao', f: scored(2, 2, 'BLUE'), type: 'TREE' as const, expected: 'BLUE' },
+    { label: 'level, no senchu, group', f: scored(2, 2), type: 'GROUP' as const, expected: 'DRAW' },
+    { label: 'level, no senchu, tree', f: scored(2, 2), type: 'TREE' as const, expected: 'RED' },
+    { label: 'senchu ao beats a group draw', f: scored(0, 0, 'BLUE'), type: 'GROUP' as const, expected: 'BLUE' },
+  ])('$label -> $expected', ({ f, type, expected }) => {
+    // act + assert
+    expect(defaultWinner(f, type)).toBe(expected)
+  })
+
+  test('fouls outrank points', () => {
+    // arrange - eight points and five fouls still loses
+    // act + assert
+    expect(defaultWinner(scored(8, 0, 'NONE', 5, 0), 'TREE')).toBe('BLUE')
+  })
+
+  test('points outrank senchu', () => {
+    // act + assert
+    expect(defaultWinner(scored(5, 3, 'BLUE'), 'TREE')).toBe('RED')
   })
 })
