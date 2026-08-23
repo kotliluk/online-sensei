@@ -2,7 +2,7 @@
 id: 007
 slug: review-bugfixes
 title: Opravy chování z revize repa
-status: approved
+status: wip
 branch: review-bugfixes
 ---
 
