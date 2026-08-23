@@ -54,18 +54,31 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
       return
     }
 
+    if (currInterval === totalIntervals) {
+      playBeep(audioSound, 500, audioVolume)
+      clock.pause()
+      setPhase('finished')
+      return
+    }
+
+    // An interval of no length is over the moment it starts, so it is stepped over here.
+    // Letting it run would set the countdown to the zero it already holds, the effect
+    // below would see no change, and the clock would carry on into negative numbers with
+    // the series stuck. A pause of zero is a normal thing to ask for - a workout with no
+    // rest - and the set-up screen offers it.
+    if (intervals[currInterval].duration <= 0) {
+      setCurrentInterval(prev => prev + 1)
+      return
+    }
+
     playBeep(audioSound, 500, audioVolume)
     clock.pause()
-    if (currInterval === totalIntervals) {
-      setPhase('finished')
-    } else {
-      if (intervals[currInterval].type === 'work') {
-        setCurrRound(prev => prev + 1)
-      }
-      setCurrTime(intervals[currInterval].duration)
-      setCurrentIntervalType(intervals[currInterval].type)
-      clock.restart()
+    if (intervals[currInterval].type === 'work') {
+      setCurrRound(prev => prev + 1)
     }
+    setCurrTime(intervals[currInterval].duration)
+    setCurrentIntervalType(intervals[currInterval].type)
+    clock.restart()
   }, [currInterval])
 
   // handles change of seconds
@@ -142,7 +155,9 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
         {currInterval === totalIntervals && `${ct.finished}!`}
       </p>
 
-      <h1>{intervals[currInterval].name}</h1>
+      {/* the last interval leaves the index one past the end for the render that says
+          the series is over, which the line above already accounts for */}
+      <h1>{intervals[currInterval]?.name ?? ''}</h1>
 
       <span className={`time ${currIntervalType}`}>{parseMinTime(currTime)}</span>
 

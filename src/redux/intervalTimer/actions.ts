@@ -123,12 +123,15 @@ export const setIntervalTimerAdvanced = (
   LS_ACCESS.audioSound.set(audioSound)
   LS_ACCESS.audioVolume.set(audioVolume)
 
-  const intervals: Interval[] = range(advancedRounds)
-    .flatMap(() => advancedRoundIntervals)
-    .slice(
-      0,
-      (skipLastPause && advancedRoundIntervals[advancedRoundIntervals.length - 1].type === 'pause') ? -1 : undefined,
-    )
+  const laidOut: Interval[] = range(advancedRounds).flatMap(() => advancedRoundIntervals)
+
+  // Dropping the trailing pause must not eat the whole series: a single round made of one
+  // pause leaves nothing behind, and the play screen reads `intervals[0]` before it renders
+  // anything. Reaching for the last item of an empty list would throw here first.
+  const endsWithPause = laidOut.length > 0 && laidOut[laidOut.length - 1].type === 'pause'
+  const intervals: Interval[] = (skipLastPause && endsWithPause && laidOut.length > 1)
+    ? laidOut.slice(0, -1)
+    : laidOut
 
   return {
     type: SET_INTERVAL_TIMER_ADVANCED,
