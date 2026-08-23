@@ -13,5 +13,7 @@ export const isBetween = (num: number, x: number, y: number): boolean => {
 export const anythingIsValid = <T>(_: T): boolean => true
 
 export const isValidArrayOf = <T> (validator: (item: T) => boolean): Predicate<T[]> => {
-  return (arr: T[]) => arr.every(validator)
+  // whatever `JSON.parse` returned is handed straight to this, so the argument is only an
+  // array if the saved value happened to be one - a stored `5` would otherwise throw
+  return (arr: T[]) => Array.isArray(arr) && arr.every(validator)
 }

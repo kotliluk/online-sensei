@@ -130,8 +130,13 @@ export const parseMinTime = (
   ret += `${seconds.toString().padStart((ret.length > 0 || padSeconds) ? 2 : 1, '0')}`
 
   if (withDecimals > 0) {
-    const decimals = cur - seconds
-    const toShow = Math.floor(decimals * Math.pow(10, withDecimals))
+    // Times reach this function as whole milliseconds divided by a thousand, and `12.34`
+    // has no exact float, so `cur - seconds` comes out as `0.33999999999999986` and
+    // truncating it loses a hundredth. Recovering the milliseconds and staying in whole
+    // numbers keeps the truncation the rest of the app expects - rounding the difference
+    // instead would agree here and disagree on every time that is not a whole hundredth.
+    const totalMs = Math.round(cur * 1000)
+    const toShow = Math.floor((totalMs % 1000) / Math.pow(10, 3 - withDecimals))
     ret += `.${toShow.toString().padStart(withDecimals, '0')}`
   }
 
