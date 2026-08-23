@@ -20,31 +20,42 @@ const press = (): void => {
 
 const message = (): string | null => screen.queryByRole('status')?.textContent ?? null
 
-const withClipboard = (value: unknown, run: () => void): void => {
+const setClipboard = (value: unknown): (() => void) => {
   const original = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
   Object.defineProperty(navigator, 'clipboard', { value, configurable: true })
-  try {
-    run()
-  } finally {
+
+  return () => {
     if (original) {
       Object.defineProperty(navigator, 'clipboard', original)
     } else {
-      Reflect.deleteProperty(navigator as unknown as Record<string, unknown>, 'clipboard')
+      Reflect.deleteProperty(navigator, 'clipboard')
     }
+  }
+}
+
+const withClipboard = (value: unknown, run: () => void): void => {
+  const restore = setClipboard(value)
+  try {
+    run()
+  } finally {
+    restore()
   }
 }
 
 describe('ShareButton', () => {
   test('says it copied when the clipboard took the link', async () => {
     // arrange
-    await withClipboard({ writeText: () => Promise.resolve() }, async () => {
+    const restore = setClipboard({ writeText: () => Promise.resolve() })
+    try {
       renderButton()
       // act
       press()
-      await act(async () => {})
+      await act(() => Promise.resolve())
       // assert
       expect(message()).toBeTruthy()
-    })
+    } finally {
+      restore()
+    }
   })
 
   /**
