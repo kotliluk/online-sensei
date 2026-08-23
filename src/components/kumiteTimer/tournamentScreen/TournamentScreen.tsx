@@ -1,10 +1,11 @@
 import { JSX, useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import './TournamentScreen.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { selectTranslation } from '../../../redux/page/selector'
 import { Translation } from '../../../logic/translation/translation'
 import {
+  selectKumiteTimerIsTournament,
   selectKumiteTimerRepechageTree,
   selectKumiteTimerTournamentGroup,
   selectKumiteTimerTournamentName,
@@ -44,10 +45,11 @@ const treePictureBlocks = (translation: Translation): PictureBlock[] => {
   ]
 }
 
-export const TournamentScreen = (): JSX.Element => {
+export const TournamentScreen = (): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
   const { kumiteTimer: { tournamentScreen: { export: t } } } = translation
 
+  const isTournament = useSelector(selectKumiteTimerIsTournament)
   const tournamentName = useSelector(selectKumiteTimerTournamentName)
   const tournamentType = useSelector(selectKumiteTimerTournamentType)
   const group = useSelector(selectKumiteTimerTournamentGroup)
@@ -116,6 +118,15 @@ export const TournamentScreen = (): JSX.Element => {
       ))
     })
   }, [tournamentName, tournamentType, group, tree, repechage, translation])
+
+  // Reachable with nothing behind it: a deep link, the browser's back button after
+  // cancelling, or a saved tree that failed validation and was reset to null while the flag
+  // saying there is a tournament stayed on. The bracket library writes into the node it is
+  // handed, so a null tree throws - and with no error boundary in this app that is a blank
+  // page the user can only escape by editing the address.
+  if (!isTournament || (tournamentType === 'TREE' && tree === null)) {
+    return <Navigate to='/kumite-timer/set-up' replace />
+  }
 
   return (
     <main className='tournament-screen'>

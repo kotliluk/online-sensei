@@ -163,6 +163,9 @@ export const cancelTournament = (): CancelTournament => {
   LS_ACCESS.competitorsCount.set(initialState.competitorsCount)
   LS_ACCESS.competitors.set(initialState.competitors)
   LS_ACCESS.tournamentTree.set(initialState.tournamentTree)
+  // the repechage line belongs to the tournament being cancelled; leaving it behind hands
+  // it to whatever tournament is started next
+  LS_ACCESS.repechageTree.set(initialState.repechageTree)
   LS_ACCESS.group.set(initialState.group)
 
   return {

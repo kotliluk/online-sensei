@@ -38,7 +38,6 @@ export const TreeTournamentScreen = (): JSX.Element => {
 
     const fight = data.attributes.fight
 
-    console.log(fight)
 
     // if both fighters are known, the fight can be started
     if (fight.redUuid !== '' && fight.blueUuid !== '') {
