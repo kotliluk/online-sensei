@@ -183,7 +183,6 @@ interface SaveAdvancedSeries extends Action<typeof SAVE_ADVANCED_SERIES> {
 }
 
 export const saveAdvancedSeries = (series: Series): SaveAdvancedSeries => {
-  console.log(series)
   const advancedSavedSeries = LS_ACCESS.advancedSavedSeries.get()
   advancedSavedSeries.push(series)
   LS_ACCESS.advancedSavedSeries.set(advancedSavedSeries)

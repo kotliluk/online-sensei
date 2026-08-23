@@ -32,7 +32,16 @@ export const ShareButton = ({ buildUrl, disabled }: ShareButtonProps): JSX.Eleme
   }, [])
 
   const handleShare = useCallback(() => {
-    // the clipboard API needs a secure context, so a failure is possible
+    // `navigator.clipboard` is marked `[SecureContext]`, so over plain http the property is
+    // not merely unusable - it is absent, and reaching through it throws where it stands,
+    // before there is any promise for `.catch` to be attached to. This app gets opened over
+    // http from the local network all the time, which is what `yarn dev:https` is for, and
+    // a button that neither copies nor complains reads as a broken button.
+    if (navigator.clipboard === undefined) {
+      showMessage('failed')
+      return
+    }
+
     navigator.clipboard.writeText(buildUrl())
       .then(() => showMessage('copied'))
       .catch(() => showMessage('failed'))

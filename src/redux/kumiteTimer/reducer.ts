@@ -46,6 +46,7 @@ export function reducer (state = initialState, action: Actions): State {
         competitors: initialState.competitors,
         competitorsCount: initialState.competitorsCount,
         tournamentTree: initialState.tournamentTree,
+        repechageTree: initialState.repechageTree,
         group: initialState.group,
       }
 

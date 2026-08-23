@@ -6,9 +6,16 @@ import { MemoryRouter } from 'react-router-dom'
 import { TournamentScreen } from '../TournamentScreen'
 import { store } from '../../../../redux/store'
 import { AppThunkDispatch } from '../../../../redux/thunk'
-import { saveTournamentFight, setKumiteTimerTournament } from '../../../../redux/kumiteTimer/actions'
+import {
+  cancelTournament, saveTournamentFight, setKumiteTimerTournament,
+} from '../../../../redux/kumiteTimer/actions'
+import { selectKumiteTimerRepechageTree } from '../../../../redux/kumiteTimer/selector'
+import { LS_KEYS } from '../../../../redux/kumiteTimer/utils'
+
+/** The key is optional in the type, but the repechage line really does have one. */
+const REPECHAGE_KEY = LS_KEYS.repechageTree as string
 import { setModalWindow } from '../../../../redux/page/actions'
-import { Competitor, FightResult, newCompetitor } from '../../../../types/tournament'
+import { Competitor, FightResult, newCompetitor, newFight } from '../../../../types/tournament'
 import { FightLogEntry } from '../../../../types/fightLog'
 
 
@@ -188,4 +195,34 @@ describe('TournamentScreen export', () => {
    * would only prove the shim. The bracket is covered by the unit tests of
    * `buildTournamentOverviewCsv` and by the browser suite, which has a real engine.
    */
+})
+
+/**
+ * The screen can be reached without a tournament behind it: a deep link, the browser's
+ * back button after cancelling, or a saved tree that failed validation and was reset to
+ * null while the "there is a tournament" flag stayed on.
+ */
+describe('TournamentScreen - without a tournament', () => {
+  beforeEach(() => {
+    store.dispatch(cancelTournament())
+  })
+
+  test('does not render the bracket', () => {
+    // act
+    renderScreen()
+    // assert - react-d3-tree writes into the node it is given and there is no error
+    // boundary in this app, so a null tree takes the whole page down
+    expect(document.querySelector('.tournament-screen')).toBeNull()
+  })
+
+  test('cancelling clears the repechage line as well', () => {
+    // arrange - a repechage left over from a tournament in progress
+    const line = { name: '', attributes: { fight: newFight('r', 'A', 'b', 'B') }, children: [] }
+    localStorage.setItem(REPECHAGE_KEY, JSON.stringify(line))
+    // act
+    store.dispatch(cancelTournament())
+    // assert - left behind, it would be handed to whatever tournament is started next
+    expect(selectKumiteTimerRepechageTree(store.getState())).toBeNull()
+    expect(localStorage.getItem(REPECHAGE_KEY)).toBe('null')
+  })
 })
