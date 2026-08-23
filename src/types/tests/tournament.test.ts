@@ -1,6 +1,7 @@
 import { vi } from 'vitest'
 import {
   Competitor, createTournamentTree, Fight, FightResult, groupRowStats, switchResultSides,
+  TournamentTreeNode, updateGroupTable, updateTournamentTree,
 } from '../tournament'
 import { FightLogEntry } from '../fightLog'
 
@@ -201,5 +202,139 @@ describe('switchResultSides', () => {
     // assert
     expect(result.log[0].event).toEqual({ kind: 'POINTS', side: 'RED', delta: 3 })
     expect(result.senchu).toBe('BLUE')
+  })
+})
+
+/**
+ * A group table lists every fight twice - once in each competitor's row, with the corners
+ * the other way round. The two cells are different fights that mirror one result, so they
+ * have to keep their own identities.
+ */
+const groupOfTwo = (): Fight[][] => {
+  const upper: Fight = { ...fight('Aneta', 'Bob'), uuid: 'upper', oppositeFight: 'lower' }
+  const lower: Fight = { ...fight('Bob', 'Aneta'), uuid: 'lower', oppositeFight: 'upper' }
+  const self = (name: string): Fight => ({ ...fight(name, name), uuid: `self-${name}` })
+
+  return [
+    [self('Aneta'), upper],
+    [lower, self('Bob')],
+  ]
+}
+
+const resultOf = (f: Fight, redPoints: number, bluePoints: number): FightResult => ({
+  uuid: f.uuid,
+  type: f.type,
+  winner: redPoints > bluePoints ? 'RED' : (bluePoints > redPoints ? 'BLUE' : 'DRAW'),
+  redPoints,
+  redFouls: 0,
+  bluePoints,
+  blueFouls: 0,
+  senchu: 'NONE',
+  oppositeFight: f.oppositeFight,
+  log: [],
+})
+
+describe('updateGroupTable', () => {
+  test('writes the result into the fight and its mirror with the corners swapped', () => {
+    // arrange
+    const group = groupOfTwo()
+    // act - Aneta beats Bob 3:1
+    const updated = updateGroupTable(group, resultOf(group[0][1], 3, 1))
+    // assert
+    expect(updated[0][1]).toMatchObject({ redPoints: 3, bluePoints: 1, winner: 'RED' })
+    expect(updated[1][0]).toMatchObject({ redPoints: 1, bluePoints: 3, winner: 'BLUE' })
+  })
+
+  test('leaves both cells their own identity, so the fight can be reopened', () => {
+    // arrange
+    const group = groupOfTwo()
+    // act
+    const updated = updateGroupTable(group, resultOf(group[0][1], 3, 1))
+    // assert - taking the mirror's uuid from the result would make the next save hit both
+    expect(updated[1][0].uuid).toBe('lower')
+    expect(updated[1][0].oppositeFight).toBe('upper')
+  })
+
+  test('a reopened fight saved the other way round still mirrors correctly', () => {
+    // arrange - played 3:1 for Aneta, then reopened and corrected to 1:5 for Bob
+    const group = updateGroupTable(groupOfTwo(), resultOf(groupOfTwo()[0][1], 3, 1))
+    // act
+    const corrected = updateGroupTable(group, resultOf(group[0][1], 1, 5))
+    // assert
+    expect(corrected[0][1]).toMatchObject({ redPoints: 1, bluePoints: 5, winner: 'BLUE' })
+    expect(corrected[1][0]).toMatchObject({ redPoints: 5, bluePoints: 1, winner: 'RED' })
+  })
+
+  test('the winner of a reopened fight has a win, not a second loss', () => {
+    // arrange - the group standings are read off whole rows, so a mirror that keeps the
+    // original corners gives both competitors a loss and nobody a win
+    const group = updateGroupTable(groupOfTwo(), resultOf(groupOfTwo()[0][1], 3, 1))
+    // act
+    const corrected = updateGroupTable(group, resultOf(group[0][1], 1, 5))
+    // assert
+    expect(groupRowStats(corrected[0])).toMatchObject({ wins: 0, losses: 1 })
+    expect(groupRowStats(corrected[1])).toMatchObject({ wins: 1, losses: 0 })
+  })
+})
+
+/**
+ * A repechage line is a tree of its own, and its fights are typed `REPECHAGE_1` /
+ * `REPECHAGE_2` so a result cannot land in the main bracket by accident.
+ */
+const repechageNode = (f: Fight, children: TournamentTreeNode[] = []): TournamentTreeNode => ({
+  name: '',
+  attributes: { fight: f },
+  children,
+})
+
+const repechageFight = (red: string, blue: string, uuid: string): Fight => ({
+  ...fight(red, blue),
+  uuid,
+  type: 'REPECHAGE_1',
+})
+
+describe('updateTournamentTree', () => {
+  test('saves a result into the root of the line', () => {
+    // arrange
+    const root = repechageFight('C3', 'C5', 'root')
+    const tree = repechageNode(root)
+    // act
+    const updated = updateTournamentTree(tree, resultOf(root, 7, 1), 'REPECHAGE_1')
+    // assert
+    expect(updated?.attributes.fight).toMatchObject({ redPoints: 7, bluePoints: 1, winner: 'RED' })
+  })
+
+  test('saves a result into a fight deeper than the root of the line', () => {
+    // arrange - from about nine competitors up, a repechage line is two fights deep
+    const deeper = repechageFight('C2', 'C3', 'deeper')
+    const root = repechageFight('', 'C5', 'root')
+    const tree = repechageNode(root, [repechageNode(deeper)])
+    // act - C3 wins the deeper fight 1:7
+    const updated = updateTournamentTree(tree, resultOf(deeper, 1, 7), 'REPECHAGE_1')
+    // assert - the fight itself has to keep the result, not just feed the one above it
+    expect(updated?.children[0].attributes.fight).toMatchObject({
+      redPoints: 1, bluePoints: 7, winner: 'BLUE',
+    })
+  })
+
+  test('feeds the winner of a deeper fight into the one above it', () => {
+    // arrange
+    const deeper = repechageFight('C2', 'C3', 'deeper')
+    const root = repechageFight('', 'C5', 'root')
+    const tree = repechageNode(root, [repechageNode(deeper)])
+    // act
+    const updated = updateTournamentTree(tree, resultOf(deeper, 1, 7), 'REPECHAGE_1')
+    // assert
+    expect(updated?.attributes.fight).toMatchObject({ redUuid: 'C3', redName: 'C3' })
+  })
+
+  test('a result of another type is left alone at every depth', () => {
+    // arrange - a main-bracket result must not land in the repechage line
+    const deeper = repechageFight('C2', 'C3', 'deeper')
+    const tree = repechageNode(repechageFight('', 'C5', 'root'), [repechageNode(deeper)])
+    // act
+    const updated = updateTournamentTree(tree, resultOf(deeper, 1, 7), 'MAIN')
+    // assert
+    expect(updated?.children[0].attributes.fight.winner).toBeUndefined()
   })
 })

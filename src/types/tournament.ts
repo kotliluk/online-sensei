@@ -178,6 +178,12 @@ export const updateGroupTable = (group: Fight[][], result: FightResult): Fight[]
       return {
         ...f,
         ...switchResultSides(result),
+        // the mirror is its own fight and has to stay so: a result carries the uuid of the
+        // cell it came from, and letting it through here gives both cells the same one -
+        // after which saving the fight a second time matches both and the lower half of
+        // the table keeps the corners of the upper one
+        uuid: f.uuid,
+        oppositeFight: f.oppositeFight,
       }
     } else {
       return f
@@ -306,8 +312,11 @@ export const updateTournamentTree = (
     return newTree({ ...node.attributes.fight, ...result }, node.children)
   }
 
-  const left = updateTournamentTree(node.children[0] ?? null, result)
-  const right = updateTournamentTree(node.children[1] ?? null, result)
+  // the type has to travel down with the result: without it the children compare against
+  // the default `MAIN` and a repechage fight below the root of its line quietly keeps
+  // `0:0`, even though the winner it produced does reach the fight above it
+  const left = updateTournamentTree(node.children[0] ?? null, result, expectedType)
+  const right = updateTournamentTree(node.children[1] ?? null, result, expectedType)
   const fight = { ...node.attributes.fight }
 
   if (node.children.length >= 1 && node.children[0].attributes.fight.uuid === result.uuid) {
