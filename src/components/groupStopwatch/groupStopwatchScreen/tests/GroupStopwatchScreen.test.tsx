@@ -261,4 +261,58 @@ describe('GroupStopwatchScreen', () => {
       expect(timeOf('Aneta')).toBe('04.99')
     })
   })
+
+  /**
+   * Two taps within two seconds rewrite the time, whenever they happen. That is what the
+   * README promises and what makes a correction possible later in the race - but it also
+   * means the first tap of any pair is silent, so two accidental brushes two seconds apart
+   * replace a measured time with the clock as it stands. Pinned down here because it is a
+   * trade-off rather than an accident, and the third test is what a narrower window would
+   * break.
+   */
+  describe('the rewrite window', () => {
+    test('a lone tap long after the time was saved leaves it alone', () => {
+      // arrange
+      renderScreen()
+      runFor(111)
+      tap('Aneta')
+      const saved = timeOf('Aneta')
+      // act - one stray tap well outside the window
+      wait(60 * TICK)
+      tap('Aneta')
+      // assert
+      expect(timeOf('Aneta')).toBe(saved)
+    })
+
+    test('any two taps within the window rewrite the time, brush or not', () => {
+      // arrange
+      renderScreen()
+      runFor(111)
+      tap('Aneta')
+      const saved = timeOf('Aneta')
+      // act - brushed once well after saving, then again a moment later
+      wait(60 * TICK)
+      tap('Aneta')
+      wait(4 * TICK)
+      tap('Aneta')
+      // assert - the measured time is gone; the pair cannot be told from a real correction
+      expect(timeOf('Aneta')).not.toBe(saved)
+      expect(timeOf('Aneta')).toBe(clock())
+    })
+
+    test('a genuine correction still works after a stray tap', () => {
+      // arrange
+      renderScreen()
+      runFor(111)
+      tap('Aneta')
+      // act - stray tap, then a real double tap later on
+      wait(60 * TICK)
+      tap('Aneta')
+      wait(60 * TICK)
+      tap('Aneta')
+      tap('Aneta')
+      // assert - the pair is what counts, and it takes the clock as it stands
+      expect(timeOf('Aneta')).toBe(clock())
+    })
+  })
 })

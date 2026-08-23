@@ -58,6 +58,9 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
             lastClick: now,
           }
         } else {
+          // Any tap opens the window, including this one, which changes nothing else.
+          // That is what makes a correction possible at all later in the race - see the
+          // tests, which also pin down the hazard that comes with it.
           return {
             ...c,
             lastClick: now,
