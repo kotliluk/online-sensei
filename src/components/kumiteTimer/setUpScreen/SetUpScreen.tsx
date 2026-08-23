@@ -55,15 +55,22 @@ export const SetUpScreen = (): JSX.Element => {
   }, [competitorsCount, isCompetitorsCountValid, competitors])
 
   const handleCompetitorEdit = useCallback((competitors: Competitor[], index: number, value: string) => {
-    const newCompetitors = [...competitors]
+    // Copies of the competitors, not of the array holding them. These objects come straight
+    // out of the store, so writing a name onto one of them edits a running tournament that
+    // nobody confirmed - press Back instead of Start and the change is still there, with
+    // the table headers saying one thing and the cells another.
+    const newCompetitors = competitors.map((c) => ({ ...c }))
+
     if (!value.includes(',')) {
-      newCompetitors[index].name = value
+      newCompetitors[index] = { ...newCompetitors[index], name: value }
     } else {
       const parts = value.split(',')
       parts.forEach((part, i) => {
         const trimmed = part.trim()
-        if (trimmed !== '' && index + i < LIMITS.competitorsCount.max) {
-          newCompetitors[index + i].name = trimmed
+        // bounded by the roster, not by the largest roster allowed: writing past the end
+        // threw, and the throw took the whole paste with it - including the names that fit
+        if (trimmed !== '' && index + i < newCompetitors.length) {
+          newCompetitors[index + i] = { ...newCompetitors[index + i], name: trimmed }
         }
       })
     }
@@ -198,7 +205,7 @@ export const SetUpScreen = (): JSX.Element => {
         <Button
           className='confirm-btn'
           onClick={handleStart}
-          disabled={!isValidDuration}
+          disabled={!isValidDuration || (isTournament && !isCompetitorsCountValid)}
         >
           {translation.common.start}
         </Button>

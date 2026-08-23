@@ -77,7 +77,9 @@ export const SetUpScreen = (): JSX.Element => {
       const parts = value.split(',')
       parts.forEach((part, i) => {
         const trimmed = part.trim()
-        if (trimmed !== '' && index + i < LIMITS.competitorsCount.max) {
+        // bounded by the roster, not by the largest roster allowed: writing past the end
+        // threw, and the throw took the whole paste with it - including the names that fit
+        if (trimmed !== '' && index + i < newCompetitors.length) {
           newCompetitors[index + i].name = trimmed
         }
       })
