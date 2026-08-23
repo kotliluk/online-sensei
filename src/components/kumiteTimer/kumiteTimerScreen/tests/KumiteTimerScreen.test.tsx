@@ -16,6 +16,7 @@ import {
 import { Fight, newCompetitor, newFight } from '../../../../types/tournament'
 import { FightLogEntry } from '../../../../types/fightLog'
 import { setModalWindow } from '../../../../redux/page/actions'
+import { LS_KEYS } from '../../utils'
 
 
 /**
@@ -423,5 +424,42 @@ describe('leaving a tournament fight', () => {
     await user.click(backButton())
     // assert
     expect(await screen.findByRole('heading', { name: 'Kumite Timer' })).toBeInTheDocument()
+  })
+})
+
+/**
+ * The mirror is a second tab reading the fight out of local storage. Anything else that
+ * mounts this screen writes to the same keys, so a tab with no session of its own must
+ * keep quiet - it renders nothing and is on its way somewhere else.
+ */
+describe('KumiteTimerScreen - a tab without a session', () => {
+  const runningFight = (): Record<string, string> => ({
+    [LS_KEYS.time]: JSON.stringify(80),
+    [LS_KEYS.scoreRed]: JSON.stringify(3),
+    [LS_KEYS.scoreBlue]: JSON.stringify(1),
+    [LS_KEYS.senchu]: JSON.stringify('RED'),
+  })
+
+  beforeEach(() => {
+    store.dispatch(setNotActualKumiteTimer())
+    Object.entries(runningFight()).forEach(([key, value]) => localStorage.setItem(key, value))
+  })
+
+  test('renders nothing', () => {
+    // act
+    renderScreen()
+    // assert
+    expect(document.querySelector('.kumite-timer')).toBeNull()
+  })
+
+  test('leaves the fight in local storage alone', () => {
+    // act - what happens when a third tab is opened, or one on this route is reloaded
+    renderScreen()
+    // assert - writing here fires a storage event and the projector jumps back to a full
+    // clock and 0:0 while the fight on the table carries on
+    expect(localStorage.getItem(LS_KEYS.time)).toBe(JSON.stringify(80))
+    expect(localStorage.getItem(LS_KEYS.scoreRed)).toBe(JSON.stringify(3))
+    expect(localStorage.getItem(LS_KEYS.scoreBlue)).toBe(JSON.stringify(1))
+    expect(localStorage.getItem(LS_KEYS.senchu)).toBe(JSON.stringify('RED'))
   })
 })

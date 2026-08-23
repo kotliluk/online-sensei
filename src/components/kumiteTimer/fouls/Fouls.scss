@@ -21,6 +21,11 @@
     cursor: pointer;
   }
 
+  // nothing to press on a display for the hall, so it should not offer to be pressed
+  &.__mirror .foul-circle {
+    cursor: default;
+  }
+
   &.red {
     .foul-circle.checked {
       background-color: $red;
