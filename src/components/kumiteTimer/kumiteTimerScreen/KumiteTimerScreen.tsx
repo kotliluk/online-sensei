@@ -59,15 +59,16 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [foulsBlue, setFoulsBlue] = useControlledState<number>(0, isValidFouls)
   const [senchu, setSenchu] = useState<Senchu>('NONE')
 
-  useLSSyncProvider(time, LS_KEYS.time)
-  useLSSyncProvider(scoreRed, LS_KEYS.scoreRed)
-  useLSSyncProvider(foulsRed, LS_KEYS.foulsRed)
-  useLSSyncProvider(tournamentFight?.redName, LS_KEYS.nameRed)
-  useLSSyncProvider(scoreBlue, LS_KEYS.scoreBlue)
-  useLSSyncProvider(foulsBlue, LS_KEYS.foulsBlue)
-  useLSSyncProvider(tournamentFight?.blueName, LS_KEYS.nameBlue)
-  useLSSyncProvider(senchu, LS_KEYS.senchu)
-  useLSSyncProvider(isTournamentFight ? tournamentName : undefined, LS_KEYS.tournamentName)
+  // only while this tab owns the fight - see the note on the hook
+  useLSSyncProvider(time, LS_KEYS.time, isActual)
+  useLSSyncProvider(scoreRed, LS_KEYS.scoreRed, isActual)
+  useLSSyncProvider(foulsRed, LS_KEYS.foulsRed, isActual)
+  useLSSyncProvider(tournamentFight?.redName, LS_KEYS.nameRed, isActual)
+  useLSSyncProvider(scoreBlue, LS_KEYS.scoreBlue, isActual)
+  useLSSyncProvider(foulsBlue, LS_KEYS.foulsBlue, isActual)
+  useLSSyncProvider(tournamentFight?.blueName, LS_KEYS.nameBlue, isActual)
+  useLSSyncProvider(senchu, LS_KEYS.senchu, isActual)
+  useLSSyncProvider(isTournamentFight ? tournamentName : undefined, LS_KEYS.tournamentName, isActual)
 
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(true)
@@ -109,6 +110,33 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     setTime(duration)
     logEvent({ kind: 'TIME_SET', from: timeRef.current, to: duration })
   }, [setTime, duration, logEvent])
+
+  /**
+   * What one second of the clock running does.
+   *
+   * This lives on the tick rather than on the value of `time`, because those are not the
+   * same thing: the referee can set the time by hand, and an effect watching the value
+   * cannot tell that apart from the clock arriving there. It could be heard - give a second
+   * back after the end and take it away again and the horn sounded a second time with a
+   * second "end" in the log, and winding down onto 0:15 by hand called atoshibaraku across
+   * the hall with the clock standing still.
+   *
+   * Giving time back after the end stays possible and stays silent; the horn belongs to the
+   * clock reaching zero on its own.
+   */
+  const handleTick = useCallback(() => {
+    const next = timeRef.current - 1
+    setTime(next)
+
+    if (next === 0) {
+      playSignalEnd()
+      setPhase('finished')
+      clock.pause()
+      logEvent({ kind: 'END' }, 0)
+    } else if (next === 15) {
+      playAtoshibaraku()
+    }
+  }, [setTime, setPhase, clock, logEvent])
 
   // which corner is shown on which side is a matter of the view, not of the fight
   const handleSwitchSides = useCallback(() => {
@@ -166,9 +194,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const handleStart = useCallback(() => {
     setPhase('fight')
     setIsPaused(false)
-    clock.restart(() => setTime(prev => prev - 1), 1000)
+    clock.restart(handleTick, 1000)
     logEvent({ kind: 'START' })
-  }, [setIsPaused, setTime, clock, logEvent])
+  }, [setIsPaused, clock, handleTick, logEvent])
 
   const handleReset = useCallback(() => {
     setPhase('init')
@@ -282,17 +310,6 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     }
   }, [])
 
-  useEffect(() => {
-    if (time === 0) {
-      playSignalEnd()
-      setPhase('finished')
-      clock.pause()
-      logEvent({ kind: 'END' }, 0)
-    } else if (time === 15) {
-      playAtoshibaraku()
-    }
-    // both the clock and logEvent keep their identity, so this still only runs on a tick
-  }, [time, clock, logEvent])
 
   /**
    * The redirect is here for one case: the screen opened without a session, by

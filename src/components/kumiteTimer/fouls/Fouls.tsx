@@ -6,11 +6,13 @@ interface FoulsProps {
   className?: string
   isRed: boolean
   fouls: number
+  /** A mirror is a display for the hall, so its circles answer to nobody. */
+  isMirror: boolean
   onChange: (fouls: number) => void
 }
 
 export const Fouls = (props: FoulsProps): JSX.Element | null => {
-  const { className, isRed, fouls, onChange } = props
+  const { className, isRed, fouls, isMirror, onChange } = props
 
   const handleChange = useCallback((newFouls: number) => {
     if (newFouls === fouls) {
@@ -21,12 +23,14 @@ export const Fouls = (props: FoulsProps): JSX.Element | null => {
   }, [fouls, onChange])
 
   return (
-    <div className={`__fouls ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
-      <div className={`foul-circle ${fouls >= 1 ? 'checked' : ''}`} onClick={() => handleChange(1)} />
-      <div className={`foul-circle ${fouls >= 2 ? 'checked' : ''}`} onClick={() => handleChange(2)} />
-      <div className={`foul-circle ${fouls >= 3 ? 'checked' : ''}`} onClick={() => handleChange(3)} />
-      <div className={`foul-circle ${fouls >= 4 ? 'checked' : ''}`} onClick={() => handleChange(4)} />
-      <div className={`foul-circle ${fouls >= 5 ? 'checked' : ''}`} onClick={() => handleChange(5)} />
+    <div className={`__fouls ${isRed ? 'red' : 'blue'} ${isMirror ? '__mirror' : ''} ${className ?? ''}`}>
+      {[1, 2, 3, 4, 5].map((n) => (
+        <div
+          key={n}
+          className={`foul-circle ${fouls >= n ? 'checked' : ''}`}
+          onClick={isMirror ? undefined : () => handleChange(n)}
+        />
+      ))}
     </div>
   )
 }

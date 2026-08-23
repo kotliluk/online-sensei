@@ -29,7 +29,7 @@ export const FighterStats = ({
   return (
     <section className={`__fighter-stats ${isRed ? 'red' : 'blue'} ${className ?? ''}`}>
       <Score isRed={isRed} score={score} isMirror={isMirror} onChange={onScoreChange} />
-      <Fouls isRed={isRed} fouls={fouls} onChange={onFoulsChange} />
+      <Fouls isRed={isRed} fouls={fouls} isMirror={isMirror} onChange={onFoulsChange} />
       {name && <span className='__fighter-stats_name'>{name}</span>}
     </section>
   )
