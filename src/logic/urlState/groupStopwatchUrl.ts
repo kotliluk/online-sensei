@@ -1,6 +1,7 @@
 import { State, initialState } from '../../redux/groupStopwatch/state'
 import { VALIDATOR } from '../../redux/groupStopwatch/utils'
 import { CompetitorSetup, newCompetitorSetup } from '../../types/groupStopwatch'
+import { isHexColor } from '../../types/color'
 import { joinList, parseColor, readNumber, serializeColor, splitList, writeIfChanged } from './params'
 
 
@@ -62,8 +63,13 @@ export const decodeGroupStopwatchSetUp = (
 
   const length = Math.max(names.length, colors.length, competitorsCount)
 
+  // Field by field, the way the rest of this layer reads a link: a colour that cannot be
+  // read is replaced on its own, rather than taking the whole roster down with it. Links
+  // arrive through chat windows that cut them short, and losing every name because the
+  // last colour lost a digit is the opposite of what the README promises.
   const competitors: CompetitorSetup[] = Array.from({ length }, (_, i) => {
-    return newCompetitorSetup(names[i] ?? '', colors[i] ?? DEFAULT_COLOR)
+    const color = colors[i] ?? DEFAULT_COLOR
+    return newCompetitorSetup(names[i] ?? '', isHexColor(color) ? color : DEFAULT_COLOR)
   })
 
   return {

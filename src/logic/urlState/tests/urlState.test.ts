@@ -18,6 +18,7 @@ import {
   encodeGroupStopwatchSetUp,
 } from '../groupStopwatchUrl'
 import { joinList, splitList } from '../params'
+import { newCompetitorSetup } from '../../../types/groupStopwatch'
 
 
 const roundTrip = <T>(encode: (v: T) => URLSearchParams, decode: (p: URLSearchParams) => T, value: T): T => {
@@ -222,9 +223,53 @@ describe('group stopwatch set up in a URL', () => {
     expect(decoded.competitorsCount).toBe(defaultGroupStopwatchSetUp().competitorsCount)
   })
 
-  test('a malformed colour discards the competitors', () => {
+  test('a malformed colour costs that colour and nothing else', () => {
     const decoded = decodeGroupStopwatchSetUp(new URLSearchParams('count=2&names=A,B&colors=zzzzzz-000000'))
 
-    expect(decoded.competitors).toEqual(defaultGroupStopwatchSetUp().competitors)
+    expect(decoded.competitors[0]).toEqual({ name: 'A', color: newCompetitorSetup().color })
+    expect(decoded.competitors[1]).toEqual({ name: 'B', color: '#000000' })
+  })
+})
+
+const DEFAULT_COLOR = newCompetitorSetup().color
+
+describe('decodeGroupStopwatchSetUp - a link that arrived damaged', () => {
+  test('keeps the names when one colour is unreadable', () => {
+    // arrange - a link cut short by a chat window, which is how they usually arrive
+    const params = new URLSearchParams('count=3&names=Alice,Bob,Cyril&colors=ff0000-00ff00-00ff0')
+    // act
+    const decoded = decodeGroupStopwatchSetUp(params)
+    // assert
+    expect(decoded.competitors.slice(0, 3).map((c) => c.name)).toEqual(['Alice', 'Bob', 'Cyril'])
+  })
+
+  test('replaces only the colour it could not read', () => {
+    // arrange
+    const params = new URLSearchParams('count=3&names=Alice,Bob,Cyril&colors=ff0000-00ff00-00ff0')
+    // act
+    const decoded = decodeGroupStopwatchSetUp(params)
+    // assert
+    expect(decoded.competitors[0].color).toBe('#ff0000')
+    expect(decoded.competitors[1].color).toBe('#00ff00')
+    expect(decoded.competitors[2].color).toBe(DEFAULT_COLOR)
+  })
+
+  test('an intact link still round-trips', () => {
+    // arrange
+    const params = new URLSearchParams('count=3&names=Alice,Bob,Cyril&colors=ff0000-00ff00-0000ff')
+    // act
+    const decoded = decodeGroupStopwatchSetUp(params)
+    // assert
+    expect(decoded.competitors.slice(0, 3).map((c) => c.color)).toEqual(['#ff0000', '#00ff00', '#0000ff'])
+  })
+
+  test('missing colours fall back without touching the names', () => {
+    // arrange - fewer colours than names
+    const params = new URLSearchParams('count=3&names=Alice,Bob,Cyril&colors=ff0000')
+    // act
+    const decoded = decodeGroupStopwatchSetUp(params)
+    // assert
+    expect(decoded.competitors[2].name).toBe('Cyril')
+    expect(decoded.competitors[2].color).toBe(DEFAULT_COLOR)
   })
 })
