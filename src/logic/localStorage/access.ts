@@ -85,19 +85,22 @@ export const getValidatedTypeFromLS = <T>(
 
   const item = localStorage.getItem(key)
 
-  if (item === null) {
-    localStorage.setItem(key, JSON.stringify(defaultValue))
-    return defaultValue
+  // Parsing has to be guarded the same way {@link getValidatedObjectFromLS} guards it. The
+  // store dispatches its init actions while it is still being imported, so a throw here is
+  // not a feature failing to load - it is a blank page with no way back except clearing
+  // the site data. A half-finished write or a value from an older shape is enough.
+  if (item !== null) {
+    try {
+      const parsed = JSON.parse(item) as T
+
+      if (parsed !== null && validator(parsed)) {
+        return parsed
+      }
+    } catch (_) {}
   }
 
-  const parsed = JSON.parse(item) as T
-
-  if (parsed === null || !validator(parsed)) {
-    localStorage.setItem(key, JSON.stringify(defaultValue))
-    return defaultValue
-  }
-
-  return parsed
+  localStorage.setItem(key, JSON.stringify(defaultValue))
+  return defaultValue
 }
 
 /**
