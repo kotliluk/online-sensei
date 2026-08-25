@@ -92,6 +92,13 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     timeRef.current = time
   }, [time])
 
+  /** The same, for the tick - which has to know whether the fight is already over. */
+  const phaseRef = useRef(phase)
+
+  useEffect(() => {
+    phaseRef.current = phase
+  }, [phase])
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -125,6 +132,17 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
    * clock reaching zero on its own.
    */
   const handleTick = useCallback(() => {
+    // A tick arriving after the end is not a second of the fight. Resuming a paused clock
+    // fires the next tick from a timeout that puts the interval back up as soon as the
+    // callback returns, so the pause asked for here on reaching zero is undone the moment
+    // it is asked for - and a second later the horn sounds again, with a second end in the
+    // log to match. Stopping the resurrected clock here is the narrow version of that fix;
+    // the wide one belongs to `PausableInterval` and to the ticket that rewrites it.
+    if (phaseRef.current === 'finished') {
+      clock.pause()
+      return
+    }
+
     // The clock starts from whatever the time says, zero included - the referee can wind it
     // down to nothing by hand and then press start. Comparing the new reading for equality
     // with zero lets that case straight past the end, and nothing downstream stops it: the
@@ -136,12 +154,13 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     if (next === 0) {
       playSignalEnd()
       setPhase('finished')
+      setIsPaused(true)
       clock.pause()
       logEvent({ kind: 'END' }, 0)
     } else if (next === 15) {
       playAtoshibaraku()
     }
-  }, [setTime, setPhase, clock, logEvent])
+  }, [setTime, setPhase, setIsPaused, clock, logEvent])
 
   // which corner is shown on which side is a matter of the view, not of the fight
   const handleSwitchSides = useCallback(() => {

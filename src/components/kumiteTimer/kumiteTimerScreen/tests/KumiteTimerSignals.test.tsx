@@ -47,6 +47,13 @@ const setTimeByHand = (label: string, times: number): void => {
   }
 }
 
+/** The pause / resume button, which is the first one under the clock. */
+const togglePause = (): void => {
+  act(() => {
+    (document.querySelector('main.kumite-timer .buttons button') as HTMLElement).click()
+  })
+}
+
 const clockText = (): string => document.querySelector('.__fight-stats__time')?.textContent ?? ''
 
 const tick = (seconds: number): void => {
@@ -154,5 +161,37 @@ describe('KumiteTimerScreen - signals belong to the clock', () => {
     tick(3)
     // assert
     expect(clockText()).toBe('0:00')
+  })
+  /**
+   * The clock resumed from a pause fires its next tick from a `setTimeout` that puts the
+   * interval back up as soon as the callback returns - so the pause asked for on reaching
+   * zero is undone a moment after it is asked for, and the horn sounds again a second later.
+   */
+  test('a fight that runs out on the tick after resume sounds the horn once', () => {
+    // arrange - stopped with a second left
+    renderScreen(3)
+    press(/start/i)
+    tick(2)
+    togglePause()
+    // act - carry on, through the end and past it
+    togglePause()
+    tick(2)
+    // assert
+    expect(signals).toEqual(['END'])
+  })
+
+  test('the log records the end once when the fight runs out after a resume', () => {
+    // arrange
+    renderScreen(3)
+    press(/start/i)
+    tick(2)
+    togglePause()
+    // act
+    togglePause()
+    tick(2)
+    // assert
+    press(/^Fight log/)
+    const ends = screen.queryAllByRole('listitem').filter((li) => /end/i.test(li.textContent ?? ''))
+    expect(ends).toHaveLength(1)
   })
 })
