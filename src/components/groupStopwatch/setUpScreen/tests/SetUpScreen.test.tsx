@@ -25,10 +25,11 @@ const renderScreen = (entry = '/group-stopwatch/set-up'): void => {
 }
 
 // the count is a text input as well, so the names are taken from the competitor rows
-const names = (): string[] => {
+const nameInputs = (): HTMLInputElement[] => {
   return Array.from(document.querySelectorAll<HTMLInputElement>('.group-inputs input[type="text"]'))
-    .map((input) => input.value)
 }
+
+const names = (): string[] => nameInputs().map((input) => input.value)
 
 const count = (): string => (document.querySelector('.set-up-input') as HTMLInputElement).value
 
@@ -37,6 +38,29 @@ const crosses = (): HTMLButtonElement[] => {
 }
 
 describe('SetUpScreen of the group stopwatch', () => {
+  describe('pasting a list of names', () => {
+    test('spreads it across the rows from the one it was pasted into', () => {
+      // arrange
+      store.dispatch(setGroupStopwatch(3, named('', '', '')))
+      renderScreen()
+      // act - a comma separated list, which is how a roster gets in
+      fireEvent.change(nameInputs()[0], { target: { value: 'Aneta, Bob, Cyril' } })
+      // assert
+      expect(names()).toEqual(['Aneta', 'Bob', 'Cyril'])
+    })
+
+    test('fills the rows that fit when the list is longer than the roster', () => {
+      // arrange - three rows, five names
+      store.dispatch(setGroupStopwatch(3, named('', '', '')))
+      renderScreen()
+      // act - writing past the last row threw here, and the throw took the whole paste
+      // with it, including the three names that had somewhere to go
+      fireEvent.change(nameInputs()[0], { target: { value: 'Aneta, Bob, Cyril, Dana, Emil' } })
+      // assert
+      expect(names()).toEqual(['Aneta', 'Bob', 'Cyril'])
+    })
+  })
+
   describe('removing a competitor', () => {
     test('takes out the one whose cross was pressed and closes the gap', () => {
       // arrange

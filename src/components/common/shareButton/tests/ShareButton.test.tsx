@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ShareButton } from '../ShareButton'
 import { store } from '../../../../redux/store'
+import { selectTranslation } from '../../../../redux/page/selector'
 
 
 const renderButton = (): void => {
@@ -19,6 +20,9 @@ const press = (): void => {
 }
 
 const message = (): string | null => screen.queryByRole('status')?.textContent ?? null
+
+/** The wording is the point - "it failed" and "it copied" must not be interchangeable. */
+const t = (): { shareCopied: string, shareFailed: string } => selectTranslation(store.getState()).common
 
 const setClipboard = (value: unknown): (() => void) => {
   const original = Object.getOwnPropertyDescriptor(navigator, 'clipboard')
@@ -52,7 +56,7 @@ describe('ShareButton', () => {
       press()
       await act(() => Promise.resolve())
       // assert
-      expect(message()).toBeTruthy()
+      expect(message()).toBe(t().shareCopied)
     } finally {
       restore()
     }
@@ -71,7 +75,7 @@ describe('ShareButton', () => {
       // act
       press()
       // assert - the alternative is a button that looks broken
-      expect(message()).toBeTruthy()
+      expect(message()).toBe(t().shareFailed)
     })
   })
 
