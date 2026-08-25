@@ -1,13 +1,14 @@
 import { vi } from 'vitest'
+import { JSX } from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider as ReduxProvider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, useLocation } from 'react-router-dom'
 import { TournamentScreen } from '../TournamentScreen'
 import { store } from '../../../../redux/store'
 import { AppThunkDispatch } from '../../../../redux/thunk'
 import {
-  cancelTournament, saveTournamentFight, setKumiteTimerTournament,
+  cancelTournament, saveTournamentFight, setKumiteTimerTournament, setTournamentState,
 } from '../../../../redux/kumiteTimer/actions'
 import { selectKumiteTimerRepechageTree } from '../../../../redux/kumiteTimer/selector'
 import { LS_KEYS } from '../../../../redux/kumiteTimer/utils'
@@ -35,11 +36,15 @@ vi.mock('../../../../logic/download/exportFile', async (importOriginal) => ({
 
 const roster: Competitor[] = ['Aneta', 'Bob', 'Cyril'].map((name) => newCompetitor(name))
 
+/** Where the screen sent the user, which is the half a missing bracket does not show. */
+const Where = (): JSX.Element => <span data-testid='where'>{useLocation().pathname}</span>
+
 const renderScreen = (): void => {
   render(
     <ReduxProvider store={store}>
       <MemoryRouter initialEntries={['/kumite-timer/tournament']}>
         <TournamentScreen />
+        <Where />
       </MemoryRouter>
     </ReduxProvider>,
   )
@@ -215,10 +220,38 @@ describe('TournamentScreen - without a tournament', () => {
     expect(document.querySelector('.tournament-screen')).toBeNull()
   })
 
+  test('sends the user to the set up', () => {
+    // act
+    renderScreen()
+    // assert - not falling over is only half of it; there has to be somewhere to land
+    expect(screen.getByTestId('where')).toHaveTextContent('/kumite-timer/set-up')
+  })
+
+  /**
+   * The second way in, and the one the flag alone does not catch: the tournament is still
+   * running as far as the flag is concerned, but the saved tree failed validation on the
+   * way in and came back as null.
+   */
+  test('does not render the bracket when the tree is gone but the flag stayed on', () => {
+    // arrange
+    store.dispatch(setKumiteTimerTournament(90, 'Cup', 'TREE', 3, roster))
+    store.dispatch(setTournamentState([], null, null))
+    // act
+    renderScreen()
+    // assert
+    expect(document.querySelector('.tournament-screen')).toBeNull()
+    expect(screen.getByTestId('where')).toHaveTextContent('/kumite-timer/set-up')
+  })
+
   test('cancelling clears the repechage line as well', () => {
-    // arrange - a repechage left over from a tournament in progress
+    // arrange - a repechage left over from a tournament in progress, in the store as well
+    // as in storage; with it only in storage the selector below would read null whatever
+    // the reducer did
     const line = { name: '', attributes: { fight: newFight('r', 'A', 'b', 'B') }, children: [] }
+    store.dispatch(setKumiteTimerTournament(90, 'Cup', 'TREE', 3, roster))
+    store.dispatch(setTournamentState([], null, line))
     localStorage.setItem(REPECHAGE_KEY, JSON.stringify(line))
+    expect(selectKumiteTimerRepechageTree(store.getState())).not.toBeNull()
     // act
     store.dispatch(cancelTournament())
     // assert - left behind, it would be handed to whatever tournament is started next

@@ -428,6 +428,26 @@ describe('leaving a tournament fight', () => {
 })
 
 /**
+ * The other half of the same rule. The tab that does hold the fight has to write, or the
+ * display in the hall stays on whatever it was showing and nobody finds out until someone
+ * looks up at a clock that is not moving.
+ */
+describe('KumiteTimerScreen - the tab holding the fight', () => {
+  test('writes the fight into local storage for the mirror to read', () => {
+    // arrange - nothing of this fight is in storage yet
+    Object.values(LS_KEYS).forEach((key) => localStorage.removeItem(key))
+    startSession(newFight('r', 'Aneta', 'b', 'Bob'))
+    // act
+    renderScreen()
+    // assert
+    const { duration } = store.getState().kumiteTimer
+    expect(localStorage.getItem(LS_KEYS.time)).toBe(JSON.stringify(duration))
+    expect(localStorage.getItem(LS_KEYS.nameRed)).toBe(JSON.stringify('Aneta'))
+    expect(localStorage.getItem(LS_KEYS.nameBlue)).toBe(JSON.stringify('Bob'))
+  })
+})
+
+/**
  * The mirror is a second tab reading the fight out of local storage. Anything else that
  * mounts this screen writes to the same keys, so a tab with no session of its own must
  * keep quiet - it renders nothing and is on its way somewhere else.
