@@ -67,6 +67,18 @@ for a kumite fight. It supports:
 - a log of how the fight got to where it is
 - exporting that log, with the state of the fight, as a CSV file
 
+### The mirror and the horn
+
+The mirror is a display for the hall, so nothing on it can be pressed: the clock, the
+score, the fouls and senchu are all read-only there. The one thing it does answer to is
+switching sides, because which corner is shown on which side is a matter of the view
+rather than of the fight, and the hall looks at the mat from the other end.
+
+The horn at the end, atoshibaraku at fifteen seconds and the "end" entry in the log all
+belong to **the clock arriving there on its own**. Setting the time by hand sounds
+nothing - giving a few seconds back after the fight has ended is a normal thing to do at
+the table, and the horn comes again only once the clock has run out again.
+
 ### Fight log
 
 Everything that changes the fight is recorded with the clock reading it happened

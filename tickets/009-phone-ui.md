@@ -52,11 +52,24 @@ a ověřitelné okem na skutečném zařízení.
 - [ ] Rychlé dvojité ťuknutí do karty závodníka nezoomne stránku.
 - [ ] Tlačítka v češtině nejsou „Reset zápas" a „Reset čas", ale „Reset zápasu"
       a „Reset času". Texty v `cs.ts` i `en.ts`.
+- [ ] Kolečka faulů (`Fouls.scss:12`) jsou na 360px displeji dost velká na prst.
+      Dnes z CSS vychází ~32×36 px s mezerou 3,6 px, tedy pod 44 pt i pod 48 dp — a je
+      jich pět vedle sebe. Přehmat mezi čtvrtým a pátým faulem přitom **mění vítěze**:
+      pátý faul předá zápas soupeři a `defaultWinner` to předvyplní v dialogu, který se
+      obvykle jen potvrdí. Změřit v prohlížeči, ne spočítat.
+- [ ] Kolečka faulů jdou ovládat klávesnicí a čtečka o nich ví. Dnes jsou to
+      `<div onClick>` bez `role`, `tabIndex` a jmenovky (`Fouls.tsx:26`) — jediné ovládací
+      prvky na obrazovce, které nejsou `<Button>`, takže je Tab přeskočí a u stolku
+      s notebookem se faul klávesnicí udělit nedá. V zrcadle ovládací prvky nejsou vůbec
+      (od ticketu 007), takže tam patří opak: nefokusovatelné a pro čtečku skryté.
 
 **Technicky** (malá dráha, `C` se nepíše):
 
 Naměřené hodnoty a screenshoty:
 [report z revize](https://claude.ai/code/artifact/41b49176-0f80-4a4c-9c69-3a3796bb2d22).
+
+Poslední dvě kritéria přibyla z review ticketu 007 (2026-08-25) — `device-ux` je našel na
+řádcích, na které ten ticket sahal, ale obojí je preexistující a mění UI, takže sem.
 
 - **Řada tlačítek přetéká:** čtyři tlačítka po 8 rem + marginy = 544 px, rodič má
   `overflow: hidden` a `bodyScrollWidth` se rovná viewportu, takže useknuté části nejdou
