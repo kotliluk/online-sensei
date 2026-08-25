@@ -8,6 +8,14 @@
     font-weight: bold;
   }
 
+  // The interval name is empty on the render that says the series is over, and in a simple
+  // series it is empty throughout. Without a floor the heading collapses and everything
+  // under it climbs - including the row of buttons, which unlocks on that very render, so
+  // the finger already on its way to Reset arrives somewhere else.
+  & > h1 {
+    min-height: 1em;
+  }
+
   .time {
     font-size: 40vmin;
 
