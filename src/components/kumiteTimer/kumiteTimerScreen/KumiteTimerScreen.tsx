@@ -125,7 +125,12 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
    * clock reaching zero on its own.
    */
   const handleTick = useCallback(() => {
-    const next = timeRef.current - 1
+    // The clock starts from whatever the time says, zero included - the referee can wind it
+    // down to nothing by hand and then press start. Comparing the new reading for equality
+    // with zero lets that case straight past the end, and nothing downstream stops it: the
+    // display counts on into negative time and the only way out is a reset, which takes the
+    // score with it.
+    const next = Math.max(0, timeRef.current - 1)
     setTime(next)
 
     if (next === 0) {

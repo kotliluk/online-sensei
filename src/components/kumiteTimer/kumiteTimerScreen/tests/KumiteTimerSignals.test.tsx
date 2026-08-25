@@ -47,6 +47,8 @@ const setTimeByHand = (label: string, times: number): void => {
   }
 }
 
+const clockText = (): string => document.querySelector('.__fight-stats__time')?.textContent ?? ''
+
 const tick = (seconds: number): void => {
   for (let i = 0; i < seconds; ++i) {
     act(() => {
@@ -124,5 +126,33 @@ describe('KumiteTimerScreen - signals belong to the clock', () => {
     const ends = screen.queryAllByRole('listitem').filter((li) => /end/i.test(li.textContent ?? ''))
     expect(ends).toHaveLength(1)
   })
-})
 
+  /**
+   * The referee can wind the clock down to nothing by hand and then start it. The tick has
+   * to treat that as the end of the fight, the same as arriving there by itself - testing
+   * the reading for equality lets it straight past zero, and from there nothing stops the
+   * clock: the display counts on into negative time and the only way out is a reset, which
+   * takes the score with it.
+   */
+  test('a clock started from a hand-set zero ends the fight on the first tick', () => {
+    // arrange - wound down to 0:00 by hand, with the fight not started yet
+    renderScreen(3)
+    setTimeByHand('-', 3)
+    // act
+    press(/start/i)
+    tick(1)
+    // assert
+    expect(signals).toEqual(['END'])
+  })
+
+  test('the clock never shows negative time', () => {
+    // arrange
+    renderScreen(3)
+    setTimeByHand('-', 3)
+    // act - a few seconds past the zero it was started on
+    press(/start/i)
+    tick(3)
+    // assert
+    expect(clockText()).toBe('0:00')
+  })
+})
