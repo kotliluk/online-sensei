@@ -54,6 +54,13 @@
   .buttons {
     display: flex;
     flex-direction: row;
+    // three or four of these come to more than a phone is wide, and the row sits inside
+    // `.app { overflow-x: hidden }` - so without wrapping the outer buttons are not merely
+    // cut off, they cannot be scrolled to at all (measured at 360px: the first button
+    // starts at -88 and the last one ends at 448)
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.5rem;
 
     button {
       width: $button-long-width;
