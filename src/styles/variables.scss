@@ -18,6 +18,10 @@ $button-long-width: 8rem;
 
 $border-radius: 0.25rem;
 
+// the smallest control a finger hits reliably - 44pt on iOS, 48dp on Android;
+// the larger of the two, because the app runs on whatever is in someone's pocket
+$touch-target: 48px;
+
 // colors
 $white: #ffffff;
 $grey-light: #a5a6a9;

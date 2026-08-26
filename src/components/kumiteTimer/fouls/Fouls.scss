@@ -8,17 +8,46 @@
   align-items: center;
   width: 100%;
 
+  // A phone gives one fighter half the screen - 180px at 360 - and five circles of 20%
+  // plus their margins came to 110% of it, so they shrank to 32x38 with 3.6px between
+  // them. The fifth foul hands the fight to the other corner and `defaultWinner` then
+  // pre-fills a dialog that is usually only confirmed, so a mis-tap between the fourth
+  // and the fifth decides the fight. Below the floor the row wraps rather than shrinking.
+  flex-wrap: wrap;
+  column-gap: 2%;
+  row-gap: 0.25rem;
+
   .foul-circle {
-    display: inline-block;
-    height: 0;
-    padding-bottom: css-min(20%, 10vh);
-    width: css-min(20%, 10vh);
+    flex: 0 0 auto;
+    // 18 and not 20: five of them plus the four gaps between have to come to under 100%,
+    // or the row wraps on a desktop too, where there is room enough for all five
+    width: css-max($touch-target, css-min(18%, 10vh));
+    aspect-ratio: 1;
+    padding: 0;
 
     border-radius: 50%;
-    border: 1px solid $black;
-    margin: 2% 1%;
+    background-color: transparent;
 
     cursor: pointer;
+
+    // a foul is given by tapping the same small row again and again, and two taps in
+    // quick succession are a double tap to the browser, which answers by zooming in
+    touch-action: manipulation;
+
+    @include themed {
+      // black on the dark theme's grey is 2.7 : 1, and an unchecked circle is nothing
+      // but its outline - so in the dark there was nothing to aim at
+      border: 1px solid t($primary-text);
+
+      // The tab order reaches these now, and a control that can be focused has to show
+      // it. Not the orange the app uses elsewhere for interaction: it comes out at
+      // 2.70 : 1 on the light background and 2.88 : 1 on the dark one, and a focus ring
+      // nobody can see is the same defect as the border above.
+      &:focus-visible {
+        outline: 2px solid t($primary-text);
+        outline-offset: 2px;
+      }
+    }
   }
 
   // nothing to press on a display for the hall, so it should not offer to be pressed

@@ -178,6 +178,8 @@ export const EN: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Save fight',
+      // 2 params - the corner and the number of the foul
+      foul: '__{1}__ foul __{2}__',
       leaveFightModal: {
         title: 'Unsaved fight',
         text: 'Really leave without saving?',
