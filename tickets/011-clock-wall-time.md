@@ -49,3 +49,26 @@ skončila.
 ## Review
 
 <!-- doplní /ticket-review -->
+
+### 2026-08-26
+
+Z ticketu 008, který ty tři třídy poprvé obestavěl testy. Vedle hlavního nálezu výš vyšly
+najevo **dvě další věci, které `PausableTimeout` dělá s časem špatně** — a na jednu z nich
+odkazuje komentář v `src/logic/timing/tests/pausableTimeout.test.ts`, tak ať má kam:
+
+**Vypršelý timeout se tváří, že běží.** `setTimeout` po vystřelení nevynuluje
+`this.timeoutId`, takže `isRunning()` vrací `true` i pro timeout, který už dávno doběhl.
+`pause()` na něm spočítá zbytek `0` a `resume()` ho **vystřelí podruhé** — druhý signál
+v Reakcích, který nikdo nevyvolal. Dosažitelnost je dnes mizivá: jediný volající
+(`ReactionsScreen.tsx:46`) nabíjí timeout znovu v efektu hned po změně fáze, takže by
+uživatel musel stisknout pauzu uvnitř jednoho renderu, a ve fázi `finished` je tlačítko
+navíc `disabled`. Zamčeno testem jako současné chování, ne jako záměr.
+
+**`isPaused()` nevolá nikdo a `isRunning()` skoro nikdo.** V celém `src/` je jediné použití
+`clock.isRunning()` na `PausableStopwatch` (`GroupStopwatchScreen.tsx:166`). Obě metody na
+`PausableTimeout` i `PausableInterval` jsou mrtvé API — a mrtvé API, které navíc lže, se
+opravit nedá otestovat. Buď je smazat (patří spíš do ticketu 010), nebo je opravit tady
+zároveň s přepisem.
+
+Testy z ticketu 008 (`src/logic/timing/tests/`) pauzovací aritmetiku všech tří tříd hlídají,
+takže přepis má proti čemu běžet.
