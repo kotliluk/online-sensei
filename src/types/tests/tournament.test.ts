@@ -390,6 +390,31 @@ const node = (f: Fight, children: TournamentTreeNode[] = []): TournamentTreeNode
   children,
 })
 
+/**
+ * Sixteen competitors, three rounds behind them: A beat P, then X, then B in the semifinal.
+ * A repechage line only recurses from here up - with eight it is a single fight, so the
+ * branch that stacks the earlier losers underneath never runs.
+ */
+const bracketOfSixteen = (): TournamentTreeNode => node(
+  mainFight('', '', 'final', 0),
+  [
+    node(mainFight('A', 'B', 'semi1', 1), [
+      node(mainFight('A', 'X', 'q1', 2), [
+        node(mainFight('A', 'P', 'r1', 3)),
+        node(mainFight('X', 'Q', 'r2', 3)),
+      ]),
+      node(mainFight('B', 'Y', 'q2', 2), [
+        node(mainFight('B', 'R', 'r3', 3)),
+        node(mainFight('Y', 'S', 'r4', 3)),
+      ]),
+    ]),
+    node(mainFight('C', 'D', 'semi2', 1), [
+      node(mainFight('C', 'Z', 'q3', 2)),
+      node(mainFight('D', 'W', 'q4', 2)),
+    ]),
+  ],
+)
+
 const bracketOfEight = (): TournamentTreeNode => node(
   mainFight('', '', 'final', 0),
   [
@@ -465,6 +490,72 @@ describe('updateRepechageTree', () => {
     })
   })
 
+  /**
+   * From sixteen competitors up, a line is a line rather than a single fight: the people
+   * knocked out earliest fight each other at the bottom and the semifinal loser waits at
+   * the top, the same shape as the main bracket. Everything below the top fight of the line
+   * lives in the branch that only runs at this size.
+   */
+  test('stacks the earlier losers underneath the semifinal loser', () => {
+    // arrange - A beat P, then X, then B
+    const tree = bracketOfSixteen()
+    // act
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    const line = repechage?.children[0]
+    // assert - B waits at the top with nobody opposite yet, P and X fight for the place
+    expect(line?.attributes.fight).toMatchObject({ redName: '', blueName: 'B' })
+    expect(line?.children).toHaveLength(1)
+    expect(line?.children[0].attributes.fight).toMatchObject({ redName: 'P', blueName: 'X' })
+  })
+
+  test('saves a result into the fight at the bottom of a stacked line', () => {
+    // arrange - the line has the shape the test above proves it is built with, written out
+    // by hand so its two fights have identities of their own: the uuid module is mocked to
+    // one constant in this file, and a line built here would be two fights with one uuid
+    const tree = bracketOfSixteen()
+    const bottom = repechageFight('P', 'X', 'line-bottom')
+    const repechage = node(
+      { ...mainFight('', '', 'rep-root', 0), type: 'REPECHAGE_ROOT' },
+      [node(repechageFight('', 'B', 'line-top'), [node(bottom)])],
+    )
+    // act - X takes it 1:4
+    const updated = updateRepechageTree(tree, repechage, resultOf(bottom, 1, 4))
+    // assert - the fight keeps the result, and its winner reaches the one above it
+    expect(updated?.children[0].children[0].attributes.fight).toMatchObject({
+      redPoints: 1, bluePoints: 4, winner: 'BLUE',
+    })
+    expect(updated?.children[0].attributes.fight).toMatchObject({ redName: 'X' })
+  })
+
+  test('saves a result into the second line as well as the first', () => {
+    // arrange - both lines exist
+    const tree = bracketOfEight()
+    const first = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    const both = updateRepechageTree(tree, first, resultOf(fightIn(tree, 'semi2'), 5, 0)) as TournamentTreeNode
+    const secondLine = both.children[1].attributes.fight
+    // act
+    const updated = updateRepechageTree(tree, both, resultOf(secondLine, 6, 2))
+    // assert
+    expect(updated?.children[1].attributes.fight).toMatchObject({
+      redPoints: 6, bluePoints: 2, winner: 'RED',
+    })
+  })
+
+  test('leaves the other line alone when one of them is played', () => {
+    // arrange
+    const tree = bracketOfEight()
+    const first = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    const both = updateRepechageTree(tree, first, resultOf(fightIn(tree, 'semi2'), 5, 0)) as TournamentTreeNode
+    // act - the second line is played
+    const updated = updateRepechageTree(tree, both, resultOf(both.children[1].attributes.fight, 6, 2))
+    // assert - both branches rebuild the children list from both lines, which is where one
+    // of them gets dropped or overwritten
+    expect(updated?.children).toHaveLength(2)
+    expect(updated?.children[0].attributes.fight).toMatchObject({
+      type: 'REPECHAGE_1', redName: 'X', blueName: 'B', winner: undefined,
+    })
+  })
+
   test('has no line to build where the semifinalist beat nobody on the way', () => {
     // arrange - four competitors, so a semifinal is the first fight there is
     const tree = node(mainFight('', '', 'final', 0), [
@@ -491,7 +582,14 @@ describe('needsConfirmationToReopen', () => {
     expect(needsConfirmationToReopen(fightIn(tree, 'final'), tree)).toBe(false)
   })
 
-  test('asks about a semifinal, which the repechage is built out of', () => {
+  /**
+   * A semifinal always asks, because the repechage is built out of the result of one. It
+   * asks in a bracket of four as well, where the test above shows there is no repechage to
+   * build - and the dialog there offers to reset one that does not exist. Left as it is:
+   * this ticket writes tests, and narrowing the question is a change to the fight the
+   * referee is looking at.
+   */
+  test('asks about a semifinal, whatever it does to the repechage', () => {
     // arrange
     const tree = bracketOfEight()
     // act + assert
@@ -538,26 +636,40 @@ describe('isValidFight', () => {
 
   /**
    * `typeof null === 'object'`, so the first line of this validator lets null past and the
-   * second one reaches into it. Every validator in this file is built the same way. Nothing
-   * hits it today - `getValidatedTypeFromLS` checks for null before it calls, and both
-   * readers in `access.ts` catch whatever the validator throws - so this is pinned rather
-   * than fixed: it is one line in each of five validators, and this ticket does not change
-   * production code.
+   * second one reaches into it. Five validators across the type files are built this way;
+   * `isValidTournamentTree` is the one that is not, because a repechage tree legitimately
+   * is null until a semifinal is decided, so it spells that case out. Nothing hits this
+   * today - `getValidatedTypeFromLS` checks for null before it calls, and it calls inside
+   * a try - so it is pinned rather than fixed: this ticket does not change production code.
    */
   test('throws on null instead of turning it down', () => {
     // act + assert
-    expect(() => isValidFight(null)).toThrow()
+    expect(() => isValidFight(null)).toThrow(TypeError)
   })
 
+  test.each(['RED', 'BLUE', 'NONE'])('takes senchu %s', (senchu) => {
+    // act + assert - each of the three separately, or narrowing the check goes unnoticed
+    expect(isValidFight({ ...valid(), senchu })).toBe(true)
+  })
+
+  // one case per property the validator looks at: checking only one side of a pair leaves
+  // the other free to be deleted, and this is the gate a saved bracket comes through
   test.each([
     { name: 'a number where the object should be', value: 5 },
     { name: 'no uuid', value: { ...valid(), uuid: undefined } },
     { name: 'no depth', value: { ...valid(), depth: undefined } },
-    { name: 'points as text', value: { ...valid(), redPoints: '3' } },
-    { name: 'fouls as text', value: { ...valid(), blueFouls: '1' } },
-    { name: 'a name that is not a name', value: { ...valid(), redName: 42 } },
+    { name: 'no type', value: { ...valid(), type: undefined } },
+    { name: 'aka without an identity', value: { ...valid(), redUuid: undefined } },
+    { name: 'ao without an identity', value: { ...valid(), blueUuid: undefined } },
+    { name: "aka's name as a number", value: { ...valid(), redName: 42 } },
+    { name: "ao's name as a number", value: { ...valid(), blueName: 42 } },
+    { name: "aka's points as text", value: { ...valid(), redPoints: '3' } },
+    { name: "ao's points as text", value: { ...valid(), bluePoints: '3' } },
+    { name: "aka's fouls as text", value: { ...valid(), redFouls: '1' } },
+    { name: "ao's fouls as text", value: { ...valid(), blueFouls: '1' } },
     { name: 'a senchu nobody gives', value: { ...valid(), senchu: 'MAYBE' } },
     { name: 'a winner that is not a string', value: { ...valid(), winner: 1 } },
+    { name: 'a mirror pointed at a number', value: { ...valid(), oppositeFight: 7 } },
     { name: 'a log that is not a log', value: { ...valid(), log: 'START' } },
   ])('turns down $name', ({ value }) => {
     // act + assert

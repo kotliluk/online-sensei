@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { act, render, screen } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { ShareButton } from '../ShareButton'
@@ -105,6 +106,35 @@ describe('ShareButton', () => {
       expect(message()).toBe(t().shareFailed)
     } finally {
       restore()
+    }
+  })
+  /**
+   * The message has to go away on its own. It talks about "the current set up", and the
+   * user carries on editing the moment they have the link - a message that stays put ends
+   * up describing a form that has moved on since.
+   *
+   * Not covered here: the same timeout being cleared when the button unmounts. Anything
+   * that could assert it in jsdom would be a spy on `clearTimeout` asserting that the code
+   * calls `clearTimeout`, which is worth nothing.
+   */
+  test('takes the message away again after a while', async () => {
+    // arrange
+    vi.useFakeTimers()
+    const restore = setClipboard({ writeText: () => Promise.resolve() })
+    try {
+      renderButton()
+      press()
+      await act(() => Promise.resolve())
+      expect(message()).toBe(t().shareCopied)
+      // act
+      act(() => {
+        vi.advanceTimersByTime(5000)
+      })
+      // assert
+      expect(message()).toBeNull()
+    } finally {
+      restore()
+      vi.useRealTimers()
     }
   })
 })

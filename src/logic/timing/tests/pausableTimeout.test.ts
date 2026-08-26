@@ -95,6 +95,30 @@ describe('PausableTimeout', () => {
     expect(fired).toHaveLength(2)
   })
 
+  /**
+   * A restart sets what the next pause has to count against. Reactions rearms this with a
+   * fresh random interval every round and the referee can pause in the middle of any of
+   * them; left over from the round before, the wait would be measured against a length
+   * nobody asked for.
+   */
+  test('a restart with a new length is what the next pause counts against', () => {
+    // arrange - armed for one second, then rearmed for three
+    const fired: number[] = []
+    const timeout = new PausableTimeout(() => fired.push(1), 1000, true)
+    vi.advanceTimersByTime(400)
+    timeout.restart(undefined, 3000)
+    // act - one of the three seconds, then stopped and started again
+    vi.advanceTimersByTime(1000)
+    timeout.pause()
+    timeout.resume()
+    vi.advanceTimersByTime(1999)
+    const early = fired.length
+    vi.advanceTimersByTime(1)
+    // assert - two of the new three seconds were owed
+    expect(early).toBe(0)
+    expect(fired).toHaveLength(1)
+  })
+
   test('starts over from the top when it is restarted', () => {
     // arrange
     const fired: number[] = []
