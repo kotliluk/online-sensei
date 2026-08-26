@@ -2,7 +2,7 @@
 id: 008
 slug: tournament-tests
 title: Testy turnajového postupu a dalších nehlídaných míst
-status: spec
+status: wip
 branch: tournament-tests
 ---
 
@@ -21,13 +21,57 @@ Jeden ze čtyř ticketů podle dělení uživatele. Testy jsem z jeho „testy/k
 oddělil od úklidu schválně: tohle je nejcennější položka z celé revize a smíchané
 s mazáním mrtvého kódu se to bude reviewovat jako úklid.
 
+### 2026-08-26
+
+Ticket 007 se mezitím zmergoval a sebral tomuhle ticketu velký kus rozsahu. Než jsem začal
+psát, pustil jsem **22 mutací ze seznamu níž proti aktuálnímu `main`** (kopie repa mimo
+pracovní strom, `npx vitest run` na každou z nich):
+
+**Zčervenalo už dnes (11)** — postup pavoukem oběma směry, celá kaskáda „kdo vyhrál"
+(fauly, body, senchu, remíza jen ve skupině), `saveToLS`, zápis defaultu zpátky do
+`localStorage`, `isBetweenValidator`, `skipLastPause`, `advancedRounds` a `restart()`
+s novým callbackem. To všechno zavřel ticket 007 cestou k opravám a **není tu co
+dodělávat.**
+
+**Přežívá (11)** — a jen tohle zbývá:
+
+| #   | Mutace, která dnes projde zeleně                                         | Kam test přijde                       |
+| --- | ------------------------------------------------------------------------ | ------------------------------------- |
+| 3   | `updateRepechageTree` vrátí vstup — repasáž se nikdy nepřepočítá         | `types/tests/tournament.test.ts`      |
+| 4   | `needsConfirmationToReopen` vrátí vždy `false`                           | tamtéž                                |
+| 5   | `isValidFight` vrátí vždy `true`                                         | tamtéž                                |
+| 10a | `PausableTimeout.resume()` počítá od začátku, ne od zbytku               | `logic/timing/tests/`                 |
+| 10b | `PausableInterval.pause()` nezapočítá uplynulý čas                       | tamtéž                                |
+| 10c | `PausableStopwatch.pause()` zahodí naběhaný čas                          | tamtéž                                |
+| 10d | `PausableStopwatch.stop()` nevynuluje naběhaný čas                       | tamtéž                                |
+| 11a | Výsledky stopek nedělí místa při shodném čase                            | `groupStopwatch/results/tests/`       |
+| 11b | Export bere jiné pořadí, než je zobrazené                                | tamtéž                                |
+| 12  | `buildAppUrl` zapomene `config.basename` — odkazy mimo `/online-sensei/` | `logic/urlState/tests/appUrl.test.ts` |
+| 13  | `ShareButton` hlásí úspěch, i když schránka promise odmítne              | `shareButton/tests/`                  |
+
+**Poznámka k metodě:** první běh censusu jsem pustil s `npx vitest run --silent`, což tenhle
+vitest neumí — CLI spadne na parsování argumentu, sada se vůbec nespustí a detekce podle
+textu výstupu hlásila nesmysly. Verdikt se teď bere z **návratového kódu** procesu, ne
+z toho, co je vidět. Stálo to jeden zahozený běh; kdyby se to nechytlo, ticket by se opíral
+o census, který nikdy nic nespustil.
+
+Bod 13 stojí za komentář: ticket 007 tu hlášku otestoval, ale jen pro větev, kde
+`navigator.clipboard` **vůbec není** (synchronní `TypeError`). Větev, kde schránka existuje
+a `writeText` odmítne, nemá test žádný — a to je ta, na kterou se narazí, když uživatel
+zamítne dialog s oprávněním.
+
+**Co z toho plyne pro rozsah:** odhad „~450 řádků testů" byl na celý seznam. Zbývá zhruba
+polovina, zato ta těžší — tři třídy z `logic/timing/` chtějí `vi.setSystemTime()`, protože
+čtou `new Date().getTime()`, a pauzovací aritmetika je přesně to místo, kde se hodiny
+v tomhle repu pletou.
+
 ## B — Zadání
 
 **Problém:** Sada 246 testů je zelená a přitom projde mutace „do dalšího kola postupuje
 poražený". Kde testy jsou, jsou dobré — `fightLog` a `urlState` jsou vzor, v celé sadě
 není jediný `.skip`, snapshot ani reálný `sleep`. Problém není kvalita, ale rozsah:
 `src/redux/` nemá ani jeden testový soubor a turnajová logika se testuje jen ze strany
-*stavby* pavouka, ne jeho *postupu*.
+_stavby_ pavouka, ne jeho _postupu_.
 
 **Rozsah:** Testy nad logikou, kde by chyba na turnaji bolela nejvíc, seřazeno podle ceny.
 Žádná změna produkčního kódu — kromě případů, kdy je logika zamčená v komponentě a levnější
