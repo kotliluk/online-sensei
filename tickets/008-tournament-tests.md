@@ -235,12 +235,12 @@ po které aspoň jeden test zčervená.
 
 **Čísla**
 
-| | main | branch |
-| - | - | - |
-| Testy | 363 (33 souborů) | **432** (33 souborů) |
-| Mutace z původního censusu, které přežijí | 11 z 22 | **0 z 22** |
-| Mutace z censusu reviewera, které přežijí | — | 0 z 18 ověřených |
-| Lint | 0 chyb / 63 warningů | 0 chyb / **62** warningů |
+|                                           | main                 | branch                   |
+| ----------------------------------------- | -------------------- | ------------------------ |
+| Testy                                     | 363 (33 souborů)     | **432** (33 souborů)     |
+| Mutace z původního censusu, které přežijí | 11 z 22              | **0 z 22**               |
+| Mutace z censusu reviewera, které přežijí | —                    | 0 z 18 ověřených         |
+| Lint                                      | 0 chyb / 63 warningů | 0 chyb / **62** warningů |
 
 **Odchylky od zadání**
 
@@ -278,4 +278,3 @@ po které aspoň jeden test zčervená.
 - **Na telefonu netřeba** a schválně: tenhle ticket nemění produkční kód, takže na
   zařízení nemá co ověřovat. Jediné, co se zařízení dotýká, je popisek „Sdílet / Stáhnout"
   na exportu výsledků — a ten schválně nemá test, protože se řídí `willShareFile`.
-
