@@ -200,6 +200,10 @@ export const isFinal = (fight: Fight): boolean => fight.depth === 0 && fight.typ
 
 export const isSemifinal = (fight: Fight): boolean => fight.depth === 1 && fight.type === 'MAIN'
 
+export const isRepechageFight = (fight: Fight): boolean => {
+  return fight.type === 'REPECHAGE_1' || fight.type === 'REPECHAGE_2'
+}
+
 export const updateGroupTable = (group: Fight[][], result: FightResult): Fight[][] => {
   return group.map((row) => row.map((f) => {
     if (f.uuid === result.uuid) {
@@ -415,7 +419,13 @@ export const needsConfirmationToReopen = (
   if (resetsRepechage(fight, tree, repechage)) {
     return true
   }
-  const parentFight = findParentFightFor(fight.uuid, tree, fight.depth - 1)
+  // A repechage line is a bracket of its own and is not in the main tree at all, so its
+  // fights are looked up there - and without the depth cut-off, which exists to stop the
+  // search in a bracket where depth means something. Every fight in a line carries zero.
+  const parentFight = isRepechageFight(fight)
+    ? findParentFightFor(fight.uuid, repechage)
+    : findParentFightFor(fight.uuid, tree, fight.depth - 1)
+
   // if the subsequent fight is finished it needs confirmation
   return parentFight?.winner !== undefined
 }
