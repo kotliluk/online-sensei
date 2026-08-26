@@ -53,7 +53,12 @@
     row-gap: 0.5rem;
 
     button {
-      width: $button-long-width;
+      // Not a fixed width: "Reset zapasu" needs 98px and the fixed width leaves 96,
+      // so it wrapped onto a second line and stretched the whole row to 60px while
+      // its neighbours stayed at 38. Same shape as the export buttons of the
+      // tournament screen, which ran into this first.
+      width: auto;
+      min-width: $button-long-width;
       margin: 0 0.25rem;
 
       &.green {

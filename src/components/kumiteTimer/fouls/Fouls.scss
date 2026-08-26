@@ -23,6 +23,12 @@
     // or the row wraps on a desktop too, where there is room enough for all five
     width: css-max($touch-target, css-min(18%, 10vh));
     aspect-ratio: 1;
+    // The button is empty, so aspect-ratio is the only thing giving it a height - and
+    // where that does not apply, an empty button with no padding is a control that
+    // vanishes rather than one that comes out the wrong size. The floor makes the worst
+    // case a pill instead. Inert wherever aspect-ratio works, since the width is at
+    // least this much already.
+    min-height: $touch-target;
     padding: 0;
 
     border-radius: 50%;

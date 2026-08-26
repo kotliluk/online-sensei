@@ -88,13 +88,35 @@ describe('Fouls - reachable without a finger', () => {
     const user = userEvent.setup()
     const given: number[] = []
     renderFouls(false, (fouls) => given.push(fouls))
-    // act - three tabs land on the third circle
+    // act
     await user.tab()
     await user.tab()
     await user.tab()
+    // assert - which circle the tabs arrived at, and not merely that three of them fit
+    // before one: a stray focusable element in the row has to fail here, where it is
+    // about the tab order, rather than further down where it would read as a broken key
+    expect(document.activeElement).toHaveAccessibleName('AKA foul 3')
+    // act
     await user.keyboard('{Enter}')
     // assert
     expect(given).toEqual([3])
+  })
+
+  /**
+   * A `<div role='button' tabIndex={0}>` with a keydown handler for Enter passes every
+   * other test in this block. The space bar is what separates it from a real button, so
+   * it is the assert that pins the native element rather than an imitation of it.
+   */
+  test('answers the space bar too, the way a button does', async () => {
+    // arrange
+    const user = userEvent.setup()
+    const given: number[] = []
+    renderFouls(false, (fouls) => given.push(fouls))
+    // act
+    await user.tab()
+    await user.keyboard(' ')
+    // assert
+    expect(given).toEqual([1])
   })
 
   test('says whether a foul stands, so the state is not carried by colour alone', () => {
@@ -103,6 +125,10 @@ describe('Fouls - reachable without a finger', () => {
     // assert
     expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
     expect(screen.getAllByRole('button', { pressed: false })).toHaveLength(3)
+    // and the lit circles are the same two - the class and the announced state come from
+    // one predicate, and this is what keeps them from drifting into disagreement
+    expect(circles().map((c) => c.classList.contains('checked')))
+      .toEqual([true, true, false, false, false])
   })
 
   type NameCase = { name: string, isRed: boolean, expected: string }
@@ -126,11 +152,20 @@ describe('Fouls - reachable without a finger', () => {
     expect(screen.getByRole('button', { name: 'AKA faul 4' })).toBeInTheDocument()
   })
 
-  test('offers the mirror neither the tab order nor the screen reader', () => {
-    // arrange + act
+  /**
+   * `aria-hidden` takes the whole subtree out of the accessibility tree, so asking by
+   * role proves nothing here - `queryAllByRole('button')` answers zero even when the row
+   * is five real buttons. The tab order is a separate claim and needs a separate assert.
+   */
+  test('offers the mirror neither the tab order nor the screen reader', async () => {
+    // arrange
+    const user = userEvent.setup()
     renderFouls(true, () => {})
-    // assert - the hall display holds no controls, so it announces none
-    expect(screen.queryAllByRole('button')).toHaveLength(0)
+    // act
+    await user.tab()
+    // assert
     expect(document.querySelector('.__fouls')).toHaveAttribute('aria-hidden', 'true')
+    expect(circles().filter((c) => c.matches('button, [tabindex]:not([tabindex="-1"])'))).toHaveLength(0)
+    expect(document.querySelector('.__fouls')?.contains(document.activeElement)).toBe(false)
   })
 })
