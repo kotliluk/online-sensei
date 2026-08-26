@@ -47,7 +47,7 @@ a ověřitelné okem na skutečném zařízení.
 - [x] Když je pole neplatné a Start zašedlý, je na telefonu **vidět proč** — hláška
       se ukáže i bez `:hover`.
 - [~] Hláška se vejde na 360px displej i u krajního pole (dnes má fixních 16 rem).
-      **Nereprodukováno** — viz `D`. Pojistka přesto přidána.
+  **Nereprodukováno** — viz `D`. Pojistka přesto přidána.
 - [x] V tmavém motivu je mřížka skupinové tabulky a obrys nerozsvícených kroužků
       u reakcí odlišitelný od pozadí.
 - [x] Rychlé dvojité ťuknutí do karty závodníka nezoomne stránku.
@@ -79,8 +79,8 @@ Poslední dvě kritéria přibyla z review ticketu 007 (2026-08-25) — `device-
   do `GroupStopwatchScreen.scss:27`, `ReactionsScreen.scss:54`, `IntervalTimerScreen.scss:23`.
 - **Mřížka karet:** `grid-template-columns: 1fr 1fr 1fr` + `min-width: 150px` dá 477–481 px
   do kontejneru širokého 360–412. Nahradit `repeat(auto-fill, minmax(150px, 1fr))` —
-  jeden řádek, žádné media queries. *(Preexistující a známé z ticketu 006, kde jsme to
-  vědomě nechali být.)*
+  jeden řádek, žádné media queries. _(Preexistující a známé z ticketu 006, kde jsme to
+  vědomě nechali být.)_
 - **Hláška jen na hover:** `atoms/input/Input.scss:43` má `&.invalid:hover .__input-msg`.
   Rozšířit na `&.invalid:hover, &.invalid:focus-within` a přidat `max-width: 90vw`.
 - **Tmavý motiv:** `$black` natvrdo v `TournamentScreen.scss`, `ReactionsScreen.scss:22`,
@@ -124,17 +124,17 @@ vlastní ticket, ne přílepek k tomuhle.
 
 ### Kritérium po kritériu
 
-| Kritérium | Před | Po | Kde |
-| --- | --- | --- | --- |
-| Tlačítka ve viewportu (360/375/412) | 2 ze 4 mimo na všech třech šířkách u stopek; 2 ze 3 mimo u reakcí a intervalů na 360 a 375. Na 360 začíná první na −88 a poslední končí na 448, a `.app` má `overflow-x: hidden`, takže **nejde k nim doscrollovat** | 0 mimo na všech třech, žádný popisek useknutý | `GroupStopwatchScreen.scss`, `ReactionsScreen.scss`, `IntervalTimerScreen.scss` |
-| Karty závodníků | 3 sloupce, mřížka 477 px v 360px telefonu, 2 karty z každé řady mimo, wrapper scrolloval do stran | 320/1, 360/2, 375/2, 412/2, 768/4, 1280/6 sloupců, nic mimo, nikde vodorovný scroll | `GroupStopwatchScreen.scss` |
-| Hláška bez `:hover` | fokus na neplatném poli ukázal 0 ze 2 hlášek na všech třech šířkách | 2 ze 2 na všech třech | `Input.scss` |
-| Hláška se vejde na 360 px | **nereprodukováno** — na pěti set-up obrazovkách je každý box 256 px a vejde se i na 320 px (nejhorší pravý okraj 313 při 360, 309 při 320). Příčina: telefon skládá popisek nad pole, takže pole vyjde na střed | pojistka `css-min(16rem, 90vw)` + vystředění přes `transform` místo posunu o půl šířky | `Input.scss` |
-| Tmavý motiv | linky `1px solid $black`: 2,70 : 1 na pozadí obrazovky, 1,81 : 1 na buňkách skupinové tabulky — obojí pod 3 : 1 | 7,78 : 1 a 11,58 : 1; ověřeno i v prohlížeči (`rgb(0,0,0)` → `rgb(255,255,255)` v tmavém, světlý beze změny) | `TournamentScreen.scss`, `ReactionsScreen.scss`, `Results.scss`, `Fouls.scss` |
-| Dvojťuk nezoomne | `touch-action` nebyl v repu nikde | `manipulation` na kartě, na tlačítkách ±1 s a na kolečkách faulů (potvrzeno v computed style) — **ale skutečný dvojťuk umí jen prst**, viz „Ověřeno na" | `GroupStopwatchScreen.scss`, `Fouls.scss` |
-| Reset zápasu / Reset času | skládalo se `${reset} ${fight.toLowerCase()}` → „Reset zápas" | plné klíče `resetFight` a `resetTime` v obou jazycích; test žádá obě mutace, angličtina je kontrola | `cs.ts`, `en.ts`, `KumiteTimerScreen.tsx`, `FightStats.tsx` |
-| Kolečka na prst | 32,4 × 38 při 360, 33,8 při 375, 37,1 při 412; mezera 3,6 px | 48 × 48 na všech telefonních šířkách; 3 + 2 na 320–375, 4 + 1 na 412, pět v řadě od tabletu | `Fouls.scss` |
-| Kolečka na klávesnici | `tabbable: 0` | 5 tlačítek, jmenovka „AKA faul 4", `aria-pressed`; v zrcadle `<div>` + `aria-hidden`; sedm testů | `Fouls.tsx`, `Fouls.test.tsx` |
+| Kritérium                           | Před                                                                                                                                                                                                                 | Po                                                                                                                                                      | Kde                                                                             |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Tlačítka ve viewportu (360/375/412) | 2 ze 4 mimo na všech třech šířkách u stopek; 2 ze 3 mimo u reakcí a intervalů na 360 a 375. Na 360 začíná první na −88 a poslední končí na 448, a `.app` má `overflow-x: hidden`, takže **nejde k nim doscrollovat** | 0 mimo na všech třech, žádný popisek useknutý                                                                                                           | `GroupStopwatchScreen.scss`, `ReactionsScreen.scss`, `IntervalTimerScreen.scss` |
+| Karty závodníků                     | 3 sloupce, mřížka 477 px v 360px telefonu, 2 karty z každé řady mimo, wrapper scrolloval do stran                                                                                                                    | 320/1, 360/2, 375/2, 412/2, 768/4, 1280/6 sloupců, nic mimo, nikde vodorovný scroll                                                                     | `GroupStopwatchScreen.scss`                                                     |
+| Hláška bez `:hover`                 | fokus na neplatném poli ukázal 0 ze 2 hlášek na všech třech šířkách                                                                                                                                                  | 2 ze 2 na všech třech                                                                                                                                   | `Input.scss`                                                                    |
+| Hláška se vejde na 360 px           | **nereprodukováno** — na pěti set-up obrazovkách je každý box 256 px a vejde se i na 320 px (nejhorší pravý okraj 313 při 360, 309 při 320). Příčina: telefon skládá popisek nad pole, takže pole vyjde na střed     | pojistka `css-min(16rem, 90vw)` + vystředění přes `transform` místo posunu o půl šířky                                                                  | `Input.scss`                                                                    |
+| Tmavý motiv                         | linky `1px solid $black`: 2,70 : 1 na pozadí obrazovky, 1,81 : 1 na buňkách skupinové tabulky — obojí pod 3 : 1                                                                                                      | 7,78 : 1 a 11,58 : 1; ověřeno i v prohlížeči (`rgb(0,0,0)` → `rgb(255,255,255)` v tmavém, světlý beze změny)                                            | `TournamentScreen.scss`, `ReactionsScreen.scss`, `Results.scss`, `Fouls.scss`   |
+| Dvojťuk nezoomne                    | `touch-action` nebyl v repu nikde                                                                                                                                                                                    | `manipulation` na kartě, na tlačítkách ±1 s a na kolečkách faulů (potvrzeno v computed style) — **ale skutečný dvojťuk umí jen prst**, viz „Ověřeno na" | `GroupStopwatchScreen.scss`, `Fouls.scss`                                       |
+| Reset zápasu / Reset času           | skládalo se `${reset} ${fight.toLowerCase()}` → „Reset zápas"                                                                                                                                                        | plné klíče `resetFight` a `resetTime` v obou jazycích; test žádá obě mutace, angličtina je kontrola                                                     | `cs.ts`, `en.ts`, `KumiteTimerScreen.tsx`, `FightStats.tsx`                     |
+| Kolečka na prst                     | 32,4 × 38 při 360, 33,8 při 375, 37,1 při 412; mezera 3,6 px                                                                                                                                                         | 48 × 48 na všech telefonních šířkách; 3 + 2 na 320–375, 4 + 1 na 412, pět v řadě od tabletu                                                             | `Fouls.scss`                                                                    |
+| Kolečka na klávesnici               | `tabbable: 0`                                                                                                                                                                                                        | 5 tlačítek, jmenovka „AKA faul 4", `aria-pressed`; v zrcadle `<div>` + `aria-hidden`; sedm testů                                                        | `Fouls.tsx`, `Fouls.test.tsx`                                                   |
 
 ### Odchylky od zadání
 
@@ -158,6 +158,8 @@ vlastní ticket, ne přílepek k tomuhle.
   interakci. Změřeno: 2,70 : 1 na světlém pozadí a 2,88 : 1 na tmavém, tedy propadá
   přesně tomu testu, kterým jsem o dva commity dřív opravoval linky. Teď je to
   `t($primary-text)` (21 : 1 / 7,78 : 1).
+- **Tlačítka na kumite časomíře mají `width: auto; min-width`** místo pevné šířky, a `±`
+  u času a skóre dostala `touch-action`. Obojí přišlo z review — viz sekce `Review`.
 
 ### Gotchas
 
@@ -181,7 +183,7 @@ vlastní ticket, ne přílepek k tomuhle.
 ### Ověřeno na
 
 **Chrome 145 headless**, 320/360/375/412/768/1280 px, oba motivy — čísla výš.
-Vitest 472 testů zelených (bylo 465), typecheck 0, lint 0 chyb / 61 warningů (stejně jako
+Vitest 473 testů zelených (bylo 465), typecheck 0, lint 0 chyb / 61 warningů (stejně jako
 `main`). Tab v prohlížeči skutečně dojede na kolečka a focus ring je vidět.
 
 **Neověřeno na skutečném telefonu.** Tohle je ticket, který se zavírá telefonem:
@@ -198,18 +200,88 @@ emulovaný viewport neumí prst. Ke zkoušce přes `yarn dev:https`:
 
 ## Review
 
-Vícestranné review (`/ticket-review`) **neproběhlo** — v týhle session mám zakázané
-pouštět subagenty bez vyžádání. Diff je připravený, stačí říct.
+Branch: `phone-ui` · revieweři: **correctness**, **device-ux**, **react-state**, **tests** —
+všichni čtyři, protože diff sahá na logiku komponenty (fauly), na SCSS a texty, na hooky
+i na testy.
 
-Co jsem našel sám při čtení vlastního diffu (a hned opravil):
+**Opravit (90–100)**
 
-- `Fouls.scss` · focus ring v `$orange` má 2,70 : 1 / 2,88 : 1 → `t($primary-text)`
-  · **✅ opraveno** (amend commitu s fauly)
-- `GroupStopwatchScreen.scss` · `width: 100%` na mřížce bez šířky na wrapperu shodilo
-  mřížku na jeden sloupec → wrapper dostal `width: 100%` · **✅ opraveno**
+- [major] `src/components/kumiteTimer/fouls/tests/Fouls.test.tsx:129` · zrcadlový test
+  tvrdil dvě věci a hlídal jednu: `aria-hidden` vyřadí podstrom z accessibility tree,
+  takže `queryAllByRole('button')` vrátí 0, i kdyby uvnitř bylo pět skutečných tlačítek
+  → tab order se testuje zvlášť, přes `matches('button, [tabindex]:not([tabindex="-1"])')`
+  a fokus po `user.tab()` · **✅ opraveno**
+- [minor] `src/components/kumiteTimer/fouls/Fouls.tsx:39` · diff zduplikoval predikát
+  `fouls >= n` (jednou do CSS třídy, jednou do `aria-pressed`), takže se svítící kolečko
+  a to, co slyší čtečka, mohly tiše rozejít → jedna proměnná `given`, čtená dvakrát,
+  plus assert na třídu ve stejném testu jako `aria-pressed` · **✅ opraveno**
+- [minor] `src/components/kumiteTimer/fightStats/FightStats.scss:35`,
+  `src/components/kumiteTimer/score/Score.scss:53` · `touch-action: manipulation` minulo
+  tlačítka ± u času a u skóre na kumite časomíře — přesně ty, do kterých se ťuká
+  několikrát po sobě → doplněno · **✅ opraveno**
+- [minor] `vite.config.ts:26` · `cssTarget: [… 'safari14' …]` proti `browserslist`, který
+  hlásí nejstarší cíl `ios_saf 15.6`. `aspect-ratio`, `gap` ve flexu i `:focus-visible`
+  jsou pod tou laťkou. Build se nemění (esbuild nic nepolyfilluje ani nevaruje) — nepravdivý
+  je jen deklarovaný kontrakt, a komentář u něj navíc mluví o něčem jiném (přepis media
+  queries do range syntaxe, kterou Safari umí až od 16.4). · **⏸ nechal jsem na tebe** —
+  je to volba mezi „zvednout `cssTarget` na `safari15`" a „nechat a doplnit fallbacky",
+  a to je rozhodnutí o build configu, ne oprava.
 
-Co zůstává na tebe, protože to je produktové rozhodnutí a ne chyba:
+**Opraveno, ačkoli přišlo z pásma 80–89** — pravidlo říká „nech na uživatele", ale u těchhle
+čtyř jsem měl důvod ho porušit a říkám ho nahlas:
 
-- zalomení řady faulů na telefonu (3 + 2) — viz „Odchylky"
-- bílá diagonála skupinové tabulky v tmavém motivu — viz „Odchylky"
+- [major] `src/components/atoms/input/Input.scss:37` · jistota 85 → **povýšeno měřením**.
+  Dokud hláška visela na `:hover`, zmizela dřív, než kurzor doletěl jinam; s `:focus-within`
+  zůstane, a je to absolutně pozicovaný `<span>` se `z-index: 1`. Naměřeno na 768 px:
+  překrývá další pole o 23 px a `elementFromPoint` na jeho středu vrací **hlášku**, ne ten
+  input — ťuknutí do dalšího pole se ztratí. Regrese, kterou způsobila oprava v tomhle
+  ticketu. `pointer-events: none`, po opravě `elementFromPoint` vrací pole na všech
+  třech šířkách. · **✅ opraveno**
+- [minor] `src/components/kumiteTimer/kumiteTimerScreen/KumiteTimerScreen.scss:56` ·
+  jistota 80 → **povýšeno měřením**. „Reset zápasu" potřebuje 98 px, fixní tlačítko dávalo
+  96, takže se popisek **zalamoval na dva řádky a tlačítko bylo 60 px vysoké proti 38 u
+  sousedů**. Taky regrese z tohohle ticketu — starý popisek „Reset zápas" byl kratší.
+  `width: auto; min-width: $button-long-width`, stejný tvar jako u exportních tlačítek
+  turnajové obrazovky. Po opravě 130 × 38 px, a v tučném řezu, který přidává `:hover`,
+  vyroste na 136 px místo aby zalomil (celá řada 38 px). · **✅ opraveno**
+- [minor] `src/components/kumiteTimer/fouls/Fouls.scss:24` · jistota 82. Kolečko je prázdný
+  `<button>` bez paddingu, takže výšku mu dává **jenom** `aspect-ratio` — kde by nezabralo,
+  ovládací prvek nezmenší, ale zmizí. `min-height: $touch-target` je jednořádková pojistka,
+  která je při funkčním `aspect-ratio` nečinná (šířka je stejně aspoň tolik). · **✅ opraveno**
+- [minor] `src/components/kumiteTimer/fouls/tests/Fouls.test.tsx:86` · jistota 88. Test
+  klávesnice pustil `<div role='button' tabIndex={0} onKeyDown={Enter}>` — netestoval
+  nativní tlačítko, jen jeho imitaci; a tři `user.tab()` netvrdily, kde fokus skončil.
+  Změna je čistě v testu, žádné produktové rozhodnutí. · **✅ opraveno**
 
+**Zvážit (80–89) — nechal jsem na tebe**
+
+- `src/components/kumiteTimer/score/Score.scss:50`, `FightStats.scss:26` · tlačítka skóre
+  a času zůstala 32 × 32 px, zatímco kolečka faulů jsou teď 48. Na obrazovce tím vznikla
+  obrácená hierarchie: častěji používaný prvek je menší. Kritéria mluvila jen o faulech,
+  takže zvětšení je nový rozsah, ne dodělávka.
+- `src/components/intervalTimer/intervalTimerScreen/IntervalTimerScreen.scss:4` ·
+  intervalový časovač i reakce stylují **stejnou třídu `.play-reactions`** (obě mají
+  `<main className='play-reactions'>`). Preexistující copy-paste; tenhle diff do obou
+  přidal identický blok, takže nic nerozbíjí, ale ty dvě obrazovky si navzájem přebíjejí
+  styly. Materiál pro ticket 010.
+
+**Bez nálezů:** `correctness-reviewer`, `react-state-reviewer`.
+
+Korektnost ověřila čtením, že tělo `handleChange` je beze změny (odebrání faulu ťuknutím
+na svítící kolečko drží), že `isRed` je identita závodníka a ne strana obrazovky (popisek
+AKA/AO sedí i po prohození stran), a prošla kaskádu po přesunu borderů do `@include themed`
+(specificita 0,2,0 → 0,3,0, žádná kolize). React a stav ověřil, že `selectTranslation` je
+holé čtení modulové konstanty, takže `Fouls` na horké cestě nepřidal jediný render navíc,
+a že diff nepřidal žádný `exhaustive-deps` warning.
+
+### Mutace po opravách
+
+Pět mutací `Fouls.tsx` na kopii repa mimo pracovní strom, verdikt z exit kódu:
+
+| Mutace                                                 | Před opravou    | Po opravě                                             |
+| ------------------------------------------------------ | --------------- | ----------------------------------------------------- |
+| zrcadlo: `<div tabIndex={0}>`                          | přežila         | **zabita**                                            |
+| zrcadlo: `<button>` místo `<div>`                      | přežila         | **zabita**                                            |
+| `fouls >= n` → `fouls > n`                             | přežila u třídy | **zabita**                                            |
+| třída `checked` invertovaná, `aria-pressed` beze změny | přežila         | **zabita**                                            |
+| `<button>` → `<div role='button' onKeyDown={Enter}>`   | přežila         | **zabita** (a padá právě a jen na testu s mezerníkem) |

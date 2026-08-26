@@ -36,6 +36,12 @@
     z-index: 1;
     white-space: pre-wrap;
 
+    // On hover the box was gone before the pointer reached anything under it. Focus keeps
+    // it up, and from a tablet onwards - where a set-up row puts label and field side by
+    // side - it then covers the top 23px of the next field and takes the tap meant for it
+    // (measured at 768px: `elementFromPoint` on that field answers with this box).
+    pointer-events: none;
+
     padding: 0.25rem 0.5rem;
     border-radius: $border-radius;
 

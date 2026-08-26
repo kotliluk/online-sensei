@@ -36,7 +36,11 @@ export const Fouls = (props: FoulsProps): JSX.Element | null => {
       aria-hidden={isMirror ? true : undefined}
     >
       {CIRCLES.map((n) => {
-        const circleClass = `foul-circle ${fouls >= n ? 'checked' : ''}`
+        // Read once and used twice on purpose: the circle that is lit and the state the
+        // screen reader is told are the same fact, and two copies of the predicate can
+        // drift apart into a table and a reader that disagree about the count.
+        const given = fouls >= n
+        const circleClass = `foul-circle ${given ? 'checked' : ''}`
 
         // A button and not a div: these were the only controls on the screen the tab order
         // skipped, so at a table with a laptop and no touchscreen a foul could not be given
@@ -48,7 +52,7 @@ export const Fouls = (props: FoulsProps): JSX.Element | null => {
               key={n}
               type='button'
               className={circleClass}
-              aria-pressed={fouls >= n}
+              aria-pressed={given}
               aria-label={insertWords(t.foul, isRed ? 'AKA' : 'AO', n)}
               onClick={() => handleChange(n)}
             />
