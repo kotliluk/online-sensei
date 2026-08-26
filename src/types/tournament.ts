@@ -420,6 +420,32 @@ export const needsConfirmationToReopen = (
   return parentFight?.winner !== undefined
 }
 
+export type OpenFightAction = 'NOTHING' | 'OPEN' | 'ASK'
+
+/**
+ * What pressing a fight in the bracket should do.
+ *
+ * The rule lives here rather than in the screen because the screen cannot be tested:
+ * `react-d3-tree` reads the size of a laid out `<svg>` and jsdom lays nothing out, so
+ * anything decided inside that component is decided where no test can reach it.
+ */
+export const openFightAction = (
+  fight: Fight,
+  tree: TournamentTreeNode | null,
+  repechage: TournamentTreeNode | null,
+): OpenFightAction => {
+  // half of a pairing is still to be decided, so there is no fight to open yet
+  if (fight.redUuid === '' || fight.blueUuid === '') {
+    return 'NOTHING'
+  }
+
+  if (fight.winner === undefined) {
+    return 'OPEN'
+  }
+
+  return needsConfirmationToReopen(fight, tree, repechage) ? 'ASK' : 'OPEN'
+}
+
 /**
  * Saves opponents of the given fighter in the tree from the last one to the first one.
  */

@@ -1,8 +1,8 @@
 import { vi } from 'vitest'
 import {
   Competitor, createTournamentTree, Fight, FightResult, groupRowStats, switchResultSides,
-  defaultWinner, isValidFight, needsConfirmationToReopen, resetsRepechage, TournamentTreeNode,
-  updateGroupTable, updateRepechageTree, updateTournamentTree,
+  defaultWinner, isValidFight, needsConfirmationToReopen, openFightAction, resetsRepechage,
+  TournamentTreeNode, updateGroupTable, updateRepechageTree, updateTournamentTree,
 } from '../tournament'
 import { FightLogEntry } from '../fightLog'
 
@@ -584,6 +584,12 @@ describe('updateRepechageTree', () => {
  * the whole value of the dialog.
  */
 describe('needsConfirmationToReopen', () => {
+  /**
+   * The final comes out false through the parent check as well - there is nothing above it,
+   * so `findParentFightFor` finds nobody. The guard on top of the function says the rule
+   * out loud rather than leaving it to fall out of the search, and no input tells them
+   * apart; this test pins the outcome, not the guard.
+   */
   test('lets the final be reopened without a word', () => {
     // arrange - there is nothing after it to go wrong
     const tree = bracketOfEight()
@@ -628,6 +634,20 @@ describe('needsConfirmationToReopen', () => {
     const decided = updateTournamentTree(tree, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
     // act + assert
     expect(needsConfirmationToReopen(fightIn(decided, 'q1'), decided, null)).toBe(true)
+  })
+
+  /**
+   * A repechage fight is not in the main tree, so `findParentFightFor` finds nothing above
+   * it and it never asks. That is right for the fight at the top of a line, and it also
+   * means the dialog's repechage wording is never reached - noted in the ticket, left as
+   * it is here.
+   */
+  test('says nothing about a repechage fight', () => {
+    // arrange
+    const tree = bracketOfEight()
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
+    // act + assert
+    expect(needsConfirmationToReopen(repechage.children[0].attributes.fight, tree, repechage)).toBe(false)
   })
 
   test('says nothing about a fight whose winner has not fought again yet', () => {
@@ -753,5 +773,61 @@ describe('resetsRepechage', () => {
     const [tree, repechage] = eightWithRepechage()
     // act + assert
     expect(resetsRepechage(fightIn(tree, uuid), tree, repechage)).toBe(false)
+  })
+})
+
+/**
+ * What pressing a fight in the bracket does. It lives away from the screen because the
+ * screen holds a `react-d3-tree` that jsdom will not lay out, so a decision left inside
+ * that component is a decision nothing can reach.
+ */
+describe('openFightAction', () => {
+  const withRepechage = (): [TournamentTreeNode, TournamentTreeNode] => {
+    const tree = bracketOfEight()
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    return [tree, repechage as TournamentTreeNode]
+  }
+
+  test('does nothing where half of the pairing is still to be decided', () => {
+    // arrange - the final has nobody in it yet
+    const tree = bracketOfEight()
+    // act + assert
+    expect(openFightAction(fightIn(tree, 'final'), tree, null)).toBe('NOTHING')
+  })
+
+  test('opens a fight that has not been played', () => {
+    // arrange
+    const tree = bracketOfEight()
+    // act + assert
+    expect(openFightAction(fightIn(tree, 'q1'), tree, null)).toBe('OPEN')
+  })
+
+  test('opens a played fight that nothing depends on', () => {
+    // arrange - the semifinal above it is still open
+    const tree = bracketOfEight()
+    const played = updateTournamentTree(tree, resultOf(fightIn(tree, 'q1'), 5, 0)) as TournamentTreeNode
+    // act + assert
+    expect(openFightAction(fightIn(played, 'q1'), played, null)).toBe('OPEN')
+  })
+
+  test('asks before reopening a semifinal whose repechage would go', () => {
+    // arrange
+    const [tree, repechage] = withRepechage()
+    const played = updateTournamentTree(tree, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
+    // act + assert
+    expect(openFightAction(fightIn(played, 'semi1'), played, repechage)).toBe('ASK')
+  })
+
+  test('hands the repechage on rather than deciding without it', () => {
+    // arrange - the same semifinal, with the line that would be lost left out
+    const [tree, repechage] = withRepechage()
+    const played = updateTournamentTree(tree, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
+    // act
+    const withLine = openFightAction(fightIn(played, 'semi1'), played, repechage)
+    const withoutLine = openFightAction(fightIn(played, 'semi1'), played, null)
+    // assert - the answer has to depend on it, or the screen could stop passing it and
+    // no test would notice
+    expect(withLine).toBe('ASK')
+    expect(withoutLine).toBe('OPEN')
   })
 })

@@ -6,7 +6,7 @@ import { TreeNode } from './TreeNode'
 import { useSelector } from '../../../redux/useSelector'
 import { selectKumiteTimerRepechageTree, selectKumiteTimerTournamentTree } from '../../../redux/kumiteTimer/selector'
 import { setTournamentFight } from '../../../redux/kumiteTimer/actions'
-import { getTreeDepth, needsConfirmationToReopen, TournamentTreeNode } from '../../../types/tournament'
+import { getTreeDepth, openFightAction, TournamentTreeNode } from '../../../types/tournament'
 import { useDispatch } from '../../../redux/useDispatch'
 import { selectTranslation } from '../../../redux/page/selector'
 import { setModalWindow } from '../../../redux/page/actions'
@@ -37,23 +37,20 @@ export const TreeTournamentScreen = (): JSX.Element => {
     }
 
     const fight = data.attributes.fight
+    const action = openFightAction(fight, tree, repechage)
 
-
-    // if both fighters are known, the fight can be started
-    if (fight.redUuid !== '' && fight.blueUuid !== '') {
-      dispatch(setTournamentFight(fight))
-      // if the winner is already known it might need a confirmation
-      if (fight.winner !== undefined) {
-        if (needsConfirmationToReopen(fight, tree, repechage)) {
-          dispatch(setModalWindow('REOPEN_TREE_FIGHT'))
-        } else {
-          void navigate('/kumite-timer')
-        }
-      } else {
-        void navigate('/kumite-timer')
-      }
+    if (action === 'NOTHING') {
+      return
     }
-  }, [tree, repechage])
+
+    dispatch(setTournamentFight(fight))
+
+    if (action === 'ASK') {
+      dispatch(setModalWindow('REOPEN_TREE_FIGHT'))
+    } else {
+      void navigate('/kumite-timer')
+    }
+  }, [tree, repechage, dispatch, navigate])
 
   return (
     <>
