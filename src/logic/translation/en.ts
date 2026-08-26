@@ -9,7 +9,6 @@ export const EN: Translation = {
     lightTheme: 'Light theme',
     language: 'Language',
     time: 'Time',
-    fight: 'Fight',
     sound: 'Sound',
     noSound: 'No sound',
     // user actions
@@ -18,6 +17,8 @@ export const EN: Translation = {
     pause: 'Pause',
     paused: 'Paused',
     reset: 'Reset',
+    resetFight: 'Reset fight',
+    resetTime: 'Reset time',
     resume: 'Resume',
     start: 'Start',
     stop: 'Stop',

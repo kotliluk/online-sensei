@@ -12,7 +12,6 @@ export interface Translation {
     lightTheme: string,
     language: string,
     time: string,
-    fight: string,
     sound: string,
     noSound: string,
     // user actions
@@ -21,6 +20,9 @@ export interface Translation {
     pause: string,
     paused: string,
     reset: string,
+    // full wordings, not `reset` glued to a noun: Czech declines the noun
+    resetFight: string,
+    resetTime: string,
     resume: string,
     start: string,
     stop: string,

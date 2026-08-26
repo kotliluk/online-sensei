@@ -59,7 +59,7 @@ export const FightStats = ({
       {!isMirror && (
         <div className='__fight-stats__time-btns'>
           <Button className='__time-btn __reset-btn' onClick={() => onTimeReset()} disabled={timeButtonsDisabled}>
-            {`${ct.reset} ${ct.time.toLowerCase()}`}
+            {ct.resetTime}
           </Button>
           <Button className='__time-btn' onClick={() => onTimeChange(time - 1)} disabled={timeButtonsDisabled}>
             -

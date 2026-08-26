@@ -15,7 +15,8 @@ import {
 } from '../../../../redux/kumiteTimer/actions'
 import { Fight, newCompetitor, newFight } from '../../../../types/tournament'
 import { FightLogEntry } from '../../../../types/fightLog'
-import { setModalWindow } from '../../../../redux/page/actions'
+import { setModalWindow, setTranslation } from '../../../../redux/page/actions'
+import { Language } from '../../../../logic/translation'
 import { LS_KEYS } from '../../utils'
 
 
@@ -481,5 +482,36 @@ describe('KumiteTimerScreen - a tab without a session', () => {
     expect(localStorage.getItem(LS_KEYS.scoreRed)).toBe(JSON.stringify(3))
     expect(localStorage.getItem(LS_KEYS.scoreBlue)).toBe(JSON.stringify(1))
     expect(localStorage.getItem(LS_KEYS.senchu)).toBe(JSON.stringify('RED'))
+  })
+})
+
+/**
+ * Both reset buttons used to be assembled out of two words - `${reset} ${fight}` and
+ * `${reset} ${time}` - which is a sentence only in English. Czech declines the noun,
+ * so the screen offered "Reset zapas" and "Reset cas" where it should read "Reset
+ * zapasu" and "Reset casu". The full wording was already in `cs.ts`, one level down
+ * under the fight log, so this is about which key the button reaches for.
+ */
+describe('KumiteTimerScreen reset labels', () => {
+  afterEach(() => {
+    store.dispatch(setTranslation('EN'))
+  })
+
+  type LabelCase = { name: string, language: Language, fight: string, time: string }
+
+  test.each([
+    { name: 'czech declines the noun', language: 'CS', fight: 'Reset zápasu', time: 'Reset času' },
+    { name: 'english leaves it alone', language: 'EN', fight: 'Reset fight', time: 'Reset time' },
+  ] as LabelCase[])('$name', async ({ language, fight, time }) => {
+    // arrange
+    const user = userEvent.setup()
+    store.dispatch(setTranslation(language))
+    startSession()
+    renderScreen()
+    // act - the fight button only says "reset" once the fight is under way
+    await user.click(screen.getByRole('button', { name: 'Start' }))
+    // assert
+    expect(screen.getByRole('button', { name: fight })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: time })).toBeInTheDocument()
   })
 })

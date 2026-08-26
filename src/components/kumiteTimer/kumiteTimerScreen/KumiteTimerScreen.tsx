@@ -424,7 +424,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
           onClick={phase === 'init' ? handleStart : handleReset}
           disabled={dangerousButtonsDisabled}
         >
-          {phase === 'init' ? ct.start : `${ct.reset} ${ct.fight.toLowerCase()}`}
+          {phase === 'init' ? ct.start : ct.resetFight}
         </Button>
         {isTournamentFight && (
           <Button
