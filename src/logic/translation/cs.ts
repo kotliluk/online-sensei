@@ -9,7 +9,6 @@ export const CS: Translation = {
     lightTheme: 'Světlý motiv',
     language: 'Jazyk',
     time: 'Čas',
-    fight: 'Zápas',
     sound: 'Zvuk',
     noSound: 'Žádný zvuk',
     // user actions
@@ -18,6 +17,8 @@ export const CS: Translation = {
     pause: 'Pauza',
     paused: 'Pozastaveno',
     reset: 'Reset',
+    resetFight: 'Reset zápasu',
+    resetTime: 'Reset času',
     resume: 'Pokračovat',
     start: 'Start',
     stop: 'Stop',
