@@ -53,6 +53,33 @@ The parameters stay in the address bar as long as the form still holds them, so
 reloading restores the shared set up. They are dropped on the first edit, when
 they would otherwise describe something the screen no longer shows.
 
+## On a phone
+
+The app runs on whatever is in someone's pocket at a tournament, so the screens
+are laid out for a phone first and grow from there rather than the other way
+round.
+
+**Rows of buttons wrap.** Four buttons of the width a play screen gives them
+come to more than a phone is wide, and the page does not scroll sideways, so
+anything sticking out would be unreachable rather than merely clipped. They fold
+onto a second line instead, at any width where they do not all fit.
+
+**Competitor cards fill the width they have.** The group stopwatch fits as many
+150px columns as there is room for - two on a phone, four on a tablet, six on a
+desktop - so no card is ever cut off at the edge.
+
+**Error messages answer to a tap.** The message saying why a field is red used
+to appear on hover, which a finger never produces. It now appears whenever the
+field is focused, so tapping the field says what is wrong with it.
+
+**A double tap does not zoom.** Tapping a competitor card twice in quick
+succession is two competitors finishing, not a request to zoom in, and the same
+goes for the correction buttons and the foul circles.
+
+**Both themes are legible.** Table rules, the outlines of the unlit reaction
+signals and the foul circles take their colour from the theme, rather than being
+black in a dark theme where black is nearly the background.
+
 ## Kumite timer
 
 The basic feature of Kumite timer is the timer itself and the management of points and fouls
@@ -78,6 +105,20 @@ The horn at the end, atoshibaraku at fifteen seconds and the "end" entry in the 
 belong to **the clock arriving there on its own**. Setting the time by hand sounds
 nothing - giving a few seconds back after the fight has ended is a normal thing to do at
 the table, and the horn comes again only once the clock has run out again.
+
+### The foul circles
+
+Five circles per corner, and the fifth of them hands the fight to the other side, so the
+row is sized to be hit rather than to fit. Each circle is at least 48px across; where five
+of those do not fit the half of the screen a phone gives one fighter, the row wraps onto a
+second line instead of shrinking them - three and two on a narrow phone, all five in a
+line from a tablet up.
+
+They are buttons, so the tab order reaches them and a foul can be given from a keyboard at
+a table with a laptop and no touchscreen. A screen reader names each one by its corner and
+number ("AKA foul 4") and says whether it stands, so the state is not carried by colour
+alone. On the mirror they are neither: a display for the hall holds no controls, so it
+offers none to the keyboard or the screen reader either.
 
 ### Fight log
 
