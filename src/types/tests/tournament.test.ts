@@ -1,7 +1,8 @@
 import { vi } from 'vitest'
 import {
   Competitor, createTournamentTree, Fight, FightResult, groupRowStats, switchResultSides,
-  defaultWinner, TournamentTreeNode, updateGroupTable, updateTournamentTree,
+  defaultWinner, isValidFight, needsConfirmationToReopen, TournamentTreeNode, updateGroupTable,
+  updateRepechageTree, updateTournamentTree,
 } from '../tournament'
 import { FightLogEntry } from '../fightLog'
 
@@ -369,5 +370,197 @@ describe('defaultWinner', () => {
   test('points outrank senchu', () => {
     // act + assert
     expect(defaultWinner(scored(5, 3, 'BLUE'), 'TREE')).toBe('RED')
+  })
+})
+
+/**
+ * Eight competitors, quarterfinals behind them: A beat X and B beat Y, so A meets B in the
+ * first semifinal; C beat Z and D beat W in the other half. Written out by hand rather than
+ * built with `createTournamentTree`, because the uuid module is mocked to one constant at
+ * the top of this file and everything in here is found by uuid.
+ */
+const mainFight = (red: string, blue: string, uuid: string, depth: number): Fight => ({
+  ...fight(red, blue, depth),
+  uuid,
+})
+
+const node = (f: Fight, children: TournamentTreeNode[] = []): TournamentTreeNode => ({
+  name: '',
+  attributes: { fight: f },
+  children,
+})
+
+const bracketOfEight = (): TournamentTreeNode => node(
+  mainFight('', '', 'final', 0),
+  [
+    node(mainFight('A', 'B', 'semi1', 1), [
+      node(mainFight('A', 'X', 'q1', 2)),
+      node(mainFight('B', 'Y', 'q2', 2)),
+    ]),
+    node(mainFight('C', 'D', 'semi2', 1), [
+      node(mainFight('C', 'Z', 'q3', 2)),
+      node(mainFight('D', 'W', 'q4', 2)),
+    ]),
+  ],
+)
+
+const findFight = (tree: TournamentTreeNode, uuid: string): Fight | undefined => {
+  if (tree.attributes.fight.uuid === uuid) {
+    return tree.attributes.fight
+  }
+
+  for (const child of tree.children) {
+    const found = findFight(child, uuid)
+    if (found !== undefined) {
+      return found
+    }
+  }
+
+  return undefined
+}
+
+const fightIn = (tree: TournamentTreeNode, uuid: string): Fight => findFight(tree, uuid) as Fight
+
+/**
+ * Repechage is what makes this an official competition type rather than a knockout: whoever
+ * lost to a finalist gets another way through, and the line is built out of exactly the
+ * people that finalist beat on the way. It is computed the moment a semifinal is decided,
+ * so nobody enters it by hand and nothing here is checked by eye at the table.
+ */
+describe('updateRepechageTree', () => {
+  test('builds the first line out of the people the first semifinalist beat', () => {
+    // arrange - A wins the first semifinal, having beaten X in the quarterfinal
+    const tree = bracketOfEight()
+    // act
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    // assert - B, who just lost to A, comes back against X, who lost to A before that
+    expect(repechage?.attributes.fight.type).toBe('REPECHAGE_ROOT')
+    expect(repechage?.children).toHaveLength(1)
+    expect(repechage?.children[0].attributes.fight).toMatchObject({
+      type: 'REPECHAGE_1', redName: 'X', blueName: 'B',
+    })
+  })
+
+  test('builds the second line without touching the first', () => {
+    // arrange - the first semifinal is already behind us
+    const tree = bracketOfEight()
+    const first = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    // act - and now the second one
+    const both = updateRepechageTree(tree, first, resultOf(fightIn(tree, 'semi2'), 5, 0))
+    // assert
+    expect(both?.children.map((c) => c.attributes.fight.type)).toEqual(['REPECHAGE_1', 'REPECHAGE_2'])
+    expect(both?.children[1].attributes.fight).toMatchObject({ redName: 'Z', blueName: 'D' })
+  })
+
+  test('saves a repechage result into the line it came from', () => {
+    // arrange
+    const tree = bracketOfEight()
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    const line = (repechage as TournamentTreeNode).children[0].attributes.fight
+    // act - X takes it 3:1
+    const updated = updateRepechageTree(tree, repechage, resultOf(line, 3, 1))
+    // assert
+    expect(updated?.children[0].attributes.fight).toMatchObject({
+      redPoints: 3, bluePoints: 1, winner: 'RED',
+    })
+  })
+
+  test('has no line to build where the semifinalist beat nobody on the way', () => {
+    // arrange - four competitors, so a semifinal is the first fight there is
+    const tree = node(mainFight('', '', 'final', 0), [
+      node(mainFight('A', 'B', 'semi1', 1)),
+      node(mainFight('C', 'D', 'semi2', 1)),
+    ])
+    // act
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    // assert - one opponent is not a line, and an empty repechage is no repechage
+    expect(repechage).toBeNull()
+  })
+})
+
+/**
+ * Reopening a fight that nothing depends on costs nothing, and asking about it every time
+ * teaches people to click through the question. Asking when there is something to lose is
+ * the whole value of the dialog.
+ */
+describe('needsConfirmationToReopen', () => {
+  test('lets the final be reopened without a word', () => {
+    // arrange - there is nothing after it to go wrong
+    const tree = bracketOfEight()
+    // act + assert
+    expect(needsConfirmationToReopen(fightIn(tree, 'final'), tree)).toBe(false)
+  })
+
+  test('asks about a semifinal, which the repechage is built out of', () => {
+    // arrange
+    const tree = bracketOfEight()
+    // act + assert
+    expect(needsConfirmationToReopen(fightIn(tree, 'semi1'), tree)).toBe(true)
+  })
+
+  test('asks about a fight whose winner has already fought again', () => {
+    // arrange - the semifinal above the quarterfinal is decided
+    const tree = bracketOfEight()
+    const decided = updateTournamentTree(tree, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
+    // act + assert
+    expect(needsConfirmationToReopen(fightIn(decided, 'q1'), decided)).toBe(true)
+  })
+
+  test('says nothing about a fight whose winner has not fought again yet', () => {
+    // arrange
+    const tree = bracketOfEight()
+    // act + assert
+    expect(needsConfirmationToReopen(fightIn(tree, 'q1'), tree)).toBe(false)
+  })
+})
+
+/**
+ * The gate between `localStorage` and the bracket. Whatever comes back from `JSON.parse` is
+ * handed straight to it, so it is the only thing standing between a half-written value from
+ * an older version of the app and a screen that reads fields which are not there.
+ */
+describe('isValidFight', () => {
+  const valid = (): Fight => fight('Aneta', 'Bob')
+
+  test('takes a fight as the app writes it', () => {
+    // act + assert
+    expect(isValidFight(valid())).toBe(true)
+  })
+
+  test('takes one with a winner and a log', () => {
+    // act + assert
+    expect(isValidFight({
+      ...valid(),
+      winner: 'RED',
+      log: [{ at: 1000, fightTime: 120, event: { kind: 'START' } }],
+    })).toBe(true)
+  })
+
+  /**
+   * `typeof null === 'object'`, so the first line of this validator lets null past and the
+   * second one reaches into it. Every validator in this file is built the same way. Nothing
+   * hits it today - `getValidatedTypeFromLS` checks for null before it calls, and both
+   * readers in `access.ts` catch whatever the validator throws - so this is pinned rather
+   * than fixed: it is one line in each of five validators, and this ticket does not change
+   * production code.
+   */
+  test('throws on null instead of turning it down', () => {
+    // act + assert
+    expect(() => isValidFight(null)).toThrow()
+  })
+
+  test.each([
+    { name: 'a number where the object should be', value: 5 },
+    { name: 'no uuid', value: { ...valid(), uuid: undefined } },
+    { name: 'no depth', value: { ...valid(), depth: undefined } },
+    { name: 'points as text', value: { ...valid(), redPoints: '3' } },
+    { name: 'fouls as text', value: { ...valid(), blueFouls: '1' } },
+    { name: 'a name that is not a name', value: { ...valid(), redName: 42 } },
+    { name: 'a senchu nobody gives', value: { ...valid(), senchu: 'MAYBE' } },
+    { name: 'a winner that is not a string', value: { ...valid(), winner: 1 } },
+    { name: 'a log that is not a log', value: { ...valid(), log: 'START' } },
+  ])('turns down $name', ({ value }) => {
+    // act + assert
+    expect(isValidFight(value)).toBe(false)
   })
 })
