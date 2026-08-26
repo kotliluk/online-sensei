@@ -1,30 +1,40 @@
-import { fireEvent, render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Provider as ReduxProvider } from 'react-redux'
 import { Fouls } from '../Fouls'
+import { store } from '../../../../redux/store'
+import { setTranslation } from '../../../../redux/page/actions'
 
 
 const circles = (): HTMLElement[] => [...document.querySelectorAll<HTMLElement>('.foul-circle')]
 
-const renderFouls = (isMirror: boolean, onChange: (fouls: number) => void, fouls = 0): void => {
-  render(<Fouls isRed fouls={fouls} isMirror={isMirror} onChange={onChange} />)
+const renderFouls = (isMirror: boolean, onChange: (fouls: number) => void, fouls = 0, isRed = true): void => {
+  render(
+    <ReduxProvider store={store}>
+      <Fouls isRed={isRed} fouls={fouls} isMirror={isMirror} onChange={onChange} />
+    </ReduxProvider>,
+  )
 }
 
 describe('Fouls', () => {
-  test('gives the foul whose circle was pressed', () => {
+  test('gives the foul whose circle was pressed', async () => {
     // arrange
+    const user = userEvent.setup()
     const given: number[] = []
     renderFouls(false, (fouls) => given.push(fouls))
     // act
-    fireEvent.click(circles()[2])
+    await user.click(circles()[2])
     // assert
     expect(given).toEqual([3])
   })
 
-  test('takes the last foul back when the circle already standing is pressed', () => {
+  test('takes the last foul back when the circle already standing is pressed', async () => {
     // arrange
+    const user = userEvent.setup()
     const given: number[] = []
     renderFouls(false, (fouls) => given.push(fouls), 3)
     // act
-    fireEvent.click(circles()[2])
+    await user.click(circles()[2])
     // assert
     expect(given).toEqual([2])
   })
@@ -35,12 +45,13 @@ describe('Fouls', () => {
    * disagree about the score with no way of telling which one is right. Score already
    * answers to nobody there; fouls did not.
    */
-  test('answers to nobody in the mirror', () => {
+  test('answers to nobody in the mirror', async () => {
     // arrange
+    const user = userEvent.setup()
     const given: number[] = []
     renderFouls(true, (fouls) => given.push(fouls))
     // act
-    fireEvent.click(circles()[2])
+    await user.click(circles()[2])
     // assert
     expect(given).toEqual([])
   })
@@ -51,5 +62,75 @@ describe('Fouls', () => {
     renderFouls(true, () => {})
     // act + assert
     expect(document.querySelector('.__fouls')?.classList.contains('__mirror')).toBe(true)
+  })
+})
+
+/**
+ * These were the only controls on the screen that were not buttons: five `<div onClick>`
+ * without a role, a name or a place in the tab order. At a table with a laptop and no
+ * touchscreen there was therefore no way to give a foul at all - and the fifth foul hands
+ * the fight to the other corner, so it is not a control anyone can do without.
+ */
+describe('Fouls - reachable without a finger', () => {
+  afterEach(() => {
+    store.dispatch(setTranslation('EN'))
+  })
+
+  test('offers five buttons the tab order can reach', () => {
+    // arrange + act
+    renderFouls(false, () => {})
+    // assert
+    expect(screen.getAllByRole('button')).toHaveLength(5)
+  })
+
+  test('gives the foul from the keyboard alone', async () => {
+    // arrange
+    const user = userEvent.setup()
+    const given: number[] = []
+    renderFouls(false, (fouls) => given.push(fouls))
+    // act - three tabs land on the third circle
+    await user.tab()
+    await user.tab()
+    await user.tab()
+    await user.keyboard('{Enter}')
+    // assert
+    expect(given).toEqual([3])
+  })
+
+  test('says whether a foul stands, so the state is not carried by colour alone', () => {
+    // arrange + act
+    renderFouls(false, () => {}, 2)
+    // assert
+    expect(screen.getAllByRole('button', { pressed: true })).toHaveLength(2)
+    expect(screen.getAllByRole('button', { pressed: false })).toHaveLength(3)
+  })
+
+  type NameCase = { name: string, isRed: boolean, expected: string }
+
+  test.each([
+    { name: 'aka', isRed: true, expected: 'AKA foul 4' },
+    { name: 'ao', isRed: false, expected: 'AO foul 4' },
+  ] as NameCase[])('names the corner and the number of the foul - $name', ({ isRed, expected }) => {
+    // arrange + act
+    renderFouls(false, () => {}, 0, isRed)
+    // assert - a row of five unnamed circles is announced as five identical buttons
+    expect(screen.getByRole('button', { name: expected })).toBeInTheDocument()
+  })
+
+  test('names them in czech too', () => {
+    // arrange
+    store.dispatch(setTranslation('CS'))
+    // act
+    renderFouls(false, () => {}, 0)
+    // assert
+    expect(screen.getByRole('button', { name: 'AKA faul 4' })).toBeInTheDocument()
+  })
+
+  test('offers the mirror neither the tab order nor the screen reader', () => {
+    // arrange + act
+    renderFouls(true, () => {})
+    // assert - the hall display holds no controls, so it announces none
+    expect(screen.queryAllByRole('button')).toHaveLength(0)
+    expect(document.querySelector('.__fouls')).toHaveAttribute('aria-hidden', 'true')
   })
 })

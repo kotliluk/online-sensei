@@ -180,6 +180,9 @@ export interface Translation {
     },
     timerScreen: {
       saveTournamentFight: string,
+      // 2 params - the corner and the number of the foul; the name a screen reader
+      // reads out for a circle that has no text of its own
+      foul: string,
       leaveFightModal: {
         title: string,
         text: string,

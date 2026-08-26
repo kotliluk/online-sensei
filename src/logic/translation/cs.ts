@@ -178,6 +178,8 @@ export const CS: Translation = {
     },
     timerScreen: {
       saveTournamentFight: 'Uložit zápas',
+      // 2 parametry - roh a pořadí faulu
+      foul: '__{1}__ faul __{2}__',
       leaveFightModal: {
         title: 'Neuložený zápas',
         text: 'Opravdu odejít bez uložení?',
