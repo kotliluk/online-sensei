@@ -27,6 +27,13 @@
   .buttons {
     display: flex;
     flex-direction: row;
+    // three or four of these come to more than a phone is wide, and the row sits inside
+    // `.app { overflow-x: hidden }` - so without wrapping the outer buttons are not merely
+    // cut off, they cannot be scrolled to at all (measured at 360px: the first button
+    // starts at -88 and the last one ends at 448)
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 0.5rem;
 
     button {
       width: $button-long-width;
@@ -43,19 +50,29 @@
   }
 
   .play-group-stopwatch-competitors-wrapper {
+    // the screen centres its children, so without this the wrapper shrinks to whatever
+    // the grid asks for - and the grid, asking for a share of the wrapper, settles on one
+    // column. Stating the width here is what lets the grid below be a share of the screen.
+    width: 100%;
     height: 100%;
     overflow-y: auto;
   }
 
   .play-group-stopwatch-competitors {
-    width: 100vw;
+    // 100vw counts the scrollbar of the wrapper above, so on a desktop the grid was
+    // a scrollbar wider than the space it sits in and the cards drifted sideways
+    width: 100%;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    // Three fixed columns needed 477px inside a 360px phone, and the two outer cards
+    // were simply gone. Letting the browser fit as many 150px columns as there is room
+    // for gives two on a phone and three or more on a desktop, with no media query.
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 2.5vw;
     padding: 1rem 2.5vw 2rem 2.5vw;
 
     .competitor-card {
-      min-width: 150px;
+      // no min-width: the track is already at least 150px, and a floor of its own would
+      // push the card back out of a viewport too narrow for even one full column
       height: 120px;
 
       display: flex;
@@ -80,6 +97,10 @@
       // iOS answers a long press with its selection callout instead
       user-select: none;
       -webkit-touch-callout: none;
+
+      // two competitors finishing within a second of each other are two taps on the same
+      // card, and the browser reads that as a double tap and zooms the page in
+      touch-action: manipulation;
     }
 
     .competitor-adjust {
@@ -90,6 +111,9 @@
         padding: 0.25rem;
         border-radius: 0;
         font-size: $text-small;
+
+        // correcting a time by four seconds is four taps in a row, not two double taps
+        touch-action: manipulation;
 
         @include button-color($orange);
       }
