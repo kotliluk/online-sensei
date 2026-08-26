@@ -2,7 +2,7 @@
 id: 015
 slug: semifinal-reopen-question
 title: Neptat se na repasáž, která neexistuje
-status: review
+status: done
 branch: semifinal-reopen-question
 ---
 
