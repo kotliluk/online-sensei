@@ -2,7 +2,7 @@
 id: 008
 slug: tournament-tests
 title: Testy turnajového postupu a dalších nehlídaných míst
-status: review
+status: done
 branch: tournament-tests
 ---
 
