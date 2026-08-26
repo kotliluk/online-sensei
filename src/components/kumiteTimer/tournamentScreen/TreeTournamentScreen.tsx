@@ -44,7 +44,7 @@ export const TreeTournamentScreen = (): JSX.Element => {
       dispatch(setTournamentFight(fight))
       // if the winner is already known it might need a confirmation
       if (fight.winner !== undefined) {
-        if (needsConfirmationToReopen(fight, tree)) {
+        if (needsConfirmationToReopen(fight, tree, repechage)) {
           dispatch(setModalWindow('REOPEN_TREE_FIGHT'))
         } else {
           void navigate('/kumite-timer')
@@ -53,7 +53,7 @@ export const TreeTournamentScreen = (): JSX.Element => {
         void navigate('/kumite-timer')
       }
     }
-  }, [tree])
+  }, [tree, repechage])
 
   return (
     <>
