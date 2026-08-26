@@ -27,8 +27,11 @@
   .__input-msg {
     display: none;
     position: absolute;
-    width: 16rem;
-    left: calc(50% - 8rem);
+    // centred on the field rather than offset from it, so that a box the viewport forces
+    // to be narrower still sits under its own field instead of drifting to the left
+    width: css-min(16rem, 90vw);
+    left: 50%;
+    transform: translateX(-50%);
     top: calc(100% + 0.25rem);
     z-index: 1;
     white-space: pre-wrap;
@@ -46,7 +49,9 @@
     }
   }
 
-  &.invalid:hover {
+  // A finger produces no :hover, so on a phone the reason a field went red - and Start
+  // with it - could not be read at all. A tap produces focus, which is what says it here.
+  &.invalid:hover, &.invalid:focus-within {
     .__input-msg {
       display: unset;
     }
