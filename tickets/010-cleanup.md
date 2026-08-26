@@ -65,6 +65,12 @@ záporný a sada zelená beze změny testů (kromě těch, které testovaly smaz
       ticketu 008** — bez testů nad repasáží je to slepý refaktor.
 - [ ] Inicializátory `useState`, které staví objekt při každém renderu, jsou líné
       (`useState(() => ...)`). Na běžících stopkách jde o ~22 zbytečných konstrukcí za sekundu.
+- [ ] `isPaused()` na všech třech třídách v `logic/timing/` a `isRunning()` na
+      `PausableTimeout` i `PausableInterval` jsou pryč, nebo je někdo volá. V celém `src/`
+      je jediné použití `clock.isRunning()` na `PausableStopwatch`
+      (`GroupStopwatchScreen.tsx:166`) — zbytek je mrtvé API, které navíc na
+      `PausableTimeout` **lže** (vypršelý timeout se hlásí jako běžící, viz ticket 011).
+      Přidáno z review ticketu 008.
 - [ ] `isValidModalWindowType` testuje řetězec, který v typu existuje — dnes je tam
       `'FIGHT_RESULT_MODAL'` proti typu `'FIGHT_RESULT'`, takže tvrdí opak pravdy
       v obou směrech. Nebo celý validátor pryč, protože se nikdy nespustí.
