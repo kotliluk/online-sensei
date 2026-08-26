@@ -27,6 +27,21 @@ soupeře a vrátí `null`, takže `updateRepechageTree` vrátí `null` taky. Dia
 že resetuje něco, co neexistuje — a to je přesně to učení lidí proklikávat dialogy, proti
 kterému je ta funkce napsaná.
 
+### 2026-08-26 (později)
+
+Review ticketu (`tests`) našlo vedle toho ještě jednu věc: **`t.textRepechage` je
+nedosažitelná větev.** `needsConfirmationToReopen` vrací pro repasážní zápas vždycky
+`false`, protože repasáž není v hlavním stromě a `findParentFightFor` nad ní nic nenajde —
+takže se dialog u repasáže neukáže nikdy. Uživatel rozhodl:
+
+„v rámci PR 26 udělej rovnou fix textRepechage - je to díra, mělo by se to ptát také,
+pokud se má znovu otevřít zápas repasáže, na který se už navázalo dalším kolem"
+
+Repasážní linka **je pavouk sám o sobě** — od šestnácti závodníků výš má dva zápasy nad
+sebou a vítěz toho spodního postupuje do horního. Reopening spodního zápasu tedy může
+osiřet výsledek nad ním úplně stejně jako v hlavním stromě. Rozsah ticketu se o to
+rozšiřuje.
+
 ## B — Zadání
 
 **Problém:** Otázka před znovuotevřením zápasu má smysl jen tam, kde je co ztratit. Ve
@@ -54,8 +69,12 @@ zůstává, jak je.
       Text je ten obecný, ne ten o resetu repasáže.
 - [x] V **osmičlenném** pavouku se otevření semifinále ptá dál a text říká, že repasáž
       bude resetována — protože tam opravdu bude.
-- [x] Reopening repasážního zápasu i běžného zápasu s dohraným následníkem se chová
-      jako dosud.
+- [x] Reopening běžného zápasu s dohraným následníkem se chová jako dosud.
+- [x] **Reopening repasážního zápasu, na který už navázalo další kolo té linky, se ptá** —
+      a dialog ukáže text o repasáži. Dnes se neptá nikdy, takže ten text nikdo nevidí.
+      Zápas na vrcholu linky se dál neptá: nad ním sedí jen uzel držící linky pohromadě.
+      _(Doplněno 2026-08-26 po rozhodnutí uživatele — původní znění bylo „chová se jako
+      dosud".)_
 
 **Technicky** (malá dráha, `C` se nepíše):
 
@@ -72,6 +91,9 @@ zůstává, jak je.
   `src/types/tests/tournament.test.ts` — čtyřčlenný pavouk před finále i po něm,
   osmičlenný s repasáží. Pavouky se tam píšou ručně, protože uuid modul je v tom souboru
   namockovaný na konstantu.
+- Repasážní zápas hledá rodiče **v repasážním stromě** a **bez ořezu hloubky**
+  (`findParentFightFor(uuid, repechage)`), protože každý zápas v lince nese `depth === 0`.
+  Rozeznává ho nová `isRepechageFight`.
 - **Čím to může selhat na zařízení:** ničím novým — mění se, jestli se ukáže modál, ne jak.
   Žádné nové API, žádný nový text, žádný layout.
 
@@ -121,15 +143,16 @@ pavouků 5–7 lidí, kde jedna půlka linku nepostaví.
 - [minor] `ReopenTreeFightModal.test.tsx` · `?? ''` v `body()` dělalo negativní asserty
   vakuově pravdivé · **✅ opraveno** (chybějící `.body` teď test shodí)
 
-**Zvážit — nechal jsem na tobě**
+- [major] `types/tournament.ts` · **`t.textRepechage` byla nedosažitelná větev.**
+  `needsConfirmationToReopen` vracelo pro repasážní zápas vždy `false`, protože ten
+  v hlavním stromě není a `findParentFightFor` nad ním nic nenajde — dialog se u repasáže
+  neukázal nikdy. Uživatel to posoudil jako díru a rozhodl opravit rovnou: repasážní linka
+  je pavouk sám o sobě, takže reopening jejího spodního zápasu může osiřet výsledek nad ním
+  úplně stejně jako v hlavním stromě → repasážní zápas hledá rodiče **v repasážním stromě**
+  a bez ořezu hloubky (každý zápas v lince nese `depth === 0`) · **✅ opraveno**, rozsah
+  ticketu se o to rozšířil
 
-- **`t.textRepechage` je nedosažitelná větev.** `needsConfirmationToReopen` vrací pro
-  repasážní zápas vždy `false`, protože ten v hlavním stromě není a `findParentFightFor`
-  nad ním nic nenajde. Dialog se tedy u repasáže nikdy neukáže a ten text nikdo neuvidí.
-  Otázka je, jestli to je záměr (repasáž je poslední zápas své linie, není co ztratit) nebo
-  díra (zápas pod kořenem linky vítěze posílá nahoru, takže **je** co ztratit). Preexistující,
-  mimo diff — akceptační kritérium „repasážní zápas se chová jako dosud" je tím splněné,
-  a je to teď řečeno nahlas v testu.
+**Zvážit — nechal jsem na tobě**
 - **`isSemifinal` ve stráži `resetsRepechage` je ekvivalentní mutant** — odebrání projde
   celou sadou. Oba revieweři to nezávisle potvrdili a `correctness` k tomu dal důvod, proč
   to tam přesto nechat: kdyby někdo předal podstrom zakořeněný v semifinále, `repechageLineOf`
@@ -150,10 +173,14 @@ nedívala na repasáž.
 | 1 | Čtyřčlenný pavouk: semifinále bez dialogu, dokud není dohrané finále | ✅ | `resetsRepechage` + `openFightAction` v `types/tournament.ts` · `types/tests/` a `tournamentScreen/tests/TreeTournamentScreen.test.tsx` |
 | 2 | Po dohraném finále se ptá, a to obecným textem | ✅ | `ReopenTreeFightModal.tsx:47` · `tests/ReopenTreeFightModal.test.tsx` |
 | 3 | Osmičlenný pavouk se ptá dál, textem o resetu repasáže | ✅ | tamtéž · oba testové soubory |
-| 4 | Repasážní zápas i zápas s dohraným následníkem beze změny | ✅ | `types/tests/tournament.test.ts` — a u repasáže i s poznámkou, **proč** je to triviálně splněné |
+| 4 | Zápas s dohraným následníkem beze změny | ✅ | `types/tests/tournament.test.ts` |
+| 5 | Repasážní zápas, na který navázalo další kolo linky, se ptá | ✅ | `isRepechageFight` + větev v `needsConfirmationToReopen` · všechny tři testové soubory, obě linky přes `test.each` |
 
 **Odchylky od zadání**
 
+- **Rozsah se rozšířil o repasáž.** Zadání říkalo „repasážní zápas se chová jako dosud";
+  review ukázalo, že „jako dosud" znamená „neptá se nikdy", a uživatel to posoudil jako
+  díru. Kritérium přepsané, `A` doplněné o datovaný záznam.
 - **Přibylo vytažení `openFightAction`**, které v zadání nebylo. Vyžádalo si to review:
   bez něj bylo rozhodnutí zavřené v komponentě, kterou `react-d3-tree` v jsdomu nedovolí
   vykreslit, takže tři mutace v něm procházely zeleně.
@@ -182,8 +209,11 @@ nedívala na repasáž.
   warning **míň** než `tournament-tests`, protože `handleClick` má teď kompletní deps.
 - **Mutačně:** devět mutací pokrývajících obě obrazovky i obě čisté funkce, všechny
   zčervenaly. Pouštěno v kopii repa mimo pracovní strom, verdikt z návratového kódu.
-- **Na telefonu neproběhlo.** Nemění se žádné API ani layout, jen jestli se modál ukáže,
-  takže se nabízí jediná ruční zkouška: rozjet turnaj pro **čtyři** lidi, odehrát semifinále
-  a kliknout na něj znovu — má se rovnou otevřít časomíra, bez otázky. Pak totéž s **osmi**,
-  kde se otázka o repasáži ukázat má.
+- **Na telefonu neproběhlo.** Nemění se žádné API ani layout, jen jestli se modál ukáže.
+  Nabízí se trojí ruční zkouška:
+  1. turnaj pro **čtyři** lidi, odehrát semifinále a kliknout na něj znovu — má se rovnou
+     otevřít časomíra, bez otázky;
+  2. totéž s **osmi**, kde se otázka o resetu repasáže ukázat má;
+  3. turnaj pro **šestnáct**, dohrát spodní zápas repasážní linky i ten nad ním, a kliknout
+     na ten spodní — teď se má poprvé ukázat text o repasáži, který dosud nikdo neviděl.
 

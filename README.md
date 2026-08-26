@@ -173,6 +173,14 @@ in repechage
 - reopening a semifinal resets the dependent half of repechage so that
 all repechage results in the half are lost
 
+Reopening a finished fight asks for confirmation only where something is at
+stake: the fight above it in the bracket has already been played, or - for a
+semifinal - a repechage line has been built out of its result and would be
+thrown away. A repechage line is a bracket in its own right, so a fight in one
+is asked about by the same rule as any other. In a tournament of four there is
+nobody to bring back, no repechage is built, and a semifinal reopens without a
+question until the final has been played.
+
 ### Group tournament
 
 It is a competition type with a group of competitors and fights
