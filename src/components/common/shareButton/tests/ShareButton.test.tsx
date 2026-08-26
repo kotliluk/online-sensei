@@ -87,4 +87,24 @@ describe('ShareButton', () => {
       expect(() => press()).not.toThrow()
     })
   })
+  /**
+   * The other way it fails, and the more likely one: the clipboard is there, the call is
+   * made, and the promise comes back rejected - a denied permission prompt, or Safari
+   * deciding the click was too long ago to count as a gesture. Nothing throws, so only the
+   * `.catch` stands between that and a button which says it copied a link it never copied.
+   */
+  test('says it failed when the clipboard turns the link down', async () => {
+    // arrange
+    const restore = setClipboard({ writeText: () => Promise.reject(new Error('NotAllowedError')) })
+    try {
+      renderButton()
+      // act
+      press()
+      await act(() => Promise.resolve())
+      // assert
+      expect(message()).toBe(t().shareFailed)
+    } finally {
+      restore()
+    }
+  })
 })

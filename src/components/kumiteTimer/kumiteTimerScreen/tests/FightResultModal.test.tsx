@@ -31,13 +31,15 @@ const offered = (): string => (document.querySelector('select') as HTMLSelectEle
  * `defaultWinner` itself is covered in the tests of the tournament types; what is checked
  * here is that the dialog asks it at all.
  */
+type SenchuCase = { name: string, senchu: Senchu, expected: string }
+
 describe('FightResultModal - what it offers', () => {
   const drawn = { redPoints: 2, bluePoints: 2 }
 
   test.each([
     { name: 'senchu for aka', senchu: 'RED', expected: 'RED' },
     { name: 'senchu for ao', senchu: 'BLUE', expected: 'BLUE' },
-  ] as { name: string, senchu: Senchu, expected: string }[])('offers the fighter who took $name', ({ senchu, expected }) => {
+  ] as SenchuCase[])('offers the fighter who took $name', ({ senchu, expected }) => {
     // arrange + act
     openFor('GROUP', { ...drawn, senchu })
     // assert
