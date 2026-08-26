@@ -1,8 +1,8 @@
 import { vi } from 'vitest'
 import {
   Competitor, createTournamentTree, Fight, FightResult, groupRowStats, switchResultSides,
-  defaultWinner, isValidFight, needsConfirmationToReopen, TournamentTreeNode, updateGroupTable,
-  updateRepechageTree, updateTournamentTree,
+  defaultWinner, isValidFight, needsConfirmationToReopen, resetsRepechage, TournamentTreeNode,
+  updateGroupTable, updateRepechageTree, updateTournamentTree,
 } from '../tournament'
 import { FightLogEntry } from '../fightLog'
 
@@ -390,6 +390,15 @@ const node = (f: Fight, children: TournamentTreeNode[] = []): TournamentTreeNode
   children,
 })
 
+/** Four competitors: the semifinals are the first fights there are. */
+const bracketOfFour = (): TournamentTreeNode => node(
+  mainFight('', '', 'final', 0),
+  [
+    node(mainFight('A', 'B', 'semi1', 1)),
+    node(mainFight('C', 'D', 'semi2', 1)),
+  ],
+)
+
 /**
  * Sixteen competitors, three rounds behind them: A beat P, then X, then B in the semifinal.
  * A repechage line only recurses from here up - with eight it is a single fight, so the
@@ -579,21 +588,38 @@ describe('needsConfirmationToReopen', () => {
     // arrange - there is nothing after it to go wrong
     const tree = bracketOfEight()
     // act + assert
-    expect(needsConfirmationToReopen(fightIn(tree, 'final'), tree)).toBe(false)
+    expect(needsConfirmationToReopen(fightIn(tree, 'final'), tree, null)).toBe(false)
   })
 
   /**
-   * A semifinal always asks, because the repechage is built out of the result of one. It
-   * asks in a bracket of four as well, where the test above shows there is no repechage to
-   * build - and the dialog there offers to reset one that does not exist. Left as it is:
-   * this ticket writes tests, and narrowing the question is a change to the fight the
-   * referee is looking at.
+   * A semifinal asks because reopening it throws the repechage away and builds a new one.
+   * Where there is no repechage - a bracket of four, where the semifinal winner beat nobody
+   * on the way - there is nothing to throw away, and the question is one people learn to
+   * click through.
    */
-  test('asks about a semifinal, whatever it does to the repechage', () => {
+  test('asks about a semifinal whose repechage would be reset', () => {
     // arrange
     const tree = bracketOfEight()
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
     // act + assert
-    expect(needsConfirmationToReopen(fightIn(tree, 'semi1'), tree)).toBe(true)
+    expect(needsConfirmationToReopen(fightIn(tree, 'semi1'), tree, repechage)).toBe(true)
+  })
+
+  test('says nothing about a semifinal with no repechage behind it', () => {
+    // arrange - four competitors, and the final not played yet
+    const tree = bracketOfFour()
+    // act + assert
+    expect(needsConfirmationToReopen(fightIn(tree, 'semi1'), tree, null)).toBe(false)
+  })
+
+  test('asks about a semifinal with no repechage once the final has been played', () => {
+    // arrange - the result of the final is about to belong to somebody who may not reach it
+    const tree = bracketOfFour()
+    const played = updateTournamentTree(tree, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
+    const decided = updateTournamentTree(played, resultOf(fightIn(played, 'semi2'), 5, 0)) as TournamentTreeNode
+    const withFinal = updateTournamentTree(decided, resultOf(fightIn(decided, 'final'), 3, 1)) as TournamentTreeNode
+    // act + assert
+    expect(needsConfirmationToReopen(fightIn(withFinal, 'semi1'), withFinal, null)).toBe(true)
   })
 
   test('asks about a fight whose winner has already fought again', () => {
@@ -601,14 +627,14 @@ describe('needsConfirmationToReopen', () => {
     const tree = bracketOfEight()
     const decided = updateTournamentTree(tree, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
     // act + assert
-    expect(needsConfirmationToReopen(fightIn(decided, 'q1'), decided)).toBe(true)
+    expect(needsConfirmationToReopen(fightIn(decided, 'q1'), decided, null)).toBe(true)
   })
 
   test('says nothing about a fight whose winner has not fought again yet', () => {
     // arrange
     const tree = bracketOfEight()
     // act + assert
-    expect(needsConfirmationToReopen(fightIn(tree, 'q1'), tree)).toBe(false)
+    expect(needsConfirmationToReopen(fightIn(tree, 'q1'), tree, null)).toBe(false)
   })
 })
 
@@ -674,5 +700,58 @@ describe('isValidFight', () => {
   ])('turns down $name', ({ value }) => {
     // act + assert
     expect(isValidFight(value)).toBe(false)
+  })
+})
+
+/**
+ * What the question before reopening a fight is actually about, and what the dialog says
+ * out loud. Reopening a semifinal builds its repechage line again from the new result, so
+ * whatever was played in the old one is gone - but only where there was a line at all.
+ */
+describe('resetsRepechage', () => {
+  const eightWithRepechage = (): [TournamentTreeNode, TournamentTreeNode] => {
+    const tree = bracketOfEight()
+    const first = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    const both = updateRepechageTree(tree, first, resultOf(fightIn(tree, 'semi2'), 5, 0))
+    return [tree, both as TournamentTreeNode]
+  }
+
+  test('is true for a semifinal with a line of its own', () => {
+    // arrange
+    const [tree, repechage] = eightWithRepechage()
+    // act + assert
+    expect(resetsRepechage(fightIn(tree, 'semi1'), tree, repechage)).toBe(true)
+  })
+
+  test('is true for the other semifinal as well', () => {
+    // arrange
+    const [tree, repechage] = eightWithRepechage()
+    // act + assert
+    expect(resetsRepechage(fightIn(tree, 'semi2'), tree, repechage)).toBe(true)
+  })
+
+  test('is false for a semifinal whose half of the repechage was never built', () => {
+    // arrange - only the first semifinal has been decided
+    const tree = bracketOfEight()
+    const first = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0))
+    // act + assert
+    expect(resetsRepechage(fightIn(tree, 'semi2'), tree, first)).toBe(false)
+  })
+
+  test('is false where there is no repechage at all', () => {
+    // arrange
+    const tree = bracketOfFour()
+    // act + assert
+    expect(resetsRepechage(fightIn(tree, 'semi1'), tree, null)).toBe(false)
+  })
+
+  test.each([
+    { name: 'the final', uuid: 'final' },
+    { name: 'a quarterfinal', uuid: 'q1' },
+  ])('is false for $name, which builds no line', ({ uuid }) => {
+    // arrange
+    const [tree, repechage] = eightWithRepechage()
+    // act + assert
+    expect(resetsRepechage(fightIn(tree, uuid), tree, repechage)).toBe(false)
   })
 })

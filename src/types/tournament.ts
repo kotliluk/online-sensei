@@ -368,13 +368,51 @@ export const updateTournamentTree = (
   return newTree(fight, children)
 }
 
-export const needsConfirmationToReopen = (fight: Fight, tree: TournamentTreeNode | null): boolean => {
+/** Which repechage line a semifinal feeds, or null where the fight feeds none. */
+const repechageLineOf = (fight: Fight, tree: TournamentTreeNode): FightType | null => {
+  if (tree.children[0]?.attributes.fight.uuid === fight.uuid) {
+    return 'REPECHAGE_1'
+  }
+  if (tree.children[1]?.attributes.fight.uuid === fight.uuid) {
+    return 'REPECHAGE_2'
+  }
+  return null
+}
+
+/**
+ * Whether reopening this fight throws a repechage line away.
+ *
+ * Reopening a semifinal builds its line again out of the new result, so whatever was played
+ * in the old one is gone - which is what the app asks about before letting it happen. Where
+ * there is no line, there is nothing to ask: a bracket of four gives its semifinalists
+ * nobody to bring back, and a question with nothing behind it is the kind people learn to
+ * click through on their way to the ones that matter.
+ */
+export const resetsRepechage = (
+  fight: Fight,
+  tree: TournamentTreeNode | null,
+  repechage: TournamentTreeNode | null,
+): boolean => {
+  if (!isSemifinal(fight) || tree === null || repechage === null) {
+    return false
+  }
+
+  const line = repechageLineOf(fight, tree)
+
+  return line !== null && repechage.children.some((c) => c.attributes.fight.type === line)
+}
+
+export const needsConfirmationToReopen = (
+  fight: Fight,
+  tree: TournamentTreeNode | null,
+  repechage: TournamentTreeNode | null,
+): boolean => {
   // final is the last fight and so it can be reopened
   if (isFinal(fight)) {
     return false
   }
-  // semifinal influences repechage fights and it needs confirmation
-  if (isSemifinal(fight)) {
+  // a semifinal whose repechage line would be thrown away needs confirmation
+  if (resetsRepechage(fight, tree, repechage)) {
     return true
   }
   const parentFight = findParentFightFor(fight.uuid, tree, fight.depth - 1)
