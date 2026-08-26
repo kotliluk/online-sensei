@@ -62,7 +62,7 @@ const open = (tree: TournamentTreeNode, repechage: TournamentTreeNode | null, fi
   )
 }
 
-const t = (): { text: string, textSemifinal: string } => {
+const t = (): { text: string, textSemifinal: string, textRepechage: string } => {
   return selectTranslation(store.getState()).kumiteTimer.setUpScreen.tournament.reopenTreeFightModal
 }
 
@@ -83,6 +83,12 @@ const saysSemifinal = (): void => {
 const saysGeneral = (): void => {
   expect(body()).toContain(t().text)
   expect(body()).not.toContain(t().textSemifinal)
+  expect(body()).not.toContain(t().textRepechage)
+}
+
+const saysRepechage = (): void => {
+  expect(body()).toContain(t().textRepechage)
+  expect(body()).not.toContain(t().text)
 }
 
 /**
@@ -134,6 +140,28 @@ describe('ReopenTreeFightModal', () => {
     // assert
     saysGeneral()
   })
+
+  test.each(['REPECHAGE_1', 'REPECHAGE_2'] as FightType[])(
+    'speaks about the repechage line for a %s fight',
+    (type) => {
+      // arrange - the line a bracket of sixteen builds: two fights, one above the other
+      const tree = bracket(16)
+      const bottom = newFight('C7', 'C7', 'C5', 'C5', type)
+      const line: TournamentTreeNode = {
+        name: '',
+        attributes: { fight: newFight('', '', '', '', 'REPECHAGE_ROOT') },
+        children: [{
+          name: '',
+          attributes: { fight: { ...newFight('C5', 'C5', 'C2', 'C2', type), winner: 'RED' } },
+          children: [{ name: '', attributes: { fight: bottom }, children: [] }],
+        }],
+      }
+      // act
+      open(tree, line, bottom)
+      // assert
+      saysRepechage()
+    },
+  )
 
   test('does not fall over with no fight selected', () => {
     // arrange - the fight and the modal are cleared in one handler, so this is a moment

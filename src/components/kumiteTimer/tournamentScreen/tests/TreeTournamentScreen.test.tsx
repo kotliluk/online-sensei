@@ -57,6 +57,17 @@ const roster = (count: number): Competitor[] => {
   return Array.from({ length: count }, (_, i) => newCompetitor(`C${i + 1}`))
 }
 
+/** A line of two, the upper one already decided - what a bracket of sixteen leaves. */
+const stackedLine = (bottom: Fight): TournamentTreeNode => ({
+  name: '',
+  attributes: { fight: newFight('', '', '', '', 'REPECHAGE_ROOT') },
+  children: [{
+    name: '',
+    attributes: { fight: { ...newFight('C5', 'C5', 'C2', 'C2', 'REPECHAGE_1'), winner: 'RED' } },
+    children: [{ name: '', attributes: { fight: bottom }, children: [] }],
+  }],
+})
+
 const repechageWith = (...lines: FightType[]): TournamentTreeNode => ({
   name: '',
   attributes: { fight: newFight('', '', '', '', 'REPECHAGE_ROOT') },
@@ -164,6 +175,16 @@ describe('TreeTournamentScreen - pressing a fight', () => {
     // assert
     expect(modal()).toBe('NONE')
     expect(where()).toBe('/kumite-timer')
+  })
+
+  test('asks before reopening a repechage fight the line has built on', () => {
+    // arrange - the lower fight of a line whose upper fight is already decided
+    const bottom = { ...newFight('C7', 'C7', 'C5', 'C5', 'REPECHAGE_1'), winner: 'BLUE' as const }
+    renderBracket(8, stackedLine(bottom))
+    // act
+    clickFight(bottom)
+    // assert - the repechage is a bracket of its own, and this fight has one above it
+    expect(modal()).toBe('REOPEN_TREE_FIGHT')
   })
 
   test('does nothing for a fight that is half empty', () => {

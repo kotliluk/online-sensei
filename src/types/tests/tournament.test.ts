@@ -1,8 +1,9 @@
 import { vi } from 'vitest'
 import {
   Competitor, createTournamentTree, Fight, FightResult, groupRowStats, switchResultSides,
-  defaultWinner, isValidFight, needsConfirmationToReopen, openFightAction, resetsRepechage,
-  TournamentTreeNode, updateGroupTable, updateRepechageTree, updateTournamentTree,
+  defaultWinner, FightType, FightWinner, isValidFight, needsConfirmationToReopen,
+  openFightAction, resetsRepechage, TournamentTreeNode, updateGroupTable, updateRepechageTree,
+  updateTournamentTree,
 } from '../tournament'
 import { FightLogEntry } from '../fightLog'
 
@@ -637,13 +638,58 @@ describe('needsConfirmationToReopen', () => {
   })
 
   /**
-   * A repechage fight is not in the main tree, so `findParentFightFor` finds nothing above
-   * it and it never asks. That is right for the fight at the top of a line, and it also
-   * means the dialog's repechage wording is never reached - noted in the ticket, left as
-   * it is here.
+   * A repechage line is a bracket of its own, so a fight in it is asked about by the same
+   * rule as one in the main tree - has anything been built on it? Looking for that in the
+   * main tree finds nothing, because the line is not there.
    */
-  test('says nothing about a repechage fight', () => {
-    // arrange
+  const stackedLine = (
+    bottomWinner?: FightWinner,
+    topWinner?: FightWinner,
+    type: FightType = 'REPECHAGE_1',
+  ): TournamentTreeNode => node(
+    { ...mainFight('', '', 'rep-root', 0), type: 'REPECHAGE_ROOT' },
+    [node(
+      { ...repechageFight('X', 'B', 'line-top'), type, winner: topWinner },
+      [node({ ...repechageFight('P', 'X', 'line-bottom'), type, winner: bottomWinner })],
+    )],
+  )
+
+  const lineFight = (line: TournamentTreeNode, uuid: string): Fight => {
+    const top = line.children[0]
+    return top.attributes.fight.uuid === uuid ? top.attributes.fight : top.children[0].attributes.fight
+  }
+
+  // both lines, because they are two branches everywhere they are handled
+  test.each(['REPECHAGE_1', 'REPECHAGE_2'] as FightType[])(
+    'asks about a %s fight the line has already built on',
+    (type) => {
+      // arrange - both fights of the line played, so the one above holds a result that came
+      // out of the one being reopened
+      const tree = bracketOfSixteen()
+      const line = stackedLine('BLUE', 'RED', type)
+      // act + assert
+      expect(needsConfirmationToReopen(lineFight(line, 'line-bottom'), tree, line)).toBe(true)
+    },
+  )
+
+  test('says nothing about a repechage fight nothing has been built on yet', () => {
+    // arrange - the fight above it is still open, so reopening this one costs nothing
+    const tree = bracketOfSixteen()
+    const line = stackedLine('BLUE', undefined)
+    // act + assert
+    expect(needsConfirmationToReopen(lineFight(line, 'line-bottom'), tree, line)).toBe(false)
+  })
+
+  test('says nothing about the fight at the top of a repechage line', () => {
+    // arrange - above it sits the node that holds the lines together, which nobody plays
+    const tree = bracketOfSixteen()
+    const line = stackedLine('BLUE', 'RED')
+    // act + assert
+    expect(needsConfirmationToReopen(lineFight(line, 'line-top'), tree, line)).toBe(false)
+  })
+
+  test('says nothing about a line that is a single fight', () => {
+    // arrange - a bracket of eight brings one person back, so there is nothing under it
     const tree = bracketOfEight()
     const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
     // act + assert
@@ -816,6 +862,22 @@ describe('openFightAction', () => {
     const played = updateTournamentTree(tree, resultOf(fightIn(tree, 'semi1'), 5, 0)) as TournamentTreeNode
     // act + assert
     expect(openFightAction(fightIn(played, 'semi1'), played, repechage)).toBe('ASK')
+  })
+
+  test('asks before reopening a repechage fight the line has built on', () => {
+    // arrange - a line of two, both played; reopening the lower one leaves the upper one
+    // holding a result that came out of it
+    const tree = bracketOfSixteen()
+    const line = node(
+      { ...mainFight('', '', 'rep-root', 0), type: 'REPECHAGE_ROOT' },
+      [node(
+        { ...repechageFight('X', 'B', 'line-top'), winner: 'RED' },
+        [node({ ...repechageFight('P', 'X', 'line-bottom'), winner: 'BLUE' })],
+      )],
+    )
+    const bottom = line.children[0].children[0].attributes.fight
+    // act + assert
+    expect(openFightAction(bottom, tree, line)).toBe('ASK')
   })
 
   test('hands the repechage on rather than deciding without it', () => {
