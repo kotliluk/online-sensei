@@ -19,9 +19,14 @@
       font-size: $text-huge;
       font-weight: bold;
 
-      border: 2px solid $black;
       border-radius: 50%;
       background-color: transparent;
+
+      // an unlit signal is nothing but its outline, and a black outline on the dark
+      // theme's grey is 2.7 : 1 - so in the dark there was nothing to aim at
+      @include themed {
+        border: 2px solid t($primary-text);
+      }
     }
 
     &.boxes-1 {

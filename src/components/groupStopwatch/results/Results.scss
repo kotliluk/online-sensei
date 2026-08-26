@@ -16,7 +16,12 @@
 
   th {
     cursor: pointer;
-    border-bottom: 1px solid $black;
+
+    // the rule under the sortable headings was black on the dark theme's own grey,
+    // which is 2.7 : 1 - not enough to tell a line from the background
+    @include themed {
+      border-bottom: 1px solid t($primary-text);
+    }
   }
 
   .competitor-id {
