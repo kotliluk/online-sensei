@@ -76,9 +76,10 @@ field is focused, so tapping the field says what is wrong with it.
 succession is two competitors finishing, not a request to zoom in, and the same
 goes for the correction buttons and the foul circles.
 
-**Both themes are legible.** Table rules, the outlines of the unlit reaction
-signals and the foul circles take their colour from the theme, rather than being
-black in a dark theme where black is nearly the background.
+**Both themes are legible.** The outlines of the unlit reaction signals, the foul
+circles and the rule under the sortable result headings take their colour from the
+theme, rather than staying black in a dark theme where black is nearly the
+background.
 
 ## Kumite timer
 
