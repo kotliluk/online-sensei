@@ -54,24 +54,19 @@ $fixed-row-height: $cell-size;
     flex-direction: row;
     box-sizing: border-box;
 
-    // Black on the dark theme's own background is a line of 2.7 : 1 - under the 3 : 1
-    // that a border needs to be seen at all, so the whole grid of the group table went
-    // missing there. The text colour is the one value that is legible in both themes.
-    @include themed {
-      border-top: 1px solid t($primary-text);
-      border-left: 1px solid t($primary-text);
-      border-bottom: 1px solid t($primary-text);
-    }
+    border-top: 1px solid $black;
+    border-left: 1px solid $black;
+    border-bottom: 1px solid $black;
 
     .top-names-cell {
       @include center-content();
+      border-right: 1px solid $black;
       box-sizing: border-box;
 
       width: $cell-size;
 
       @include themed {
         background: t($secondary-color);
-        border-right: 1px solid t($primary-text);
       }
     }
   }
@@ -85,23 +80,21 @@ $fixed-row-height: $cell-size;
   overflow-x: scroll;
 
   .left-names-column {
-    @include themed {
-      border-top: 1px solid t($primary-text);
-      border-left: 1px solid t($primary-text);
-      border-right: 1px solid t($primary-text);
-    }
+    border-top: 1px solid $black;
+    border-left: 1px solid $black;
+    border-right: 1px solid $black;
 
     .left-names-cell {
       display: flex;
       flex-direction: row;
       align-items: center;
+      border-bottom: 1px solid $black;
       padding-left: 0.5rem;
 
       height: $cell-size;
 
       @include themed {
         background: t($secondary-color);
-        border-bottom: 1px solid t($primary-text);
       }
     }
   }
@@ -118,46 +111,33 @@ $fixed-row-height: $cell-size;
 .group-table {
   display: flex;
   flex-direction: column;
+  border-top: 1px solid $black;
+  border-left: 1px solid $black;
   box-sizing: border-box;
-
-  @include themed {
-    border-top: 1px solid t($primary-text);
-    border-left: 1px solid t($primary-text);
-  }
 }
 
 .group-table-row {
   display: flex;
   flex-direction: row;
-
-  @include themed {
-    border-left: 1px solid t($primary-text);
-  }
+  border-left: 1px solid $black;
 }
 
 .group-table-cell {
   width: $cell-size;
   height: $cell-size;
+  border-bottom: 1px solid $black;
+  border-right: 1px solid $black;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
 
-  @include themed {
-    border-bottom: 1px solid t($primary-text);
-    border-right: 1px solid t($primary-text);
-  }
-
   &.upper {
     cursor: pointer;
   }
 
-  // a competitor has no fight against themselves: the cell is struck out rather than
-  // empty, and it is filled with the same colour the lines are drawn in
   &.diagonal {
-    @include themed {
-      background: t($primary-text);
-    }
+    background: $black;
   }
 
   &.lower, &.stats-cell {
