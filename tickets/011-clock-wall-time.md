@@ -2,7 +2,7 @@
 id: 011
 slug: clock-wall-time
 title: Hodiny mají měřit uplynulý čas, ne počítat tiky
-status: idea
+status: approved
 branch: clock-wall-time
 ---
 
@@ -45,6 +45,82 @@ uspaná? U kumite zápasu je „dopočítat" pravděpodobně správně (čas na 
 u intervalového tréninku možná taky, ale stojí za to to říct nahlas dřív, než se to
 naimplementuje — může to znamenat, že se uživatel vrátí k obrazovce, kde už série
 skončila.
+
+## B — Zadání
+
+### Co se mění
+
+`PausableInterval` má přestat počítat vlastní callbacky a začít číst `Date.now()`, stejně
+jako to vedle ní dělá `PausableStopwatch`. Callback dostane **kolik celých intervalů
+uplynulo** od minulého tiku: za běžného běhu vždycky `1`, po výpadku (záložka na pozadí,
+zamčený telefon) tolik, kolik jich doopravdy uteklo.
+
+**Rozhodnutí k otevřené otázce z `A`:** čas, který uběhl, když byla appka uspaná, se
+**dopočítá**. Zápas na tatami běžel dál, takže hodiny mají po probuzení ukazovat, kolik
+z něj doopravdy zbývá — ne kolik tiků prohlížeč stihl doručit.
+
+Vedle toho se opraví druhý nález ze sekce Review: `PausableTimeout` po vystřelení nevynuluje
+`timeoutId`, takže vypršelý timeout se tváří, že běží, a `pause()` + `resume()` ho vystřelí
+podruhé.
+
+### Postup
+
+- `PausableInterval`: `setInterval` nahradí řetěz `setTimeout`ů mířících na **absolutní
+  okamžik** dalšího tiku. Z rozdílu `Date.now()` proti němu se spočítá, kolik intervalů
+  uplynulo, a callback se zavolá **jednou s tím počtem** — ne tolikrát, kolik se jich
+  zameškalo.
+- Explicitní příznak `running` místo odvozování stavu z `timeoutId`. Bez něj nejde poznat
+  `pause()` zavolanou **zevnitř** callbacku, což je přesně ta cesta, kterou dnes hodiny
+  po dosažení nuly ožívají (viz komentář v `KumiteTimerScreen.tsx:140`).
+- `KumiteTimerScreen`: `handleTick(elapsedSeconds)`, odečet místo dekrementu, atoshibaraku
+  na **překročení** patnáctky. Narrow fix `phase === 'finished' → clock.pause()` může
+  odejít — po opravě třídy je mrtvý.
+- `IntervalTimerScreen`: odečet s ořezem na nule (bez ořezu by `currTime` skočil pod nulu,
+  efekt na `currTime === 0` by se nechytil a série by se zasekla).
+- `PausableTimeout`: vystřelení vynuluje `timeoutId`; `resume()` se chytá jen toho, co bylo
+  opravdu pauznuté, ne vypršelého timeoutu se zbytkem nula.
+
+### Akceptační kritéria
+
+1. `PausableInterval` odvozuje uplynulý čas z `Date.now()`; po zablokovaném event loopu
+   dožene, co se zameškalo.
+2. Jeden zameškaný úsek = **jedno** zavolání callbacku s počtem intervalů, ne série volání.
+3. `pause()` zavolaná zevnitř callbacku hodiny skutečně zastaví.
+4. Pauzovací aritmetika zůstává: `resume()` dojede rozpracovaný interval, ne celý znovu.
+   Stávající testy v `src/logic/timing/tests/` platí beze změny.
+5. Kumite: po výpadku ukazují hodiny čas odpovídající uplynulému, ne počtu tiků.
+6. Kumite: END zazní a zaloguje se **jednou**, i když se na nulu dojde skokem.
+7. Kumite: atoshibaraku zazní při překročení 15 s (ne jen při přesné rovnosti), a ruční
+   nastavení času dál nezvoní.
+8. Interval timer: čas se dopočítá uvnitř intervalu a na hranici se ořízne na nulu.
+9. Interval timer: `currTime` nikdy neklesne pod nulu.
+10. `PausableTimeout`: po vystřelení `isRunning()` vrací `false` a `pause()` + `resume()`
+    ho nevystřelí podruhé.
+11. Žádný nový `react-hooks` warning; typecheck, lint i testy zelené.
+12. Ověřeno na telefonu se zamčenou obrazovkou — nebo je v `D` napsáno, že to neproběhlo.
+
+### Plán testů
+
+- `pausableInterval.test.ts`: dopočítání přes `Date.now()` posunutý proti fake timerům
+  (přesně ten výpadek, který změřil reviewer v `A`); jedno volání s `N`; `pause()` zevnitř
+  callbacku; stávající pauzovací testy nezměněné.
+- `pausableTimeout.test.ts`: zamčený test „a spent timeout still calls itself running"
+  se překlápí na opravené chování.
+- `KumiteTimerSignals.test.tsx`: skok přes patnáctku, skok na nulu (horn a log jednou),
+  správný čas na displeji po skoku.
+- `IntervalTimerScreen.test.tsx`: skok uvnitř intervalu, ořez na hranici intervalu.
+
+### Předpoklady
+
+- **Zvuk se za spánek nepřehrává zpětně, stav ano.** Atoshibaraku se pouští při překročení
+  patnáctky — tvrzení „zbývá málo" po probuzení pořád platí, a nepustit ho vůbec by
+  znamenalo, že v tom zápase nezazní. Konec zazní i skokem: je to způsob, jakým appka říká
+  „zápas skončil", a tichý druhý konec by byl nová cesta kódem.
+- **Interval timer dopočítává jen uvnitř aktuálního intervalu**, přetečení přes hranici
+  zahazuje. Dopočítat celou sérii znamená přemodelovat stav obrazovky na jednu časovou osu
+  a vyřešit dávku pípnutí za přeskočené hranice — to je vlastní ticket, ne dvacet řádků.
+- **`PausableStopwatch` se v chování nemění**; přepisuje se v ní jen čtení hodin na stejný
+  tvar (`Date.now()`), aby tři třídy vedle sebe nečetly čas dvěma způsoby.
 
 ## Review
 
