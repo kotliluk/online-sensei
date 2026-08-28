@@ -7,16 +7,23 @@ import { Func } from '../../utils/function'
 export class PausableTimeout {
   private callback: Func
   private timeoutTime: number
-  private remainingTime: number
+  /** The moment it is due to fire at, on the wall clock. */
+  private dueAt: number
+  /**
+   * What was left of it when it was paused, and `undefined` when there is nothing paused to
+   * pick up - never armed, or already spent. Firing used to leave the timer id behind
+   * instead, so a spent timeout called itself running and the next resume fired it a second
+   * time: in Reactions, a signal nobody asked for.
+   */
+  private remainingTime: number | undefined
   private timeoutId: ReturnType<typeof setTimeout> | undefined
-  private lastStart: number
 
   constructor (callback: Func, ms: number, start = false) {
     this.callback = callback
     this.timeoutTime = ms
-    this.remainingTime = ms
+    this.dueAt = 0
+    this.remainingTime = undefined
     this.timeoutId = undefined
-    this.lastStart = 0
 
     start && this.restart()
   }
@@ -29,16 +36,13 @@ export class PausableTimeout {
     if (this.timeoutId !== undefined) {
       clearTimeout(this.timeoutId)
       this.timeoutId = undefined
-      const now = new Date().getTime()
-      const elapsed = now - this.lastStart
-      this.remainingTime -= elapsed
+      this.remainingTime = Math.max(0, this.dueAt - Date.now())
     }
   }
 
   resume (): void {
-    if (this.timeoutId === undefined) {
-      this.timeoutId = setTimeout(this.callback, this.remainingTime)
-      this.lastStart = new Date().getTime()
+    if (this.timeoutId === undefined && this.remainingTime !== undefined) {
+      this.arm(this.remainingTime)
     }
   }
 
@@ -55,8 +59,15 @@ export class PausableTimeout {
       clearTimeout(this.timeoutId)
     }
 
-    this.remainingTime = this.timeoutTime
-    this.timeoutId = setTimeout(this.callback, this.timeoutTime)
-    this.lastStart = new Date().getTime()
+    this.arm(this.timeoutTime)
+  }
+
+  private arm (ms: number): void {
+    this.remainingTime = undefined
+    this.dueAt = Date.now() + ms
+    this.timeoutId = setTimeout(() => {
+      this.timeoutId = undefined
+      this.callback()
+    }, ms)
   }
 }
