@@ -545,8 +545,11 @@ describe('updateRepechageTree', () => {
     const secondLine = both.children[1].attributes.fight
     // act
     const updated = updateRepechageTree(tree, both, resultOf(secondLine, 6, 2))
-    // assert
+    // assert - the names and the type, not only the score: every fight in this file shares
+    // one mocked uuid, so a result written into the first line and then filed under the
+    // second would match on score alone
     expect(updated?.children[1].attributes.fight).toMatchObject({
+      type: 'REPECHAGE_2', redName: 'Z', blueName: 'D',
       redPoints: 6, bluePoints: 2, winner: 'RED',
     })
   })
@@ -564,6 +567,20 @@ describe('updateRepechageTree', () => {
     expect(updated?.children[0].attributes.fight).toMatchObject({
       type: 'REPECHAGE_1', redName: 'X', blueName: 'B', winner: undefined,
     })
+  })
+
+  /**
+   * Two competitors is one fight and no children at all. The search for the semifinal a
+   * result came from walks a fixed pair of positions, so it has to cope with a tree that
+   * has neither rather than reaching past the end of the list.
+   */
+  test('has no semifinal to look at in a bracket of two', () => {
+    // arrange - a final with nothing underneath it
+    const tree = node(mainFight('A', 'B', 'final', 0))
+    // act
+    const repechage = updateRepechageTree(tree, null, resultOf(fightIn(tree, 'final'), 5, 0))
+    // assert
+    expect(repechage).toBeNull()
   })
 
   test('has no line to build where the semifinalist beat nobody on the way', () => {
