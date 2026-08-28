@@ -11,7 +11,7 @@ const useValidatedState = <T>(
   validator: (value: T) => boolean,
 ): [T, (newValue: T) => void, boolean] => {
   const [value, setValue] = useState(initialValue)
-  const [isValid, setIsValid] = useState(validator(initialValue))
+  const [isValid, setIsValid] = useState(() => validator(initialValue))
 
   useEffect(() => {
     setIsValid(validator(value))

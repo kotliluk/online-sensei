@@ -48,7 +48,9 @@ export const SetUpScreen = (): JSX.Element => {
     init.competitorsCount,
     VALIDATOR.competitorsCount,
   )
-  const [competitors, setCompetitors] = useState(init.competitors.map((c) => newCompetitorSetup(c.name, c.color)))
+  const [competitors, setCompetitors] = useState(
+    () => init.competitors.map((c) => newCompetitorSetup(c.name, c.color)),
+  )
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
