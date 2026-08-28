@@ -37,7 +37,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   const [currTime, setCurrTime] = useState(0)
   const [actualLeadingTimeUnit, setActualLeadingTimeUnit] = useState<LeadingTimeUnit>('seconds')
   const [phase, setPhase] = useState<PlayPhase>('init')
-  const [clock] = useState<PausableStopwatch>(new PausableStopwatch(emptyFunc, 0))
+  const [clock] = useState<PausableStopwatch>(() => new PausableStopwatch(emptyFunc, 0))
   const [competitors, setCompetitors] = useState<Competitor[]>(
     competitorNames.slice(0, competitorCount).map((c, index) => newCompetitor(index + 1, c.name, c.color)),
   )

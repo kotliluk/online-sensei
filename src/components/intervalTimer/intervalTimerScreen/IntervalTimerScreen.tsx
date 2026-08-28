@@ -43,7 +43,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
 
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(false)
-  const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
+  const [clock] = useState<PausableInterval>(() => new PausableInterval(emptyFunc, 0))
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
