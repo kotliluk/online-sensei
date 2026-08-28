@@ -41,6 +41,25 @@ const wait = (seconds: number): void => {
   }
 }
 
+/**
+ * How far the wall clock has run ahead of the timers that have not been let through yet.
+ * Fake timers move `Date.now()` and the timer queue as one thing, so the gap a phone with
+ * the screen off opens between them has to be made by hand.
+ */
+let skew = 0
+
+/**
+ * The device sleeps and wakes up: the seconds pass with nothing running, and the next timer
+ * the browser gets round to has to account for them. That timer is a second late in fake
+ * time as well, so the interval loses `seconds + 1`.
+ */
+const sleepThrough = (seconds: number): void => {
+  skew += seconds * 1000
+  act(() => {
+    vi.advanceTimersByTime(1000)
+  })
+}
+
 const clock = (): string => document.querySelector('.time')?.textContent ?? ''
 
 const headline = (): string => document.querySelector('p')?.textContent ?? ''
@@ -48,9 +67,13 @@ const headline = (): string => document.querySelector('p')?.textContent ?? ''
 describe('IntervalTimerScreen', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    skew = 0
+    const faked = Date.now.bind(Date)
+    vi.spyOn(Date, 'now').mockImplementation(() => faked() + skew)
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.useRealTimers()
   })
 
@@ -104,5 +127,30 @@ describe('IntervalTimerScreen', () => {
     wait(3)
     // assert
     expect(headline()).toMatch(/2\/2/)
+  })
+
+  /**
+   * The training does not stop because the phone did, so the seconds that went by with the
+   * timers frozen come off the interval that was running. What is deliberately not done is
+   * carrying the leftover into the intervals after it: catching up a whole series means a
+   * burst of beeps for boundaries nobody was there for, and a different shape of state -
+   * see the assumptions in ticket 011.
+   */
+  test('catches up the seconds slept through inside the interval', () => {
+    // arrange - ten seconds of work
+    startSeries(1, 10, 5)
+    // act - four seconds with nothing running
+    sleepThrough(4)
+    // assert - five of the ten are gone
+    expect(clock()).toBe('5')
+  })
+
+  test('stops at the end of the interval rather than running the countdown past it', () => {
+    // arrange - three seconds of work, then five of rest
+    startSeries(1, 3, 5)
+    // act - a minute with nothing running, far past the end of the work interval
+    sleepThrough(60)
+    // assert - the rest starts whole, and the leftover is dropped rather than carried
+    expect(clock()).toBe('5')
   })
 })

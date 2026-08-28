@@ -92,13 +92,6 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     timeRef.current = time
   }, [time])
 
-  /** The same, for the tick - which has to know whether the fight is already over. */
-  const phaseRef = useRef(phase)
-
-  useEffect(() => {
-    phaseRef.current = phase
-  }, [phase])
-
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -119,7 +112,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   }, [setTime, duration, logEvent])
 
   /**
-   * What one second of the clock running does.
+   * What the seconds of the clock running do. Usually one of them; more when the browser
+   * was away - a locked phone, a tab in the background - and the clock is telling the fight
+   * how much wall time it owes.
    *
    * This lives on the tick rather than on the value of `time`, because those are not the
    * same thing: the referee can set the time by hand, and an effect watching the value
@@ -131,24 +126,14 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
    * Giving time back after the end stays possible and stays silent; the horn belongs to the
    * clock reaching zero on its own.
    */
-  const handleTick = useCallback(() => {
-    // A tick arriving after the end is not a second of the fight. Resuming a paused clock
-    // fires the next tick from a timeout that puts the interval back up as soon as the
-    // callback returns, so the pause asked for here on reaching zero is undone the moment
-    // it is asked for - and a second later the horn sounds again, with a second end in the
-    // log to match. Stopping the resurrected clock here is the narrow version of that fix;
-    // the wide one belongs to `PausableInterval` and to the ticket that rewrites it.
-    if (phaseRef.current === 'finished') {
-      clock.pause()
-      return
-    }
-
+  const handleTick = useCallback((elapsedSeconds: number) => {
     // The clock starts from whatever the time says, zero included - the referee can wind it
     // down to nothing by hand and then press start. Comparing the new reading for equality
     // with zero lets that case straight past the end, and nothing downstream stops it: the
     // display counts on into negative time and the only way out is a reset, which takes the
     // score with it.
-    const next = Math.max(0, timeRef.current - 1)
+    const previous = timeRef.current
+    const next = Math.max(0, previous - elapsedSeconds)
     setTime(next)
 
     if (next === 0) {
@@ -157,7 +142,11 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
       setIsPaused(true)
       clock.pause()
       logEvent({ kind: 'END' }, 0)
-    } else if (next === 15) {
+    } else if (previous > 15 && next <= 15) {
+      // Atoshibaraku is the call for a fight with under fifteen seconds left, not for the
+      // instant the clock reads fifteen. Time caught up after a sleep can step over that
+      // reading without landing on it, and testing for equality would mean the round it
+      // stepped over never hears the call at all.
       playAtoshibaraku()
     }
   }, [setTime, setPhase, setIsPaused, clock, logEvent])
