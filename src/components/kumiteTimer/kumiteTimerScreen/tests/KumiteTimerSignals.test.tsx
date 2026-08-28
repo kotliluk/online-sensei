@@ -65,6 +65,25 @@ const tick = (seconds: number): void => {
 }
 
 /**
+ * How far the wall clock has run ahead of the timers that have not been let through yet.
+ * Fake timers move `Date.now()` and the timer queue as one thing, so the gap a phone with
+ * the screen off opens between them has to be made by hand.
+ */
+let skew = 0
+
+/**
+ * The device sleeps for a while and then wakes up: the seconds pass with nothing running,
+ * and the next timer the browser gets round to is the one that has to account for them.
+ * That timer is a second late in fake time as well, so the fight loses `seconds + 1`.
+ */
+const sleepThrough = (seconds: number): void => {
+  skew += seconds * 1000
+  act(() => {
+    vi.advanceTimersByTime(1000)
+  })
+}
+
+/**
  * Winding the clock back after the end is a real thing to do at a table - the referee
  * gives back a few seconds. What must not happen is the horn treating that as the fight
  * ending all over again.
@@ -73,9 +92,13 @@ describe('KumiteTimerScreen - signals belong to the clock', () => {
   beforeEach(() => {
     vi.useFakeTimers()
     signals.length = 0
+    skew = 0
+    const faked = Date.now.bind(Date)
+    vi.spyOn(Date, 'now').mockImplementation(() => faked() + skew)
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.useRealTimers()
   })
 
@@ -193,5 +216,71 @@ describe('KumiteTimerScreen - signals belong to the clock', () => {
     press(/^Fight log/)
     const ends = screen.queryAllByRole('listitem').filter((li) => /end/i.test(li.textContent ?? ''))
     expect(ends).toHaveLength(1)
+  })
+
+  /**
+   * The fight on the tatami does not stop because the phone did. Whatever the browser did
+   * with the timers it owed - a locked screen, a tab in the background - the clock has to
+   * show what is left of the round, not how many callbacks it managed to deliver.
+   */
+  test('the clock catches up the seconds the device slept through', () => {
+    // arrange - two minutes, one second of it run
+    renderScreen(120)
+    press(/start/i)
+    tick(1)
+    // act - thirty seconds with nothing running
+    sleepThrough(30)
+    // assert - thirty two seconds of the fight are gone
+    expect(clockText()).toBe('1:28')
+  })
+
+  test('a fight that runs out while the device sleeps sounds the horn once', () => {
+    // arrange - ten seconds left
+    renderScreen(10)
+    press(/start/i)
+    // act - a minute with nothing running
+    sleepThrough(60)
+    // assert
+    expect(signals).toEqual(['END'])
+    expect(clockText()).toBe('0:00')
+  })
+
+  test('the log records one end for a fight that ran out while the device slept', () => {
+    // arrange
+    renderScreen(10)
+    press(/start/i)
+    // act
+    sleepThrough(60)
+    // assert
+    press(/^Fight log/)
+    const ends = screen.queryAllByRole('listitem').filter((li) => /end/i.test(li.textContent ?? ''))
+    expect(ends).toHaveLength(1)
+  })
+
+  /**
+   * Atoshibaraku is called while under fifteen seconds are left, not at the instant the
+   * clock reads fifteen. A sleep that carries the fight from twenty to eleven has to call
+   * it late rather than not at all - testing the reading for equality means the round it
+   * skipped over never hears it.
+   */
+  test('atoshibaraku sounds when a sleep carries the clock past fifteen seconds', () => {
+    // arrange - twenty seconds left
+    renderScreen(20)
+    press(/start/i)
+    // act - eight seconds with nothing running
+    sleepThrough(8)
+    // assert
+    expect(signals).toEqual(['ATOSHIBARAKU'])
+    expect(clockText()).toBe('0:11')
+  })
+
+  test('a sleep that ends the fight sounds the horn and nothing else', () => {
+    // arrange - twenty seconds, so fifteen is on the way past
+    renderScreen(20)
+    press(/start/i)
+    // act
+    sleepThrough(60)
+    // assert - the call for the last fifteen seconds belongs to a fight still running
+    expect(signals).toEqual(['END'])
   })
 })

@@ -110,7 +110,11 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
   const handleStart = useCallback(() => {
     setPhase('intervals')
     setIsPaused(false)
-    clock.restart(() => setCurrTime(prev => prev - 1), 1000)
+    // The clock hands over wall time, so a device that was asleep hands over several seconds
+    // at once. They stop at the end of the interval rather than carrying into the next one:
+    // the effect below moves the series on when the countdown reaches zero, and a countdown
+    // allowed past zero never reaches it - the series would hang with the numbers falling.
+    clock.restart((elapsedSeconds) => setCurrTime(prev => Math.max(0, prev - elapsedSeconds)), 1000)
   }, [isPaused, setIsPaused, setCurrTime])
 
   const handleReset = useCallback(() => {
