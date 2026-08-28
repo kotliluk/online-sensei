@@ -24,10 +24,6 @@ export class PausableStopwatch {
     return this.intervalId !== undefined
   }
 
-  isPaused (): boolean {
-    return this.intervalId === undefined
-  }
-
   pause (): void {
     if (this.intervalId !== undefined) {
       clearInterval(this.intervalId)

@@ -23,14 +23,6 @@ export class PausableInterval {
     start && this.restart()
   }
 
-  isRunning (): boolean {
-    return this.intervalId !== undefined
-  }
-
-  isPaused (): boolean {
-    return this.intervalId === undefined
-  }
-
   pause (): void {
     if ((this.intervalId !== undefined) || (this.timeoutId !== undefined)) {
       this.intervalId !== undefined && clearInterval(this.intervalId)
