@@ -1,13 +1,13 @@
 ---
 name: ticket
-description: Orchestrátor vývojového flow Online Sensei — vede změnu od nápadu po hotový lokální diff k review (zadání → analýza → implementace → validace → review → uzávěrka), s tvrdým gatem před psaním kódu. Použij, když se má něco naimplementovat, opravit nebo rozpracovat z nápadu.
+description: Orchestrátor vývojového flow Online Sensei — vede změnu od nápadu po PR připravený k review (zadání → analýza → implementace → validace → review → uzávěrka), s tvrdým gatem před psaním kódu. Použij, když se má něco naimplementovat, opravit nebo rozpracovat z nápadu.
 ---
 
 # Ticket — orchestrátor
 
 Vede jednu změnu jako pipeline fází. Cíl: kvalitní výsledek s **minimem zásahů uživatele**,
 ale s **tvrdým gatem tam, kde je omyl drahý**. Každá fáze je samostatný skill a jde spustit
-izolovaně.
+izolovaně. **Výstupem je PR na GitHubu**, ne lokální diff — merge zůstává uživateli.
 
 **Vstup:** `/ticket <id nebo slug>` (existující ticket) nebo `/ticket <popis nápadu>`
 (založí nový).
@@ -36,7 +36,7 @@ dopsat `C` v půlce implementace je levnější než ji nemít.
 | ------------------ | ---------------------- | ------------------------------------------------------------------- |
 | _měkká pauza_      | po `B`                 | ukážeš zadání, uživatel doupraví nebo schválí                        |
 | **TVRDÝ STOP**     | po `C` (malá dráha: po `B`) | **žádný kód**, dokud uživatel neschválí                         |
-| **finální**        | po uzávěrce            | uživatel dělá code review nad lokálním diffem                        |
+| **finální**        | po uzávěrce            | uživatel dělá code review **v PR na GitHubu**                        |
 
 Mezi tvrdým gatem a finálním review běž **autonomně**. Zastav se **jen u tvrdého blokeru** —
 rozhodnutí, kde špatná volba znamená přepsat velkou část práce.
@@ -89,10 +89,11 @@ zapracuj **do souboru**, pak přepni `status:` na `approved`.
 
 ### 3–5 — Autonomně po schválení
 
-1. **`ticket-implementace`** — branch, TDD proti „Plánu testů", průběžné commity.
+1. **`ticket-implementace`** — branch, TDD proti „Plánu testů", průběžné commity,
+   push a **draft PR**.
 2. **`ticket-validace`** — typecheck + lint + testy do zelena.
 3. **`ticket-review`** — paralelní revieweři → sekce `Review` → auto-fix jistých nálezů →
-   **znovu `ticket-validace`**.
+   **znovu `ticket-validace`** → push a **PR na ready**.
 
 ### 6 — Uzávěrka → finální gate
 
@@ -113,8 +114,9 @@ zapracuj **do souboru**, pak přepni `status:` na `approved`.
    - co našlo review, **co se auto-fixlo a co zůstalo na něj**,
    - **Předpoklady**, za kterých se šlo,
    - co chce ověřit na telefonu,
-   - `gh pr create --draft --fill` jako nabídku, ne jako provedený krok — **PR ani push
-     nedělej sám.**
+   - **URL PR** — review se dělá tam, ne nad lokálním diffem. PR má v tuhle chvíli být
+     pushnutý a ready (založila ho fáze 3, překlopila fáze 5); když z nějakého důvodu není,
+     doděláš to tady.
 
 ## Re-run a pokračování v nové session
 

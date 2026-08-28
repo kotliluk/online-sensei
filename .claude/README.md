@@ -1,6 +1,6 @@
 # .claude — AI vývojová flow
 
-Vede změnu od nápadu po hotový lokální diff. Postavené na stejné kostře jako flow
+Vede změnu od nápadu po PR připravený k review. Postavené na stejné kostře jako flow
 v clubSystem, ale **zmenšené na velikost tohohle projektu**: tenhle repo se vyvíjí většinou
 iteracemi po stovkách řádků, ne po tisících — a flow se má té velikosti přizpůsobit, ne
 naopak.
@@ -41,7 +41,7 @@ ticketů je jediná knihovna precedentů, kterou tenhle projekt má, a analýza 
 co posledně překvapilo.)
 
 **Gaty:** měkká pauza po zadání → **tvrdý STOP před psaním kódu** → autonomní běh →
-review lokálního diffu. Mezi tvrdým gatem a koncem se zastavuj jen u skutečného blokeru;
+review v PR na GitHubu. Mezi tvrdým gatem a koncem se zastavuj jen u skutečného blokeru;
 drobné nejasnosti jdou do „Předpoklady", ne do chatu.
 
 ## Čím se to liší od clubSystem
@@ -77,8 +77,12 @@ ticketu se vyplňuje pravdivě — včetně „neověřeno".
 je půlhodinový cross-model průchod dražší než užitečnější.
 
 **Hosting je rozhodnutý** (GitHub Pages), takže guard nezakazuje push úplně — zakazuje
-commit a push na `main`, protože ta se deployuje. Feature branch se pushnout smí; PR
-a merge dělá uživatel.
+commit a push na `main`, protože ta se deployuje.
+
+**Feature branch se pushuje a PR zakládá flow sama.** Fáze 3 pushne a otevře draft PR
+hned, jak je co pushnout, fáze 5 do něj dopushuje review fixy a překlopí ho na ready.
+Review se dělá **na GitHubu**, ne nad lokálním diffem. **Merge zůstává uživateli** —
+merge do `main` je deploy.
 
 ## Guardraily
 

@@ -109,6 +109,11 @@ Branch: `<branch>` · revieweři: <kdo běžel>
 
 Po fixech spusť **znovu `ticket-validace`** — fix bez zelených testů není fix.
 
+Pak **pushni** a **překlop draft PR na ready** (`gh pr ready`). PR, který nemá review fixy,
+je PR, nad kterým uživatel reviewuje něco jiného, než co je na branchi. Do popisu PR přidej
+sekci o tom, **co review našlo, co se opravilo a co zůstalo** — to je ta část, kterou
+reviewer na GitHubu potřebuje nejdřív.
+
 ## Krok 5 — Anti-busywork
 
 Když není co opravit, napiš **„Bez nálezů"** a skonči. **Nevymýšlej si práci**, nerefaktoruj
