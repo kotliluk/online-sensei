@@ -10,17 +10,7 @@ export function reducer (state = initialState, action: Actions): State {
       }
 
     case SET_THEME:
-      return {
-        ...state,
-        ...action.payload,
-      }
-
     case SET_TRANSLATION:
-      return {
-        ...state,
-        ...action.payload,
-      }
-
     case SET_MODAL_WINDOW:
       return {
         ...state,
