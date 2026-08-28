@@ -2,7 +2,7 @@
 id: 009
 slug: phone-ui
 title: Opravy UI na telefonu
-status: review
+status: done
 branch: phone-ui
 ---
 
@@ -45,16 +45,16 @@ a ověřitelné okem na skutečném zařízení.
 - [x] Karty závodníků nepřetékají do stran — na 360 px vyjdou dva sloupce, na desktopu
       víc, bez horizontálního scrollu uvnitř svisle scrollovaného kontejneru.
 - [~] Když je pole neplatné a Start zašedlý, je na telefonu **vidět proč** — hláška
-      se ukáže i bez `:hover`. **Vada se na telefonu neprojevila** (2026-08-27) — viz `D`.
-      Oprava přesto zůstává.
+  se ukáže i bez `:hover`. **Vada se na telefonu neprojevila** (2026-08-27) — viz `D`.
+  Oprava přesto zůstává.
 - [~] Hláška se vejde na 360px displej i u krajního pole (dnes má fixních 16 rem).
   **Nereprodukováno** — viz `D`. Pojistka přesto přidána.
 - [~] V tmavém motivu je mřížka skupinové tabulky a obrys nerozsvícených kroužků
-      u reakcí odlišitelný od pozadí. **Kroužky u reakcí a čára v tabulce výsledků
-      hotové; mřížka skupinové tabulky vrácena** na uživatelovo rozhodnutí (2026-08-27) —
-      viz `D`.
+  u reakcí odlišitelný od pozadí. **Kroužky u reakcí a čára v tabulce výsledků
+  hotové; mřížka skupinové tabulky vrácena** na uživatelovo rozhodnutí (2026-08-27) —
+  viz `D`.
 - [~] Rychlé dvojité ťuknutí do karty závodníka nezoomne stránku. **Vada se na telefonu
-      neprojevila** (2026-08-27) — viz `D`. Oprava přesto zůstává.
+  neprojevila** (2026-08-27) — viz `D`. Oprava přesto zůstává.
 - [x] Tlačítka v češtině nejsou „Reset zápas" a „Reset čas", ale „Reset zápasu"
       a „Reset času". Texty v `cs.ts` i `en.ts`.
 - [x] Kolečka faulů (`Fouls.scss:12`) jsou na 360px displeji dost velká na prst.
@@ -128,17 +128,17 @@ vlastní ticket, ne přílepek k tomuhle.
 
 ### Kritérium po kritériu
 
-| Kritérium                           | Před                                                                                                                                                                                                                 | Po                                                                                                                                                      | Kde                                                                             |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Tlačítka ve viewportu (360/375/412) | 2 ze 4 mimo na všech třech šířkách u stopek; 2 ze 3 mimo u reakcí a intervalů na 360 a 375. Na 360 začíná první na −88 a poslední končí na 448, a `.app` má `overflow-x: hidden`, takže **nejde k nim doscrollovat** | 0 mimo na všech třech, žádný popisek useknutý                                                                                                           | `GroupStopwatchScreen.scss`, `ReactionsScreen.scss`, `IntervalTimerScreen.scss` |
-| Karty závodníků                     | 3 sloupce, mřížka 477 px v 360px telefonu, 2 karty z každé řady mimo, wrapper scrolloval do stran                                                                                                                    | 320/1, 360/2, 375/2, 412/2, 768/4, 1280/6 sloupců, nic mimo, nikde vodorovný scroll                                                                     | `GroupStopwatchScreen.scss`                                                     |
-| Hláška bez `:hover` | v headless Chrome ukázal fokus 0 ze 2 hlášek | 2 ze 2 na všech třech — **ale na skutečném telefonu se hláška ukazovala i před opravou**, viz Ověřeno na | `Input.scss` |
-| Hláška se vejde na 360 px           | **nereprodukováno** — na pěti set-up obrazovkách je každý box 256 px a vejde se i na 320 px (nejhorší pravý okraj 313 při 360, 309 při 320). Příčina: telefon skládá popisek nad pole, takže pole vyjde na střed     | pojistka `css-min(16rem, 90vw)` + vystředění přes `transform` místo posunu o půl šířky                                                                  | `Input.scss`                                                                    |
-| Tmavý motiv | linky `1px solid $black`: 2,70 : 1 na pozadí obrazovky, 1,81 : 1 na buňkách skupinové tabulky — obojí pod 3 : 1 | 7,78 : 1 u kroužků reakcí, koleček faulů a čáry ve výsledcích; **mřížka skupinové tabulky vrácena na černou** rozhodnutím uživatele po zkoušce na telefonu | `ReactionsScreen.scss`, `Results.scss`, `Fouls.scss` |
-| Dvojťuk nezoomne | `touch-action` nebyl v repu nikde | `manipulation` na kartě, na ±1 s, na kolečkách faulů a (z review) na ± u času a skóre — **ale na telefonu nezoomovala ani stará verze**, viz Ověřeno na | `GroupStopwatchScreen.scss`, `Fouls.scss`, `FightStats.scss`, `Score.scss` |
-| Reset zápasu / Reset času           | skládalo se `${reset} ${fight.toLowerCase()}` → „Reset zápas"                                                                                                                                                        | plné klíče `resetFight` a `resetTime` v obou jazycích; test žádá obě mutace, angličtina je kontrola                                                     | `cs.ts`, `en.ts`, `KumiteTimerScreen.tsx`, `FightStats.tsx`                     |
-| Kolečka na prst                     | 32,4 × 38 při 360, 33,8 při 375, 37,1 při 412; mezera 3,6 px                                                                                                                                                         | 48 × 48 na všech telefonních šířkách; 3 + 2 na 320–375, 4 + 1 na 412, pět v řadě od tabletu                                                             | `Fouls.scss`                                                                    |
-| Kolečka na klávesnici               | `tabbable: 0`                                                                                                                                                                                                        | 5 tlačítek, jmenovka „AKA faul 4", `aria-pressed`; v zrcadle `<div>` + `aria-hidden`; sedm testů                                                        | `Fouls.tsx`, `Fouls.test.tsx`                                                   |
+| Kritérium                           | Před                                                                                                                                                                                                                 | Po                                                                                                                                                         | Kde                                                                             |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| Tlačítka ve viewportu (360/375/412) | 2 ze 4 mimo na všech třech šířkách u stopek; 2 ze 3 mimo u reakcí a intervalů na 360 a 375. Na 360 začíná první na −88 a poslední končí na 448, a `.app` má `overflow-x: hidden`, takže **nejde k nim doscrollovat** | 0 mimo na všech třech, žádný popisek useknutý                                                                                                              | `GroupStopwatchScreen.scss`, `ReactionsScreen.scss`, `IntervalTimerScreen.scss` |
+| Karty závodníků                     | 3 sloupce, mřížka 477 px v 360px telefonu, 2 karty z každé řady mimo, wrapper scrolloval do stran                                                                                                                    | 320/1, 360/2, 375/2, 412/2, 768/4, 1280/6 sloupců, nic mimo, nikde vodorovný scroll                                                                        | `GroupStopwatchScreen.scss`                                                     |
+| Hláška bez `:hover`                 | v headless Chrome ukázal fokus 0 ze 2 hlášek                                                                                                                                                                         | 2 ze 2 na všech třech — **ale na skutečném telefonu se hláška ukazovala i před opravou**, viz Ověřeno na                                                   | `Input.scss`                                                                    |
+| Hláška se vejde na 360 px           | **nereprodukováno** — na pěti set-up obrazovkách je každý box 256 px a vejde se i na 320 px (nejhorší pravý okraj 313 při 360, 309 při 320). Příčina: telefon skládá popisek nad pole, takže pole vyjde na střed     | pojistka `css-min(16rem, 90vw)` + vystředění přes `transform` místo posunu o půl šířky                                                                     | `Input.scss`                                                                    |
+| Tmavý motiv                         | linky `1px solid $black`: 2,70 : 1 na pozadí obrazovky, 1,81 : 1 na buňkách skupinové tabulky — obojí pod 3 : 1                                                                                                      | 7,78 : 1 u kroužků reakcí, koleček faulů a čáry ve výsledcích; **mřížka skupinové tabulky vrácena na černou** rozhodnutím uživatele po zkoušce na telefonu | `ReactionsScreen.scss`, `Results.scss`, `Fouls.scss`                            |
+| Dvojťuk nezoomne                    | `touch-action` nebyl v repu nikde                                                                                                                                                                                    | `manipulation` na kartě, na ±1 s, na kolečkách faulů a (z review) na ± u času a skóre — **ale na telefonu nezoomovala ani stará verze**, viz Ověřeno na    | `GroupStopwatchScreen.scss`, `Fouls.scss`, `FightStats.scss`, `Score.scss`      |
+| Reset zápasu / Reset času           | skládalo se `${reset} ${fight.toLowerCase()}` → „Reset zápas"                                                                                                                                                        | plné klíče `resetFight` a `resetTime` v obou jazycích; test žádá obě mutace, angličtina je kontrola                                                        | `cs.ts`, `en.ts`, `KumiteTimerScreen.tsx`, `FightStats.tsx`                     |
+| Kolečka na prst                     | 32,4 × 38 při 360, 33,8 při 375, 37,1 při 412; mezera 3,6 px                                                                                                                                                         | 48 × 48 na všech telefonních šířkách; 3 + 2 na 320–375, 4 + 1 na 412, pět v řadě od tabletu                                                                | `Fouls.scss`                                                                    |
+| Kolečka na klávesnici               | `tabbable: 0`                                                                                                                                                                                                        | 5 tlačítek, jmenovka „AKA faul 4", `aria-pressed`; v zrcadle `<div>` + `aria-hidden`; sedm testů                                                           | `Fouls.tsx`, `Fouls.test.tsx`                                                   |
 
 ### Odchylky od zadání
 
@@ -191,27 +191,28 @@ vlastní ticket, ne přílepek k tomuhle.
 Vitest 473 testů zelených (bylo 465), typecheck 0, lint 0 chyb / 61 warningů (stejně jako
 `main`). Tab v prohlížeči skutečně dojede na kolečka a focus ring je vidět.
 
-**Skutečný telefon, 2026-08-27** — uživatel proklikal starou (nasazenou) a novou (lokální
-přes `yarn dev:https`) verzi vedle sebe, bod po bodu. Výsledek:
+**Skutečný telefon a notebook, 2026-08-27/28** — uživatel proklikal starou (nasazenou)
+a novou (lokální přes `yarn dev:https`) verzi vedle sebe, bod po bodu. Výsledek:
 
-| Co | Výsledek |
-| --- | --- |
-| Řada tlačítek u skupinových stopek | opraveno, potvrzeno |
-| Karty závodníků ve dvou sloupcích | opraveno, potvrzeno |
-| Tlačítka u reakcí a intervalů | opraveno, potvrzeno |
-| Kolečka faulů — velikost a zalomení 3 + 2 | opraveno, **zalomení odsouhlaseno** |
-| Popisky „Reset zápasu" / „Reset času" | opraveno, potvrzeno |
-| Kroužky reakcí a čára ve výsledcích v tmavém motivu | opraveno, potvrzeno |
-| **Dvojťuk do karty** | **vada se neprojevila — nezoomovala ani stará verze** |
-| **Hláška u neplatného pole** | **vada se neprojevila — hláška se ukazovala i ve staré verzi** |
-| **Mřížka skupinové tabulky v tmavém motivu** | **vráceno na černou** na rozhodnutí uživatele |
+| Co                                                             | Výsledek                                                       |
+| -------------------------------------------------------------- | -------------------------------------------------------------- |
+| Řada tlačítek u skupinových stopek                             | opraveno, potvrzeno                                            |
+| Karty závodníků ve dvou sloupcích                              | opraveno, potvrzeno                                            |
+| Tlačítka u reakcí a intervalů                                  | opraveno, potvrzeno                                            |
+| Kolečka faulů — velikost a zalomení 3 + 2                      | opraveno, **zalomení odsouhlaseno**                            |
+| Popisky „Reset zápasu" / „Reset času"                          | opraveno, potvrzeno                                            |
+| Kroužky reakcí a čára ve výsledcích v tmavém motivu            | opraveno, potvrzeno                                            |
+| Kolečka faulů klávesnicí (Tab, Enter, mezerník) — na notebooku | opraveno, potvrzeno                                            |
+| **Dvojťuk do karty**                                           | **vada se neprojevila — nezoomovala ani stará verze**          |
+| **Hláška u neplatného pole**                                   | **vada se neprojevila — hláška se ukazovala i ve staré verzi** |
+| **Mřížka skupinové tabulky v tmavém motivu**                   | **vráceno na černou** na rozhodnutí uživatele                  |
 
 **Tři z devíti kritérií popisovala vadu, která na cílovém zařízení neexistuje.** Stojí za
 to vědět proč, protože zdrojem těch kritérií byla jednorázová revize repa (2026-08-19)
 a stejná chyba se v ní může opakovat:
 
 - **Dvojťuk.** `index.html:5` má `<meta name="viewport" content="width=device-width,
-  initial-scale=1">`. Prohlížeče na telefonech u viewportu nastaveného na šířku zařízení
+initial-scale=1">`. Prohlížeče na telefonech u viewportu nastaveného na šířku zařízení
   dvojťukový zoom **samy vypínají** — `touch-action: manipulation` je tedy pojistka, ne
   oprava. Nechal jsem ho tam (nic nestojí a chrání proti tomu, aby někdo ten meta tag
   změnil), ale kritérium bylo postavené na předpokladu, který nikdo neověřil.
@@ -227,8 +228,8 @@ seděla na milimetr), ale neumí odpovědět na otázku, jestli se vada projeví
 tam odpovídá jedině zařízení. Kritérium, které tvrdí „na telefonu se stane X", patří
 ověřit na telefonu **dřív**, než se podle něj něco opraví.
 
-**Nezkoušené na telefonu:** ovládání koleček faulů klávesnicí (patří k notebooku
-u stolku, ne k telefonu) — v prohlížeči ověřené, na skutečném stolku ne.
+**Nezkoušené zůstalo:** nic z toho, co ticket sliboval. Ovládání koleček klávesnicí
+proběhlo na notebooku, tedy tam, kam patří — u stolku, ne pod prstem.
 
 ## Review
 
