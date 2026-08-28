@@ -31,7 +31,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
   // remaining time in current interval
   const [currTime, setCurrTime] = useState(intervals[0].duration)
   // total number of rounds (work intervals)
-  const [totalRounds] = useState(intervals.filter((i) => i.type === 'work').length)
+  const [totalRounds] = useState(() => intervals.filter((i) => i.type === 'work').length)
   // actual round (number of previous work intervals)
   const [currRound, setCurrRound] = useState(intervals[0].type === 'work' ? 1 : 0)
   // total number of intervals
