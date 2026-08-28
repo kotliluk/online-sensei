@@ -25,10 +25,6 @@ export class PausableTimeout {
     return this.timeoutId !== undefined
   }
 
-  isPaused (): boolean {
-    return this.timeoutId === undefined
-  }
-
   pause (): void {
     if (this.timeoutId !== undefined) {
       clearTimeout(this.timeoutId)
