@@ -1,5 +1,5 @@
 import { State, initialState } from '../../redux/reactions/state'
-import { LIMITS, VALIDATOR } from '../../redux/reactions/utils'
+import { VALIDATOR } from '../../redux/reactions/utils'
 import { BeepType } from '../../types/beepType'
 import { THexColor } from '../../types/color'
 import { parseColor, readNumber, readString, serializeColor, writeIfChanged } from './params'
@@ -75,5 +75,3 @@ export const decodeReactionsSetUp = (
     audioVolume: readNumber(params, 'vol', VALIDATOR.audioVolume, defaults.audioVolume),
   }
 }
-
-export { LIMITS as REACTIONS_LIMITS }

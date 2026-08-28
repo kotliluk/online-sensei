@@ -6,10 +6,6 @@ export const isBetweenValidator = (bounds: Bounds): Predicate<number> => {
   return (num: number) => bounds.min <= num && num <= bounds.max
 }
 
-export const isBetween = (num: number, x: number, y: number): boolean => {
-  return x <= num && num <= y
-}
-
 export const anythingIsValid = <T>(_: T): boolean => true
 
 export const isValidArrayOf = <T> (validator: (item: T) => boolean): Predicate<T[]> => {

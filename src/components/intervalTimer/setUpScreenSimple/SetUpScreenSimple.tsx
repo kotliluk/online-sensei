@@ -163,13 +163,6 @@ export const SetUpScreenSimple = (): JSX.Element => {
               onChange={setAudioVolume}
               disabled={audioSound === NO_BEEP}
             />
-            {/* <Button
-              className='set-up-volume-try'
-              onClick={handleTryAudio}
-              disabled={audioSound === NO_BEEP}
-            >
-              Try
-            </Button> */}
           </div>
         </li>
 

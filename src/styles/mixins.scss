@@ -135,14 +135,6 @@
     .set-up-volume-mute {
       @include button-color($orange);
     }
-
-    .set-up-volume-try {
-      @include button-color($orange);
-      @include center-content;
-      height: 2rem;
-      width: 4rem;
-      margin-left: 0.5rem;
-    }
   }
 }
 
