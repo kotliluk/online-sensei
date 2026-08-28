@@ -9,7 +9,6 @@ export interface Translation {
   languageShort: Language
   common: {
     darkTheme: string,
-    lightTheme: string,
     language: string,
     time: string,
     sound: string,

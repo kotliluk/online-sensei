@@ -6,7 +6,6 @@ export const EN: Translation = {
   languageShort: 'EN',
   common: {
     darkTheme: 'Dark theme',
-    lightTheme: 'Light theme',
     language: 'Language',
     time: 'Time',
     sound: 'Sound',

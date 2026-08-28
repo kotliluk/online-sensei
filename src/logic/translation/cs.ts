@@ -6,7 +6,6 @@ export const CS: Translation = {
   languageShort: 'CS',
   common: {
     darkTheme: 'Tmavý motiv',
-    lightTheme: 'Světlý motiv',
     language: 'Jazyk',
     time: 'Čas',
     sound: 'Zvuk',

@@ -104,12 +104,6 @@ export const SetUpScreen = (): JSX.Element => {
     setAudioSound(newValue as BeepType)
   }, [setAudioSound])
 
-  // TODO - Fix
-  // const handleTryAudio = useCallback(() => {
-  //   console.log(audioSound, 300, audioVolume)
-  //   playBeep(audioSound, 300, audioVolume)
-  // }, [audioSound, audioVolume])
-
   const handleStart = useCallback(() => {
     dispatch(setReactions(rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume))
     void navigate('/reactions')
@@ -240,13 +234,6 @@ export const SetUpScreen = (): JSX.Element => {
               onChange={setAudioVolume}
               disabled={audioSound === NO_BEEP}
             />
-            {/* <Button
-              className='set-up-volume-try'
-              onClick={handleTryAudio}
-              disabled={audioSound === NO_BEEP}
-            >
-              Try
-            </Button> */}
           </div>
         </li>
       </ul>
