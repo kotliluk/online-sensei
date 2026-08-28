@@ -18,11 +18,9 @@ import {
 } from '../../../redux/reactions/selector'
 import useValidatedState from '../../../logic/hooks/useValidatedState'
 import { joinErrorMessages } from '../../../utils/error'
-import { Select } from '../../atoms/select/Select'
-import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
 import { LIMITS, VALIDATOR } from '../../../redux/reactions/utils'
 import { preloadBeep } from '../../../logic/audio/beep'
-import { VolumeInput } from '../../atoms/input/VolumeInput'
+import { SoundSelect } from '../../common/soundSelect/SoundSelect'
 import { selectTranslation } from '../../../redux/page/selector'
 import { insertWords } from '../../../logic/translation'
 import { CounterInput } from '../../atoms/input/CounterInput'
@@ -98,11 +96,6 @@ export const SetUpScreen = (): JSX.Element => {
       return newColors
     })
   }, [setSignalColors])
-
-  const handleAudioChange = useCallback((newValue: string) => {
-    preloadBeep(newValue as BeepType)
-    setAudioSound(newValue as BeepType)
-  }, [setAudioSound])
 
   const handleStart = useCallback(() => {
     dispatch(setReactions(rounds, signal, minInterval, maxInterval, signalCount, signalColors, audioSound, audioVolume))
@@ -216,25 +209,12 @@ export const SetUpScreen = (): JSX.Element => {
         ))}
 
         <li className='set-up-item'>
-          <label>{translation.common.sound}:</label>
-          <div className='set-up-volume'>
-            <Select
-              className='set-up-volume-select'
-              selected={audioSound}
-              values={[
-                { value: NO_BEEP, text: translation.common.noSound },
-                { value: BEEP_A, text: getBeepName(BEEP_A) },
-              ]}
-              onChange={handleAudioChange}
-            />
-            <VolumeInput
-              inputClassName='set-up-volume-input'
-              buttonClassName='set-up-volume-mute'
-              value={audioVolume}
-              onChange={setAudioVolume}
-              disabled={audioSound === NO_BEEP}
-            />
-          </div>
+          <SoundSelect
+            sound={audioSound}
+            volume={audioVolume}
+            onSoundChange={setAudioSound}
+            onVolumeChange={setAudioVolume}
+          />
         </li>
       </ul>
 
