@@ -43,7 +43,7 @@ export const ReactionsScreen = (): JSX.Element | null => {
   const [curSignal, setCurSignal] = useState(0)
   // bumped by reset, so a fresh run is a change even when the phase is the same one
   const [runId, setRunId] = useState(0)
-  const [timeoutObj] = useState<PausableTimeout>(new PausableTimeout(emptyFunc, 0))
+  const [timeoutObj] = useState<PausableTimeout>(() => new PausableTimeout(emptyFunc, 0))
 
   const dispatch = useDispatch()
   const navigate = useNavigate()

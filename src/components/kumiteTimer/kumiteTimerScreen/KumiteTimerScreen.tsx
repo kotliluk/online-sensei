@@ -72,7 +72,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
 
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(true)
-  const [clock] = useState<PausableInterval>(new PausableInterval(emptyFunc, 0))
+  const [clock] = useState<PausableInterval>(() => new PausableInterval(emptyFunc, 0))
 
   const [log, setLog] = useState<FightLogEntry[]>([])
   /** How long the log was when this fight was opened - see {@link handleGoBack}. */
