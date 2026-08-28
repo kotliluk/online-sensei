@@ -495,6 +495,30 @@ const createRepechageLine = (
   )
 }
 
+/** Index n is the line the n-th semifinal feeds, and the order the two are kept in. */
+const REPECHAGE_LINES = ['REPECHAGE_1', 'REPECHAGE_2'] as const
+
+type RepechageLine = typeof REPECHAGE_LINES[number]
+
+const lineOf = (tree: TournamentTreeNode | null, line: RepechageLine): TournamentTreeNode | undefined => {
+  return tree?.children.find((c) => c.attributes.fight.type === line)
+}
+
+/**
+ * The children of a repechage root: one line replaced by a freshly computed one, the other
+ * carried over untouched, both in line order. Either may be missing - a line with a single
+ * fighter left in it has no fight to hold - and a root with no children at all is no root.
+ */
+const repechageChildren = (
+  repechageTree: TournamentTreeNode | null,
+  replaced: RepechageLine,
+  replacement: TournamentTreeNode | null,
+): TournamentTreeNode[] => {
+  return arrayOfDefined(...REPECHAGE_LINES.map(
+    (line) => line === replaced ? replacement : lineOf(repechageTree, line),
+  ))
+}
+
 export const updateRepechageTree = (
   tournamentTree: TournamentTreeNode | null,
   repechageTree: TournamentTreeNode | null,
@@ -504,61 +528,32 @@ export const updateRepechageTree = (
     return null
   }
 
-  // result from the main tree
+  // a semifinal result rebuilds the line it feeds out of everyone its winner beat,
+  // and leaves whatever the other semifinal has already produced alone
   if (result.type === 'MAIN') {
-    // result of first semifinal - creates repechage 1
-    if (tournamentTree.children.length > 0 && result.uuid === tournamentTree.children[0].attributes.fight.uuid) {
-      const semifinal = tournamentTree.children[0].attributes.fight
-      const winnerUuid = result.winner === 'RED' ? semifinal.redUuid : semifinal.blueUuid
-      const opponents: Competitor[] = []
-      saveOpponentsOf(winnerUuid, tournamentTree.children[0], opponents)
+    const semifinals = tournamentTree.children
 
-      const repechage1 = createRepechageLine(opponents, 'REPECHAGE_1')
-      const repechage2 = repechageTree?.children.find((c) => c.attributes.fight.type === 'REPECHAGE_2')
-      const children = arrayOfDefined(repechage1, repechage2)
-
-      if (children.length === 0) {
-        return null
+    for (const [index, line] of REPECHAGE_LINES.entries()) {
+      if (semifinals.length <= index || result.uuid !== semifinals[index].attributes.fight.uuid) {
+        continue
       }
 
-      return newTree(newFight('', '', '', '', 'REPECHAGE_ROOT'), children)
-    }
-
-    // result of second semifinal - creates repechage 2
-    if (tournamentTree.children.length > 1 && result.uuid === tournamentTree.children[1].attributes.fight.uuid) {
-      const semifinal = tournamentTree.children[1].attributes.fight
+      const semifinal = semifinals[index].attributes.fight
       const winnerUuid = result.winner === 'RED' ? semifinal.redUuid : semifinal.blueUuid
       const opponents: Competitor[] = []
-      saveOpponentsOf(winnerUuid, tournamentTree.children[1], opponents)
+      saveOpponentsOf(winnerUuid, semifinals[index], opponents)
 
-      const repechage1 = repechageTree?.children.find((c) => c.attributes.fight.type === 'REPECHAGE_1')
-      const repechage2 = createRepechageLine(opponents, 'REPECHAGE_2')
-      const children = arrayOfDefined(repechage1, repechage2)
+      const children = repechageChildren(repechageTree, line, createRepechageLine(opponents, line))
 
-      if (children.length === 0) {
-        return null
-      }
-
-      return newTree(newFight('', '', '', '', 'REPECHAGE_ROOT'), children)
+      return children.length === 0 ? null : newTree(newFight('', '', '', '', 'REPECHAGE_ROOT'), children)
     }
   }
 
-  // result from the repechage 1 - updates
-  if (!!repechageTree && result.type === 'REPECHAGE_1') {
-    const repechage1 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_1') ?? null
-    const repechage2 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_2')
-    const updated1 = updateTournamentTree(repechage1, result, 'REPECHAGE_1')
-    const children = arrayOfDefined(updated1, repechage2)
-    return newTree(repechageTree.attributes.fight, children)
-  }
+  // a repechage result advances its own line and leaves the other one as it is
+  if (!!repechageTree && (result.type === 'REPECHAGE_1' || result.type === 'REPECHAGE_2')) {
+    const advanced = updateTournamentTree(lineOf(repechageTree, result.type) ?? null, result, result.type)
 
-  // result from the repechage 2 - updates
-  if (!!repechageTree && result.type === 'REPECHAGE_2') {
-    const repechage1 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_1')
-    const repechage2 = repechageTree.children.find((c) => c.attributes.fight.type === 'REPECHAGE_2') ?? null
-    const updated2 = updateTournamentTree(repechage2, result, 'REPECHAGE_2')
-    const children = arrayOfDefined(repechage1, updated2)
-    return newTree(repechageTree.attributes.fight, children)
+    return newTree(repechageTree.attributes.fight, repechageChildren(repechageTree, result.type, advanced))
   }
 
   return repechageTree
