@@ -18,29 +18,9 @@ export function reducer (state = initialState, action: Actions): State {
       }
 
     case SET_INTERVAL_TIMER_SIMPLE:
-      return {
-        ...state,
-        ...action.payload,
-      }
-
     case SET_INTERVAL_TIMER_ADVANCED:
-      return {
-        ...state,
-        ...action.payload,
-      }
-
     case LOAD_ADVANCED_SERIES:
-      return {
-        ...state,
-        ...action.payload,
-      }
-
     case SAVE_ADVANCED_SERIES:
-      return {
-        ...state,
-        ...action.payload,
-      }
-
     case DELETE_SAVED_ADVANCED_SERIES:
       return {
         ...state,
