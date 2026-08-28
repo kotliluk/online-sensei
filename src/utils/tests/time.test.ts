@@ -2,12 +2,22 @@ import { parseMinTime, parseTime } from '../time'
 
 
 describe('parseTime', () => {
+  /**
+   * The cases past the half minute are not padding. Every other case here has its seconds
+   * under thirty, where flooring the minutes and rounding them agree - so on its own the
+   * list would let `2:-15` through for a minute and three quarters. The fractional case
+   * says the same thing about the seconds: the clock counts down through them and the
+   * written time truncates, it never rounds up to a second that has not passed.
+   */
   test.each([
     { sec: 0, expected: '0:00' },
     { sec: 1, expected: '0:01' },
     { sec: 10, expected: '0:10' },
+    { sec: 45, expected: '0:45' },
+    { sec: 59.9, expected: '0:59' },
     { sec: 60, expected: '1:00' },
     { sec: 75, expected: '1:15' },
+    { sec: 105, expected: '1:45' },
     { sec: 143, expected: '2:23' },
     { sec: 3600, expected: '60:00' },
     { sec: 3675, expected: '61:15' },
