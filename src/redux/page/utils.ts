@@ -6,14 +6,13 @@ import { initialState, State } from './state'
 import { anythingIsValid } from '../../logic/validation/validators'
 import { isValidLanguage } from '../../logic/translation'
 import { emptyFunc } from '../../utils/function'
-import { isValidModalWindowType } from '../../types/modalWindowType'
 
 
 export const VALIDATOR: Validator<State> = {
   theme: isThemeType,
   language: isValidLanguage,
   translation: anythingIsValid,
-  modalWindow: isValidModalWindowType,
+  modalWindow: anythingIsValid,
 }
 
 export const LS_KEYS: LSMapper<State> = {
