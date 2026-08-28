@@ -73,14 +73,14 @@ describe('PausableTimeout', () => {
   })
 
   /**
-   * A sharp edge, pinned here rather than fixed: firing does not clear the id the class
-   * keeps, so a spent timeout still calls itself running, and pausing it works out a
-   * remaining time of zero - which the next resume fires straight away. Reactions arms the
-   * next signal in an effect right after the phase changes, so a human would have to press
-   * pause inside that one render to see it. Recorded in ticket 011 along with the rest of
-   * what these three classes get wrong about time.
+   * Firing used to leave the id the class keeps behind, so a spent timeout called itself
+   * running, pausing it worked out a remaining time of zero, and the next resume fired it
+   * straight away - a second signal in Reactions that nobody asked for. Reactions arms the
+   * next signal in an effect right after the phase changes, so a human would have had to
+   * press pause inside that one render to see it; it is fixed here rather than left to be
+   * reached one day.
    */
-  test('a spent timeout still calls itself running, and pausing it fires it again', () => {
+  test('a spent timeout is not running, and pausing it does not fire it again', () => {
     // arrange
     const fired: number[] = []
     const timeout = new PausableTimeout(() => fired.push(1), 1000, true)
@@ -90,9 +90,21 @@ describe('PausableTimeout', () => {
     timeout.pause()
     timeout.resume()
     vi.advanceTimersByTime(1)
-    // assert - both of these are wrong, and both are what it does today
-    expect(runningAfterFiring).toBe(true)
-    expect(fired).toHaveLength(2)
+    // assert
+    expect(runningAfterFiring).toBe(false)
+    expect(fired).toHaveLength(1)
+  })
+
+  /** Resuming something that was never started has nothing to pick up either. */
+  test('a timeout that was never started does not fire on resume', () => {
+    // arrange
+    const fired: number[] = []
+    const timeout = new PausableTimeout(() => fired.push(1), 1000)
+    // act
+    timeout.resume()
+    vi.advanceTimersByTime(10_000)
+    // assert
+    expect(fired).toHaveLength(0)
   })
 
   /**
