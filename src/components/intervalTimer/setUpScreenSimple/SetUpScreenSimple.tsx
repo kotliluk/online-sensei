@@ -4,8 +4,7 @@ import { useDispatch } from '../../../redux/useDispatch'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { NumberInput } from '../../atoms/input/NumberInput'
 import { Button } from '../../atoms/button/Button'
-import { Select } from '../../atoms/select/Select'
-import { VolumeInput } from '../../atoms/input/VolumeInput'
+import { SoundSelect } from '../../common/soundSelect/SoundSelect'
 import { CheckBox } from '../../atoms/checkBox/CheckBox'
 import { useSelector } from '../../../redux/useSelector'
 import useValidatedState from '../../../logic/hooks/useValidatedState'
@@ -20,8 +19,6 @@ import {
 } from '../../../redux/intervalTimer/selector'
 import { LIMITS, VALIDATOR } from '../../../redux/intervalTimer/utils'
 import { setIntervalTimerSimple, setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
-import { BEEP_A, BeepType, getBeepName, NO_BEEP } from '../../../types/beepType'
-import { preloadBeep } from '../../../logic/audio/beep'
 import { ShareButton } from '../../common/shareButton/ShareButton'
 import { buildAppUrl } from '../../../logic/urlState/appUrl'
 import {
@@ -69,11 +66,6 @@ export const SetUpScreenSimple = (): JSX.Element => {
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
-  const handleAudioChange = useCallback((newValue: string) => {
-    preloadBeep(newValue as BeepType)
-    setAudioSound(newValue as BeepType)
-  }, [setAudioSound])
 
   const handleGoToAdvancedSettings = useCallback(() => {
     dispatch(setIntervalTimerSimple(rounds, work, pause, skipLastPause, audioSound, audioVolume))
@@ -145,25 +137,12 @@ export const SetUpScreenSimple = (): JSX.Element => {
         </li>
 
         <li className='set-up-item'>
-          <label>{translation.common.sound}:</label>
-          <div className='set-up-volume'>
-            <Select
-              className='set-up-volume-select'
-              selected={audioSound}
-              values={[
-                { value: NO_BEEP, text: translation.common.noSound },
-                { value: BEEP_A, text: getBeepName(BEEP_A) },
-              ]}
-              onChange={handleAudioChange}
-            />
-            <VolumeInput
-              inputClassName='set-up-volume-input'
-              buttonClassName='set-up-volume-mute'
-              value={audioVolume}
-              onChange={setAudioVolume}
-              disabled={audioSound === NO_BEEP}
-            />
-          </div>
+          <SoundSelect
+            sound={audioSound}
+            volume={audioVolume}
+            onSoundChange={setAudioSound}
+            onVolumeChange={setAudioVolume}
+          />
         </li>
 
         <li className='set-up-item'>
