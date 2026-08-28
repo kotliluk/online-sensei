@@ -92,7 +92,14 @@ export class PausableInterval {
   }
 
   private schedule (): void {
-    this.timeoutId = setTimeout(() => this.tick(), Math.max(0, this.nextTickAt - Date.now()))
+    // Never further off than one whole interval, which is all that can honestly be owed.
+    // A device clock corrected backwards - a phone picking up the network time, a timezone
+    // set by hand - moves the moment being waited for away from the wait, and without this
+    // the fight clock would stand still for as long as the correction was. Capped, it goes
+    // back to a tick a second, which is the truth about how fast time is passing anyway.
+    const wait = Math.min(this.intervalTime, Math.max(0, this.nextTickAt - Date.now()))
+
+    this.timeoutId = setTimeout(() => this.tick(), wait)
   }
 
   private tick (): void {

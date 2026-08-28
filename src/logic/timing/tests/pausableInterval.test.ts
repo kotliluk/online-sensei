@@ -144,6 +144,47 @@ describe('PausableInterval', () => {
   })
 
   /**
+   * The slow version of the same defect. A tick that sets the next one from the moment it
+   * was actually called keeps whatever it was late by instead of absorbing it, and a browser
+   * is late every time: a fifth of a second per second is a four minute round taking four
+   * minutes and forty eight seconds. Aiming at the grid the clock started from means each
+   * tick carries only its own lateness, never the sum of the ones before it.
+   */
+  test('puts the tick after a catch-up back on the second it belongs to', () => {
+    // arrange - a sleep that ends halfway through a second
+    const at: number[] = []
+    const started = Date.now()
+    new PausableInterval(() => at.push(Date.now() - started), 1000, true)
+    vi.advanceTimersByTime(1000)
+    skew = 5500
+    vi.advanceTimersByTime(1000)
+    // act - what is left of the second the waking tick landed in the middle of
+    vi.advanceTimersByTime(500)
+    // assert - eight seconds in, not eight and a half: the half second already served
+    // counts, rather than the clock starting that second over
+    expect(at).toEqual([1000, 7500, 8000])
+  })
+
+  /**
+   * Aiming at absolute moments buys the catching up above, and costs an exposure the old
+   * implementation did not have: a device clock corrected backwards moves the moment being
+   * waited for away from the wait. A phone picking up network time mid-fight is rare and a
+   * fight clock standing still for an hour is not survivable, so the wait is capped at one
+   * interval - the clock stops catching up, but it does not stop.
+   */
+  test('keeps ticking at its own rate when the device clock is put back', () => {
+    // arrange
+    const ticks: number[] = []
+    new PausableInterval((elapsed) => ticks.push(elapsed), 1000, true)
+    vi.advanceTimersByTime(1000)
+    // act - the clock is corrected back by an hour, then three seconds pass
+    skew = -3_600_000
+    vi.advanceTimersByTime(3000)
+    // assert - a second is still a second, and none of them are invented
+    expect(ticks).toEqual([1, 1, 1, 1])
+  })
+
+  /**
    * The fight clock stops itself on reaching zero, from inside its own callback. The old
    * implementation put the interval back up as soon as that callback returned, so the horn
    * sounded again a second later with a second end in the log to match - see the tests of
