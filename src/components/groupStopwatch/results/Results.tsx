@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useState } from 'react'
+import { JSX, useCallback, useMemo, useState } from 'react'
 import './Results.scss'
 import { useSelector } from '../../../redux/useSelector'
 import { Button } from '../../atoms/button/Button'
@@ -7,19 +7,12 @@ import { Competitor, CompetitorWithPlace, newCompetitorWithPlace } from '../../.
 import { OrderArrow } from '../../icons/OrderArrow'
 import { buildCsv, CSV_MIME_TYPE } from '../../../utils/csv'
 import { exportFile, willShareFile } from '../../../logic/download/exportFile'
+import { fileNameStamp } from '../../../logic/download/fileName'
 
 
 const NULL_TIME_REPLACE = 365 * 24 * 60 * 60 * 1000
 
-const pad = (value: number): string => value.toString().padStart(2, '0')
-
-/** Local time, so the name matches the clock of whoever exports the file. */
-const csvFileName = (): string => {
-  const now = new Date()
-
-  return `group-stopwatch-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
-    + `-${pad(now.getHours())}${pad(now.getMinutes())}.csv`
-}
+const csvFileName = (): string => `group-stopwatch-${fileNameStamp(new Date())}.csv`
 
 const compareOrById = (primaryResult: number, a: CompetitorWithPlace, b: CompetitorWithPlace): number => {
   if (primaryResult === 0) {
@@ -38,40 +31,36 @@ export const Results = (props: ResultsProps): JSX.Element | null => {
   const translation = useSelector(selectTranslation)
   const { groupStopwatch: { playScreen: t }, common: ct } = translation
 
-  const [competitorsWithPlace, setCompetitorsWithPlace] = useState<CompetitorWithPlace[]>([])
-  const [competitorsToShow, setCompetitorsToShow] = useState<CompetitorWithPlace[]>([])
   const [sortBy, setSortBy] = useState<'id' | 'name' | 'place'>('place')
   const [order, setOrder] = useState<'asc' | 'desc'>('asc')
   // the button says what it does, and that depends on the device, not on the results
   const [shares] = useState(() => willShareFile(CSV_MIME_TYPE))
 
-  useEffect(() => {
-    const newCompetitors = competitors.map((c, i) => newCompetitorWithPlace(c, i, NULL_TIME_REPLACE))
+  const competitorsWithPlace = useMemo(() => {
+    const withPlace = competitors.map((c, i) => newCompetitorWithPlace(c, i, NULL_TIME_REPLACE))
     // sorts competitors
-    newCompetitors.sort((a, b) => a.time - b.time)
+    withPlace.sort((a, b) => a.time - b.time)
     // adds their places - draw with previous competitor when times are equal
-    newCompetitors.forEach((c, i, arr) => {
+    withPlace.forEach((c, i, arr) => {
       c.place = i + 1
       if (i > 0 && c.time === arr[i - 1].time) {
         c.place = arr[i - 1].place
       }
     })
-    setCompetitorsWithPlace(newCompetitors)
-  }, [competitors, setCompetitorsWithPlace])
+    return withPlace
+  }, [competitors])
 
-  useEffect(() => {
+  const competitorsToShow = useMemo(() => {
     const copy = [...competitorsWithPlace]
     const orderMultiplicator = order === 'asc' ? 1 : -1
     if (sortBy === 'id') {
-      setCompetitorsToShow(copy.sort((a, b) => compareOrById(0, a, b) * orderMultiplicator))
+      return copy.sort((a, b) => compareOrById(0, a, b) * orderMultiplicator)
     }
     if (sortBy === 'name') {
-      setCompetitorsToShow(copy.sort((a, b) => compareOrById(a.name.localeCompare(b.name), a, b) * orderMultiplicator))
+      return copy.sort((a, b) => compareOrById(a.name.localeCompare(b.name), a, b) * orderMultiplicator)
     }
-    if (sortBy === 'place') {
-      setCompetitorsToShow(copy.sort((a, b) => compareOrById(a.place - b.place, a, b) * orderMultiplicator))
-    }
-  }, [competitorsWithPlace, sortBy, order, setCompetitorsToShow])
+    return copy.sort((a, b) => compareOrById(a.place - b.place, a, b) * orderMultiplicator)
+  }, [competitorsWithPlace, sortBy, order])
 
   const handleChangeSort = useCallback((newSortBy: 'id' | 'name' | 'place') => {
     setSortBy(newSortBy)
