@@ -107,6 +107,16 @@ belong to **the clock arriving there on its own**. Setting the time by hand soun
 nothing - giving a few seconds back after the fight has ended is a normal thing to do at
 the table, and the horn comes again only once the clock has run out again.
 
+### A phone that went to sleep
+
+A locked screen or a tab in the background stops getting timers from the browser, and
+the ones it missed are never offered again. The clock counts **what the wall clock says
+has passed**, not how many of those it was handed, so a fight comes back from a minute
+of locked screen a minute shorter rather than a second. A round that ran out while the
+screen was off is over when it comes back on, horn and all. Atoshibaraku is the call for
+a fight with under fifteen seconds left, so catching up *past* fifteen still calls it,
+late, rather than skipping the round that stepped over the reading without landing on it.
+
 ### The foul circles
 
 Five circles per corner, and the fifth of them hands the fight to the other side, so the
@@ -301,6 +311,11 @@ Basic settings are quick and easy way to start the timer. You can set:
 - audio on/off
 
 Once started, the timer repeats work and pause interval (the number of repetitions is given by the number of rounds). You can always pause/resume/reset the ongoing exercise.
+
+The clock measures elapsed time here as well, so a device that slept catches up inside
+the interval that was running. It stops at that interval's boundary rather than running
+the whole series forward - coming back to a training that finished in your pocket would
+be a burst of beeps for rounds nobody did.
 
 ### Advanced settings
 

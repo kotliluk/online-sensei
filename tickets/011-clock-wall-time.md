@@ -2,7 +2,7 @@
 id: 011
 slug: clock-wall-time
 title: Hodiny mají měřit uplynulý čas, ne počítat tiky
-status: approved
+status: review
 branch: clock-wall-time
 ---
 
@@ -148,3 +148,99 @@ zároveň s přepisem.
 
 Testy z ticketu 008 (`src/logic/timing/tests/`) pauzovací aritmetiku všech tří tříd hlídají,
 takže přepis má proti čemu běžet.
+
+### 2026-08-28
+
+Paralelní revieweři **neběželi** — tahle session je má zakázané spouštět, takže review
+proběhlo jako vlastní kritický průchod plus mutační testování nového kódu. Nálezy jsou
+dva a oba jsou v diffu opravené:
+
+- `pausableInterval.ts` · **hodiny se zastaví, když se systémový čas přetočí dozadu.**
+  Míření na absolutní okamžik je to, co kupuje dopočítávání, a zároveň to otevírá díru,
+  kterou `setInterval` neměl: telefon, co si mid-zápas stáhne síťový čas nebo dostane ručně
+  přenastavenou časovou zónu, odsune hledaný okamžik pryč od čekání. Bez ošetření to
+  znamená stojící hodiny na celou dobu korekce — přesně ta porucha, kvůli které tenhle
+  ticket vznikl, jen novými dveřmi. Čekání je teď zastropované na jeden interval; ověřeno
+  testem, který bez opravy dostane dva tiky za čtyři sekundy.
+- `pausableInterval.ts` · **pomalá verze původní vady.** Mutace mřížkové aritmetiky
+  (`nextTickAt += …` → přepočet od aktuálního okamžiku) neshodila **nic**. Tik, který si
+  další nastavuje od momentu, kdy byl doopravdy zavolán, si to zpoždění nechává místo aby
+  ho pohltil — a prohlížeč je pozdě pokaždé. Pětina sekundy na sekundu je čtyřminutové kolo
+  trvající 4:48. Zamčeno testem, který nechá spánek skončit v půlce sekundy a kontroluje,
+  že další tik dosedne na tu sekundu, ne na novou.
+
+**Mutační test:** 12 mutací nového kódu napříč `pausableInterval.ts`, `pausableTimeout.ts`
+a oběma obrazovkami. Po doplnění testu výš je **12 z 12 zabitých**.
+
+## D — Hotovo
+
+Přepis `PausableInterval` z počítání callbacků na měření `Date.now()`, oprava
+`PausableTimeout` a sjednocení čtení hodin ve všech třech třídách. Pět commitů,
+PR [#31](https://github.com/kotliluk/online-sensei/pull/31).
+
+| Soubor | Co se stalo |
+| --- | --- |
+| `src/logic/timing/pausableInterval.ts` | řetěz timeoutů na absolutní mřížce, callback dostává počet uplynulých intervalů, explicitní `running` |
+| `src/logic/timing/pausableTimeout.ts` | vystřelení vynuluje id; `resume()` zvedne jen to, co položila pauza |
+| `src/logic/timing/pausableStopwatch.ts` | `new Date().getTime()` → `Date.now()`, beze změny chování |
+| `KumiteTimerScreen.tsx` | `handleTick(elapsedSeconds)`, atoshibaraku na překročení 15; **odešel** workaround `phase === 'finished'` i `phaseRef`, který ho živil |
+| `IntervalTimerScreen.tsx` | odečet uplynulých sekund s ořezem na nule |
+
+Testy **483 → 498**. Produkční soubory +130 / −73 řádků, ale samotného kódu (bez komentářů
+a prázdných řádků) **+66 / −59, čili netto sedm řádků** — mřížka a `running` stojí zhruba
+tolik, kolik ušetřil zrušený workaround v kumite. Zbytek přírůstku jsou komentáře: proč
+absolutní okamžik, proč strop na čekání, proč atoshibaraku na překročení.
+
+### Akceptační kritéria
+
+| # | Stav | Čím |
+| --- | --- | --- |
+| 1 | splněno | `pausableInterval.test.ts` → `catches up the intervals the event loop slept through` |
+| 2 | splněno | `reports a whole slept-through gap in one call, not one call per interval` |
+| 3 | splněno | `stays stopped when the callback is what paused it` |
+| 4 | splněno | pět původních pauzovacích testů beze změny + `a pause is a pause however long the device sleeps through it` |
+| 5 | splněno | `KumiteTimerSignals.test.tsx` → `the clock catches up the seconds the device slept through` (`1:28`, proti `1:58` před opravou) |
+| 6 | splněno | `a fight that runs out while the device sleeps sounds the horn once` + `the log records one end…` |
+| 7 | splněno | `atoshibaraku sounds when a sleep carries the clock past fifteen seconds` + původní `setting the time by hand does not sound anything` |
+| 8 | splněno | `IntervalTimerScreen.test.tsx` → `catches up the seconds slept through inside the interval`, `stops at the end of the interval…` |
+| 9 | splněno | tamtéž + původní `the clock never goes negative` |
+| 10 | splněno | `pausableTimeout.test.ts` → `a spent timeout is not running, and pausing it does not fire it again` |
+| 11 | splněno | typecheck 0, lint 0 errors / 59 warnings (baseline 59 — žádný nový), build prochází |
+| 12 | **nesplněno** | viz níž |
+
+Nad rámec kritérií přibylo ošetření přetočeného systémového času a test mřížky — oboje
+z review, oboje popsané výš.
+
+### Ověřeno na
+
+**Na žádném reálném zařízení. Tohle je ten ticket, u kterého to chybí nejvíc** — celý
+existuje kvůli tomu, co dělá zamčený telefon, a to je přesně věc, kterou jsdom se
+zfalšovanými timery nedokáže zastoupit. Testy simulují spánek tím, že rozejdou `Date.now()`
+s frontou timerů; skutečný iOS navíc suspenduje JS úplně, může audio na probuzení odmítnout
+a Safari má vlastní režim throttlingu na pozadí.
+
+Co zkusit přes `yarn dev:https` z telefonu:
+
+1. **Kumite, zamčená obrazovka.** Spusť dvouminutový zápas, zamkni telefon na minutu,
+   odemkni. Hodiny mají ukazovat cca `1:00`, ne `1:59`.
+2. **Kumite, konec ve spánku.** Spusť zápas na 10 s, zamkni na minutu, odemkni. Zápas má
+   být ukončený, v logu **jeden** `END` — a hlavně: **ozve se roh při probuzení?** Pokud ho
+   iOS spolkne, je to k rozhodnutí (viz Předpoklady, konec se pouští i skokem).
+3. **Kumite, atoshibaraku přes hranici.** Zápas na 20 s, zamknout na ~8 s, odemknout —
+   `0:11` a atoshibaraku.
+4. **Interval timer.** Série 10 s práce / 5 s pauza, zamknout na 4 s — má ukazovat `5`.
+   Zamknout na minutu — má stát na začátku pauzy, ne přeskočit celou sérii.
+5. **Záložka na pozadí** (ne zamčení): totéž na desktopu s přepnutím na jinou záložku,
+   kde prohlížeč timery jen throttluje.
+
+### Co zůstalo
+
+- **Dopočítání přes hranici intervalu** v interval timeru — vědomě neuděláno, důvod je
+  v Předpokladech. Chce vlastní ticket a jiný tvar stavu.
+- **`PausableStopwatch` má stejnou expozici na přetočený systémový čas** jako měl interval
+  před opravou (hlásí `now - lastStart`). Neošetřeno: nemá plánovač, který by se dal
+  zaseknout, takže se to projeví chybou v odečtu, ne stojícími hodinami. Kandidát do 016.
+- **`Date.now()` proti `performance.now()`** — monotónní hodiny by přetočení systémového
+  času vyřešily z principu, ale nechovají se stejně přes suspend napříč prohlížeči a
+  `PausableStopwatch` už `Date.now()` používá. Zvoleno sjednocení + strop, ne třetí způsob
+  měření času ve stejné složce.
