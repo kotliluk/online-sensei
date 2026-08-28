@@ -28,7 +28,7 @@ export class PausableStopwatch {
     if (this.intervalId !== undefined) {
       clearInterval(this.intervalId)
       this.intervalId = undefined
-      const now = new Date().getTime()
+      const now = Date.now()
       this.elapsedBefore += now - this.lastStart
       this.callback(this.elapsedBefore, true)
     }
@@ -52,11 +52,11 @@ export class PausableStopwatch {
     }
 
     this.intervalId = setInterval(() => {
-      const now = new Date().getTime()
+      const now = Date.now()
       const elapsedNow = now - this.lastStart
       this.callback(this.elapsedBefore + elapsedNow, false)
     }, this.callbackInterval)
-    this.lastStart = new Date().getTime()
+    this.lastStart = Date.now()
   }
 
   stop (): void {
