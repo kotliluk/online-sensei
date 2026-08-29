@@ -1,0 +1,50 @@
+@use 'src/styles' as *;
+@use '../modal/mixins' as *;
+
+
+$padding: 30px;
+$btnHeight: 2.5rem;
+
+// deliberately the same shape as `.leave-fight-modal` from ticket 003: it asks the same
+// kind of question, and two leave questions that look different would read as two
+// different kinds of warning
+.leave-screen-modal {
+  @include modal-window();
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: $padding;
+
+    @include themed() {
+      background-color: t($primary-color);
+    }
+
+    .buttons {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .cancel-btn {
+      @include modal-footer-btn();
+      @include button-color($red);
+
+      width: auto;
+      min-width: $button-long-width;
+      height: $btnHeight;
+    }
+
+    .back-btn {
+      @include modal-footer-btn();
+      @include button-color($orange);
+
+      height: $btnHeight;
+    }
+  }
+}
