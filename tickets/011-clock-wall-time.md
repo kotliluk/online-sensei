@@ -201,49 +201,55 @@ absolutní okamžik, proč strop na čekání, proč atoshibaraku na překročen
 | 4 | splněno | pět původních pauzovacích testů beze změny + `a pause is a pause however long the device sleeps through it` |
 | 5 | splněno | `KumiteTimerSignals.test.tsx` → `the clock catches up the seconds the device slept through` (`1:28`, proti `1:58` před opravou) |
 | 6 | splněno | `a fight that runs out while the device sleeps sounds the horn once` + `the log records one end…` |
-| 7 | splněno testem, **na zařízení neprokázáno** | `atoshibaraku sounds when a sleep carries the clock past fifteen seconds` + původní `setting the time by hand does not sound anything`; na telefonu to blokuje vadný asset, viz „Ověřeno na" |
+| 7 | splněno; na zařízení **zpola** | `atoshibaraku sounds when a sleep carries the clock past fifteen seconds` + původní `setting the time by hand does not sound anything`. Že hraje, ověřeno na Androidu; že se pouští na překročení, slyšet nejde — viz „Ověřeno na" |
 | 8 | splněno | `IntervalTimerScreen.test.tsx` → `catches up the seconds slept through inside the interval`, `stops at the end of the interval…` |
 | 9 | splněno | tamtéž + původní `the clock never goes negative` |
 | 10 | splněno | `pausableTimeout.test.ts` → `a spent timeout is not running, and pausing it does not fire it again` |
 | 11 | splněno | typecheck 0, lint 0 errors / 59 warnings (baseline 59 — žádný nový), build prochází |
-| 12 | splněno | ověřeno na iPhonu 2026-08-29, viz „Ověřeno na" |
+| 12 | splněno | ověřeno na Androidu 2026-08-29, viz „Ověřeno na" |
 
 Nad rámec kritérií přibylo ošetření přetočeného systémového času a test mřížky — oboje
 z review, oboje popsané výš.
 
 ### Ověřeno na
 
-**iPhone, Safari, přes `yarn dev:https` na lokální síti — 2026-08-29.** A jeden desktop
-(Mac / Chrome) pro srovnání. Prošlo pět scénářů; hlavní věc, kvůli které ticket vznikl,
-na zařízení **funguje**, a vypadl přitom jeden nález, který s touhle změnou nesouvisí.
+**Android (Motorola), přes `yarn dev:https` na lokální síti — 2026-08-29.** A jeden desktop
+(Mac / Chrome) pro srovnání. To, kvůli čemu ticket vznikl, na zařízení **funguje**.
 
 | # | Scénář | Výsledek |
 | --- | --- | --- |
 | 1 | kumite, zhasnutá obrazovka | **OK** — čas se po rozsvícení dopočítal |
-| 2 | kumite, konec ve tmě (30 s zápas, ~40 s zhasnuto) | **OK s výhradou** — čas doběhl, konec zazněl **ve tmě ve správnou chvíli**, ale zvuk byl zkomolený a kratší. Log: jeden `START` na `0:30`, jeden `END` na `0:00` |
-| 3 | kumite, atoshibaraku přes hranici (30 s zápas, ~20 s zhasnuto) | **atoshibaraku nezaznělo**; zbývajících 10 s doběhlo a konec zazněl správně |
+| 2 | kumite, konec ve tmě (30 s zápas, ~40 s zhasnuto) | **OK s výhradou** — čas doběhl, konec zazněl **ve tmě ve správnou chvíli**, ale zkomoleně a kratší. Atoshibaraku ve tmě neslyšet. Log: jeden `START` na `0:30`, jeden `END` na `0:00` |
+| 3 | kumite, atoshibaraku přes hranici (30 s zápas, ~20 s zhasnuto) | atoshibaraku ve tmě neslyšet; zbývajících 10 s po rozsvícení doběhlo a konec zazněl správně |
 | 4 | interval timer | chová se, jak je popsáno — dopočítá uvnitř intervalu, na hranici stojí |
 | 5 | desktop Mac / Chrome, přepnutá záložka i uspaný Mac | čas i zvuky správně — **a stejně tak v nasazené verzi**, tedy tam se defekt nikdy neprojevoval |
+| 6 | **kumite s rozsvícenou obrazovkou** (dodatečně, s wake lockem z ticketu 017) | **atoshibaraku i konec zazněly čistě** |
 
-Tři věci z toho stojí za zapsání.
+Dvě věci z toho stojí za zapsání.
 
-**Konec ve tmě zazněl, ale zkomolený.** iOS na zhasnuté obrazovce timery i audio pouští,
-ale dekódování škrtí. Kritérium 6 (jeden konec, jeden `END` v logu) je tím ověřené;
-kvalita zvuku ve tmě je věc, kterou tenhle ticket neopraví — pomůže až to, aby obrazovka
-nezhasla, viz „Co zůstalo".
+**Za zhasnutou obrazovkou je zvuk, ne kód.** Řádek 6 to rozhodl: rozsvícená obrazovka →
+oba signály čistě, zhasnutá → konec zkomolený a atoshibaraku vůbec. Zhasnutý displej
+nechává timery běžet, ale škrtí dekódování audia natolik, že kratší signál zmizí celý.
+Tenhle ticket to neopraví ze strany hodin; opravuje to ticket 017 tím, že obrazovku
+nenechá zhasnout.
 
-**`ATOSHIBARAKU.mp3` je bajt po bajtu `BEEP_A_500ms.mp3`.** Stejné MD5
-(`7d85a90572ba5a452da013eb15b51ec7`), stejných 8821 B; přidal to commit `867bdaa`
-„Add atoshibaraku sound effect." jako kopii pípnutí z Reakcí. **I když se ta větev kódu
-spustí správně, co se ozve je půlvteřinové pípnutí, ne atoshibaraku** — což vysvětluje
-„nezaznělo" ve scénářích 2 a 3, aniž by za tím byla tahle změna. Nález je starší než
-ticket a patří k audiu, ne k hodinám.
+**Kritérium 7 je ověřené jen zpola, a nejde to líp.** Že atoshibaraku hraje, potvrdil
+řádek 6. Že se pouští na **překročení** patnáctky, a ne jen na přesné rovnosti, drží unit
+test — a na telefonu to slyšet nejde, protože jediné, co tu větev spustí, je dopočítání po
+zhasnuté obrazovce, a ta ten signál zároveň spolkne. Stavová část větve ověřená je: po
+rozsvícení hodiny stojí na správné sekundě (řádky 1 a 3).
 
-**Kritérium 7 tím zůstává ověřené jen testem, ne na zařízení.** Že se atoshibaraku pouští
-na *překročení* patnáctky, drží unit test s namockovaným audiem; na telefonu to nejde
-odlišit od „nezaznělo", dokud je asset kopií pípnutí. Rozhodnout to umí jedna dvacetivteřinová
-zkouška: pustit zápas na 20 s **s rozsvícenou obrazovkou** a poslouchat na `0:15`. Ozve-li
-se krátké pípnutí, mechanismus běží a problém je jen v souboru.
+### Otázka k rozhodnutí, ne nález
+
+`public/audio/ATOSHIBARAKU.mp3` a `public/audio/BEEP_A_500ms.mp3` jsou **dva soubory
+s naprosto stejným obsahem** — stejné MD5 (`7d85a90572ba5a452da013eb15b51ec7`), stejných
+8821 bajtů. Atoshibaraku tedy hraje totéž půlvteřinové pípnutí, jaké používá interval
+timer a Reakce; přidal to commit `867bdaa` „Add atoshibaraku sound effect.".
+
+Vyšlo to najevo při hledání, proč atoshibaraku „nezaznělo" — a jako vysvětlení to bylo
+špatně, za to mohla zhasnutá obrazovka. **Otázka zůstává otevřená jen jedna: má atoshibaraku
+znít jako pípnutí?** Když ano, není co řešit a tenhle odstavec může z ticketu pryč. Když
+se má lišit (zvonek, hlas), je to výměna souboru v `public/audio/`, žádná změna kódu.
 
 ### Co zůstalo
 
