@@ -2,7 +2,7 @@
 id: 012
 slug: leave-guard
 title: Logo v hlavičce obchází potvrzení odchodu
-status: approved
+status: review
 branch: leave-guard
 ---
 
@@ -239,6 +239,101 @@ komentář s odkazem.
    Přijato jako známá mezera; patří do `D`, ne mezi kritéria.
 
 
+## D — Hotovo
+
+**Co se udělalo:** Logo v hlavičce přestalo být odkazem na pěti obrazovkách, které mají co
+ztratit (`7239a51`), a prohlížečové zpět i zavření záložky drží nový `LeaveGuard` vedle
+`ModalContainer` (`b89b6aa`). Kvůli `useBlocker` přešel `src/index.tsx` z `<BrowserRouter>`
+na `createBrowserRouter` — jednou splat routou, takže `App` routování dál vlastní.
+Sada je 540 testů (z 507).
+
+**Akceptační kritéria:**
+
+| # | Kritérium | Stav | Čím |
+| - | --------- | ---- | ---- |
+| 1 | Hlavička na pěti obrazovkách není odkaz | splněno | `PageHeader.tsx:26` · test „is not a link at %s" přes všech pět cest |
+| 2 | Na rozcestníku, set-up a zrcadle logo odkaz zůstává | splněno | test „is a link home at %s" (`/`, obě set-up, `/kumite-timer/mirror`) |
+| 3 | Prohlížečové zpět otevře modál a neodejde | splněno | `LeaveGuard.tsx:22` · test „asks before browser back leaves a guarded screen" |
+| 4 | Potvrzení odejde, zrušení zůstane a stav je nedotčený | splněno; stav **konstrukcí** | testy „answered yes" / „answered no" / „the cross … as answering no". Že je stav nedotčený, nedokazuje test, ale to, že zablokovaná navigace obrazovku neodmountuje — patří to na telefon, ne do mocku |
+| 5 | Zavření a reload vyvolá dialog jen na chráněné obrazovce | splněno | testy „asks the browser to confirm closing…", „lets a screen with nothing to lose close…", „stops asking once the guarded screen is left" |
+| 6 | Vlastní navigace appky se neptá | splněno | test „lets the app navigate away…"; mutace `NavigationType.Pop` → `true` ho shodí |
+| 7 | Každý nový text v `cs.ts` i `en.ts` | splněno | `leaveScreenModal` ve všech třech souborech; `Translation` to vynutí typecheckem |
+| 8 | Zrcadlo funguje dál bez ptaní | splněno | `guardedPaths.ts` ho neobsahuje · testy `isGuardedPath('/kumite-timer/mirror') === false` a „is a link home at /kumite-timer/mirror" |
+
+**Odchylky od B/C:** dvě, obě drobné a obě vynucené linterem.
+
+- `historyAction === 'POP'` neprojde `@typescript-eslint/no-unsafe-enum-comparison` —
+  react-router to vrací jako enum `Action`, reexportovaný jako `NavigationType`. Je z toho
+  `NavigationType.Pop`, což je stejně čitelnější.
+- Analýza počítala s komponentou `Root` v `index.tsx`. Ten soubor nic neexportuje, takže
+  komponenta v něm stojí warning `react-refresh/only-export-components` — a cílem je
+  nepřidat ani jeden. Element routy je proto napsaný rovnou na místě.
+
+**Gotchas:**
+
+- **`useBlocker` spadne pod `<BrowserRouter>`**, ne graciézně — `invariant` v
+  `useDataRouterContext`. Kdo by ho chtěl použít někde jinde, musí být pod
+  `RouterProvider`; testy si na to musí postavit `createMemoryRouter`, `MemoryRouter`
+  nestačí.
+- **`waitFor` uspěje hned na prvním pokusu**, takže „po kliknutí je cesta pořád stejná"
+  je tautologie: pravda je to i vteřinu předtím, než navigace dorazí. Mutace to odhalila
+  (viz Review). Čeká se místo toho na zmizení modálu, které nastane u obou odpovědí —
+  teprve pak má smysl se ptát, kde jsme.
+- **Křížek ve `ModalHeader` má default `onClose` do redux `modalWindow`.** Modál, který
+  redux nepoužívá, ho musí přebít, jinak je z křížku tlačítko, které nic nedělá a nechá
+  navigaci viset zablokovanou.
+- **Splat routa nechá descendant `<Routes>` na pokoji.** Všech 12 existujících souborů
+  s `MemoryRouter` prošlo beze změny — to byl v `C` test toho, že je migrace minimální,
+  a splnil se.
+
+**Ověřeno na:** zatím **jen automatickými testy** — 540 unit a Testing Library testů,
+z toho 24 nových, a 10 mutací nového kódu, všech 10 zabitých.
+
+**Na telefonu neověřeno a ověřit se to musí**, protože se změna dotýká historie prohlížeče
+a `beforeunload`, tedy přesně té třídy věcí, které se tomuhle repu chovají na zařízení
+jinak než v jsdom. Pusť `yarn dev:https` a na Androidu zkus:
+
+1. Rozjetý kumite zápas → **gesto zpět od hrany**. Má se zeptat, ne odejít.
+2. V té otázce **Zpět** → zůstat v zápase, čas běží dál, log i skóre nedotčené.
+3. Znovu gesto zpět → **Odejít** → má skončit na set-up obrazovce.
+4. Na rozjetém zápase **ťuknout na logo** v hlavičce → nemá se stát nic.
+5. Na set-up obrazovce ťuknout na logo → má odejít na rozcestník.
+6. Rozjetý zápas → **zavřít záložku**. Chrome se má zeptat; jestli se nezeptá, je to ta
+   známá mezera, ne regrese.
+7. Otevřít `/kumite-timer/mirror` ve druhém okně → má jít zavřít a opustit bez ptaní.
+
 ## Review
 
-<!-- doplní /ticket-review -->
+Branch: `leave-guard` · revieweři: **žádní** — paralelní revieweři se v téhle session
+nepouštěli, protože je uživatel nevyžádal. Review je vlastní průchod plus **mutační
+testování**, stejně jako u ticketu 011.
+
+**Opravit (90–100)**
+
+- [major] `src/components/common/leaveGuard/tests/LeaveGuard.test.tsx` · Test „zrušení
+  zůstane na obrazovce" nedokázal chytit záměnu `reset()` za `proceed()`: `waitFor` na
+  nezměněnou cestu uspěje na první pokus, tedy dřív, než by navigace stihla dorazit. Test
+  tvrdil něco, co je pravda i v rozbité verzi. → Čeká se na zmizení modálu (nastane u obou
+  odpovědí) a teprve pak se čte cesta. · **✅ opraveno**
+- [major] `src/components/common/leaveGuard/LeaveGuard.tsx` · Křížek v hlavičce modálu
+  nebyl pokrytý žádným testem, a přitom by bez `onClose={stay}` spadl na default
+  `ModalHeader`, který dispatchuje do redux `modalWindow`. Tenhle modál redux nepoužívá,
+  takže by z křížku bylo tlačítko, které nic nedělá — a navigace by zůstala viset
+  zablokovaná. → Přidán test „treats the cross in the header as answering no". ·
+  **✅ opraveno**
+
+**Zvážit (80–89)**
+
+- `src/components/common/leaveGuard/LeaveGuard.scss` · Vypadá stejně jako
+  `LeaveFightModal.scss` z ticketu 003 a je to skoro řádek za řádkem totéž. Nabízí se
+  vytáhnout sdílený mixin do `common/modal/mixins.scss`. Neudělal jsem to schválně: je to
+  refaktor cizího ticketu uvnitř tohohle a bez vizuální kontroly obou modálů by to byla
+  změna naslepo.
+
+**Bez nálezů:** kritérium 6 (vlastní navigace appky se neptá) drží konstrukce, ne podmínka
+— mutace `historyAction === NavigationType.Pop` → `true` shodila přesně ten test, který
+ji měla shodit.
+
+**Mutační testování:** 10 mutací napříč `guardedPaths.ts`, `PageHeader.tsx`
+a `LeaveGuard.tsx`. Po dvou opravách výš **10 z 10 zabito**.
+
