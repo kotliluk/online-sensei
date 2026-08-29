@@ -201,37 +201,49 @@ absolutní okamžik, proč strop na čekání, proč atoshibaraku na překročen
 | 4 | splněno | pět původních pauzovacích testů beze změny + `a pause is a pause however long the device sleeps through it` |
 | 5 | splněno | `KumiteTimerSignals.test.tsx` → `the clock catches up the seconds the device slept through` (`1:28`, proti `1:58` před opravou) |
 | 6 | splněno | `a fight that runs out while the device sleeps sounds the horn once` + `the log records one end…` |
-| 7 | splněno | `atoshibaraku sounds when a sleep carries the clock past fifteen seconds` + původní `setting the time by hand does not sound anything` |
+| 7 | splněno testem, **na zařízení neprokázáno** | `atoshibaraku sounds when a sleep carries the clock past fifteen seconds` + původní `setting the time by hand does not sound anything`; na telefonu to blokuje vadný asset, viz „Ověřeno na" |
 | 8 | splněno | `IntervalTimerScreen.test.tsx` → `catches up the seconds slept through inside the interval`, `stops at the end of the interval…` |
 | 9 | splněno | tamtéž + původní `the clock never goes negative` |
 | 10 | splněno | `pausableTimeout.test.ts` → `a spent timeout is not running, and pausing it does not fire it again` |
 | 11 | splněno | typecheck 0, lint 0 errors / 59 warnings (baseline 59 — žádný nový), build prochází |
-| 12 | **nesplněno** | viz níž |
+| 12 | splněno | ověřeno na iPhonu 2026-08-29, viz „Ověřeno na" |
 
 Nad rámec kritérií přibylo ošetření přetočeného systémového času a test mřížky — oboje
 z review, oboje popsané výš.
 
 ### Ověřeno na
 
-**Na žádném reálném zařízení. Tohle je ten ticket, u kterého to chybí nejvíc** — celý
-existuje kvůli tomu, co dělá zamčený telefon, a to je přesně věc, kterou jsdom se
-zfalšovanými timery nedokáže zastoupit. Testy simulují spánek tím, že rozejdou `Date.now()`
-s frontou timerů; skutečný iOS navíc suspenduje JS úplně, může audio na probuzení odmítnout
-a Safari má vlastní režim throttlingu na pozadí.
+**iPhone, Safari, přes `yarn dev:https` na lokální síti — 2026-08-29.** A jeden desktop
+(Mac / Chrome) pro srovnání. Prošlo pět scénářů; hlavní věc, kvůli které ticket vznikl,
+na zařízení **funguje**, a vypadl přitom jeden nález, který s touhle změnou nesouvisí.
 
-Co zkusit přes `yarn dev:https` z telefonu:
+| # | Scénář | Výsledek |
+| --- | --- | --- |
+| 1 | kumite, zhasnutá obrazovka | **OK** — čas se po rozsvícení dopočítal |
+| 2 | kumite, konec ve tmě (30 s zápas, ~40 s zhasnuto) | **OK s výhradou** — čas doběhl, konec zazněl **ve tmě ve správnou chvíli**, ale zvuk byl zkomolený a kratší. Log: jeden `START` na `0:30`, jeden `END` na `0:00` |
+| 3 | kumite, atoshibaraku přes hranici (30 s zápas, ~20 s zhasnuto) | **atoshibaraku nezaznělo**; zbývajících 10 s doběhlo a konec zazněl správně |
+| 4 | interval timer | chová se, jak je popsáno — dopočítá uvnitř intervalu, na hranici stojí |
+| 5 | desktop Mac / Chrome, přepnutá záložka i uspaný Mac | čas i zvuky správně — **a stejně tak v nasazené verzi**, tedy tam se defekt nikdy neprojevoval |
 
-1. **Kumite, zamčená obrazovka.** Spusť dvouminutový zápas, zamkni telefon na minutu,
-   odemkni. Hodiny mají ukazovat cca `1:00`, ne `1:59`.
-2. **Kumite, konec ve spánku.** Spusť zápas na 10 s, zamkni na minutu, odemkni. Zápas má
-   být ukončený, v logu **jeden** `END` — a hlavně: **ozve se roh při probuzení?** Pokud ho
-   iOS spolkne, je to k rozhodnutí (viz Předpoklady, konec se pouští i skokem).
-3. **Kumite, atoshibaraku přes hranici.** Zápas na 20 s, zamknout na ~8 s, odemknout —
-   `0:11` a atoshibaraku.
-4. **Interval timer.** Série 10 s práce / 5 s pauza, zamknout na 4 s — má ukazovat `5`.
-   Zamknout na minutu — má stát na začátku pauzy, ne přeskočit celou sérii.
-5. **Záložka na pozadí** (ne zamčení): totéž na desktopu s přepnutím na jinou záložku,
-   kde prohlížeč timery jen throttluje.
+Tři věci z toho stojí za zapsání.
+
+**Konec ve tmě zazněl, ale zkomolený.** iOS na zhasnuté obrazovce timery i audio pouští,
+ale dekódování škrtí. Kritérium 6 (jeden konec, jeden `END` v logu) je tím ověřené;
+kvalita zvuku ve tmě je věc, kterou tenhle ticket neopraví — pomůže až to, aby obrazovka
+nezhasla, viz „Co zůstalo".
+
+**`ATOSHIBARAKU.mp3` je bajt po bajtu `BEEP_A_500ms.mp3`.** Stejné MD5
+(`7d85a90572ba5a452da013eb15b51ec7`), stejných 8821 B; přidal to commit `867bdaa`
+„Add atoshibaraku sound effect." jako kopii pípnutí z Reakcí. **I když se ta větev kódu
+spustí správně, co se ozve je půlvteřinové pípnutí, ne atoshibaraku** — což vysvětluje
+„nezaznělo" ve scénářích 2 a 3, aniž by za tím byla tahle změna. Nález je starší než
+ticket a patří k audiu, ne k hodinám.
+
+**Kritérium 7 tím zůstává ověřené jen testem, ne na zařízení.** Že se atoshibaraku pouští
+na *překročení* patnáctky, drží unit test s namockovaným audiem; na telefonu to nejde
+odlišit od „nezaznělo", dokud je asset kopií pípnutí. Rozhodnout to umí jedna dvacetivteřinová
+zkouška: pustit zápas na 20 s **s rozsvícenou obrazovkou** a poslouchat na `0:15`. Ozve-li
+se krátké pípnutí, mechanismus běží a problém je jen v souboru.
 
 ### Co zůstalo
 
