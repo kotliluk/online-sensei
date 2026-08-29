@@ -14,6 +14,7 @@ import {
 import { setNotActualKumiteTimer, setTournamentFight } from '../../../redux/kumiteTimer/actions'
 import { FighterStats } from '../fighterStats/FighterStats'
 import useControlledState from '../../../logic/hooks/useControledState'
+import { useWakeLock } from '../../../logic/hooks/useWakeLock'
 import { LS_KEYS } from '../utils'
 import { FightStats } from '../fightStats/FightStats'
 import { LIMITS } from '../../../redux/kumiteTimer/utils'
@@ -73,6 +74,9 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [isPaused, setIsPaused] = useState(true)
   const [clock] = useState<PausableInterval>(() => new PausableInterval(emptyFunc, 0))
+
+  // the fight is watched from the table and from the hall, with nobody's finger on the phone
+  useWakeLock(isActual)
 
   const [log, setLog] = useState<FightLogEntry[]>([])
   /** How long the log was when this fight was opened - see {@link handleGoBack}. */
