@@ -3,18 +3,25 @@ import { Provider as ReduxProvider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { LeaveGuard } from '../LeaveGuard'
 import { store } from '../../../../redux/store'
-import { setTranslation } from '../../../../redux/page/actions'
+import { setLeaveQuestion, setTranslation } from '../../../../redux/page/actions'
 import { EN } from '../../../../logic/translation/en'
+import { LeaveQuestion } from '../../../../types/leaveQuestion'
 
 
-const t = EN.leaveScreenModal
+const session = EN.leaveScreenModal
+const fight = EN.kumiteTimer.timerScreen.leaveFightModal
 
 /**
  * A data router, because that is what `useBlocker` needs - the app's own
  * `<BrowserRouter>` does not provide one, which is the whole reason `src/index.tsx`
  * changed in this ticket.
  */
-const renderGuard = (entries: string[]): ReturnType<typeof createMemoryRouter> => {
+const renderGuard = (
+  leaveQuestion: LeaveQuestion | null,
+  entries: string[] = ['/kumite-timer/set-up', '/kumite-timer'],
+): ReturnType<typeof createMemoryRouter> => {
+  store.dispatch(setLeaveQuestion(leaveQuestion))
+
   const router = createMemoryRouter(
     [{ path: '*', element: <LeaveGuard /> }],
     { initialEntries: entries, initialIndex: entries.length - 1 },
@@ -56,7 +63,8 @@ const clickCross = (): void => {
  */
 const answerSettles = async (): Promise<void> => {
   await waitFor(() => {
-    expect(screen.queryByRole('heading', { name: t.title })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: session.title })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: fight.title })).not.toBeInTheDocument()
   })
 }
 
@@ -75,25 +83,63 @@ describe('LeaveGuard', () => {
     store.dispatch(setTranslation('EN'))
   })
 
-  test('asks before browser back leaves a guarded screen', async () => {
+  afterEach(() => {
+    store.dispatch(setLeaveQuestion(null))
+  })
+
+  test('asks before browser back leaves a screen with something to lose', async () => {
     // arrange
-    const router = renderGuard(['/kumite-timer/set-up', '/kumite-timer'])
+    const router = renderGuard('SESSION')
 
     // act
     await goBack(router)
 
     // assert
-    expect(screen.getByRole('heading', { name: t.title })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: session.title })).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/kumite-timer')
+  })
+
+  /**
+   * A fight can be saved, so its question is about saving rather than about losing, and
+   * it borrows the wording ticket 003 already settled on. The generic one would read
+   * wrong on a tournament fight, which is exactly what the device check reported.
+   */
+  test('asks a fight about saving rather than about losing', async () => {
+    // arrange
+    const router = renderGuard('FIGHT')
+
+    // act
+    await goBack(router)
+
+    // assert
+    expect(screen.getByRole('heading', { name: fight.title })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: fight.confirm })).toBeInTheDocument()
+  })
+
+  /**
+   * The tournament overview publishes no question: the tree and the group are written to
+   * `localStorage` and survive being left, so there is nothing to protect. Neither is a
+   * fight nothing has happened in yet.
+   */
+  test('does not ask when the screen has nothing to lose', async () => {
+    // arrange
+    const router = renderGuard(null)
+
+    // act
+    await goBack(router)
+
+    // assert
+    expect(screen.queryByRole('heading', { name: session.title })).not.toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/kumite-timer/set-up')
   })
 
   test('leaves once the question is answered yes', async () => {
     // arrange
-    const router = renderGuard(['/kumite-timer/set-up', '/kumite-timer'])
+    const router = renderGuard('SESSION')
     await goBack(router)
 
     // act
-    click(t.confirm)
+    click(session.confirm)
     await answerSettles()
 
     // assert
@@ -102,7 +148,7 @@ describe('LeaveGuard', () => {
 
   test('stays put once the question is answered no', async () => {
     // arrange
-    const router = renderGuard(['/kumite-timer/set-up', '/kumite-timer'])
+    const router = renderGuard('SESSION')
     await goBack(router)
 
     // act
@@ -121,7 +167,7 @@ describe('LeaveGuard', () => {
    */
   test('treats the cross in the header as answering no', async () => {
     // arrange
-    const router = renderGuard(['/kumite-timer/set-up', '/kumite-timer'])
+    const router = renderGuard('SESSION')
     await goBack(router)
 
     // act
@@ -139,9 +185,9 @@ describe('LeaveGuard', () => {
    * history action rather than by any flag the screens would have to keep: the app
    * pushes, the browser pops.
    */
-  test('lets the app navigate away from a guarded screen without asking', async () => {
+  test('lets the app navigate away without asking', async () => {
     // arrange
-    const router = renderGuard(['/kumite-timer'])
+    const router = renderGuard('SESSION', ['/kumite-timer'])
 
     // act
     await act(async () => {
@@ -149,25 +195,13 @@ describe('LeaveGuard', () => {
     })
 
     // assert
-    expect(screen.queryByRole('heading', { name: t.title })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: session.title })).not.toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/kumite-timer/set-up')
   })
 
-  test('does not ask when back leaves a screen with nothing to lose', async () => {
+  test('asks the browser to confirm closing a screen with something to lose', () => {
     // arrange
-    const router = renderGuard(['/', '/kumite-timer/set-up'])
-
-    // act
-    await goBack(router)
-
-    // assert
-    expect(screen.queryByRole('heading', { name: t.title })).not.toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/')
-  })
-
-  test('asks the browser to confirm closing a guarded screen', () => {
-    // arrange
-    renderGuard(['/group-stopwatch'])
+    renderGuard('SESSION')
 
     // act
     const event = fireBeforeUnload()
@@ -178,7 +212,7 @@ describe('LeaveGuard', () => {
 
   test('lets a screen with nothing to lose close without a word', () => {
     // arrange
-    renderGuard(['/group-stopwatch/set-up'])
+    renderGuard(null)
 
     // act
     const event = fireBeforeUnload()
@@ -188,18 +222,18 @@ describe('LeaveGuard', () => {
   })
 
   /**
-   * The listener has to come off on the way out, not only on unmount. The guard is
-   * mounted for the whole life of the app, so a listener left behind would go on
-   * asking about closing the tab from the main page for the rest of the session.
+   * The listener has to come off the moment there is nothing left to lose, not only on
+   * unmount. The guard is mounted for the whole life of the app, so a listener left
+   * behind would go on asking about closing the tab from the main page.
    */
-  test('stops asking once the guarded screen is left', async () => {
+  test('stops asking once there is nothing left to lose', () => {
     // arrange
-    const router = renderGuard(['/group-stopwatch'])
+    renderGuard('SESSION')
     expect(fireBeforeUnload().defaultPrevented).toBe(true)
 
     // act
-    await act(async () => {
-      await router.navigate('/group-stopwatch/set-up')
+    act(() => {
+      store.dispatch(setLeaveQuestion(null))
     })
 
     // assert

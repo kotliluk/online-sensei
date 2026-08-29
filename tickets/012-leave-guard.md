@@ -66,6 +66,23 @@ Odpovědi na tři otevřené otázky z `C`. Uživatel:
 
  pokračuj"
 
+### 2026-08-29 (ověření na Androidu)
+
+Testy ze sekce `D` proběhly na telefonu: 1–5 a 7 ok, u 6 se mobil neptá a PC ano
+(„za mě je to takhle ok, neřeš"). K tomu pět připomínek. Uživatel:
+
+„- asi bych pro konzistenci dal potvrzovací dialog i na UI tlačítko „Zpět" u jednotlivého
+ zápasu kumite
+ - přijde mi, že mobilní/prohlížečové tlačítko „Zpět" nefunguje v obrazovkách nastavení -
+ nic nedělá (ani návrat, ani dialog), je to schválně? na těchto obrazovkách bych možnost
+ návratu nechal normálně
+ - změnil bych hlášku „Nic z toho, co je tady rozdělané, se neukládá — odchodem o to
+ přijdeš." v Kumite turnaji, tam toto znění nedává smysl
+ - mobilní/prohlížečové tlačítko „Zpět" dá modal i na stránce s přehledem turnaje
+ (zobrazení skupiny/pavouka) - tam není o co přijít, nedával bych ho tam
+ - UI tlačítko „Zpět" v kumite zápase v turnaji odlišuje, kdy se něco změnilo a podle toho
+ ne/zobrazí modal, ale mobilní/prohlížečové tlačítko se ptá vždy"
+
 ## B — Zadání
 
 **Problém:** Logo v hlavičce je obyčejný odkaz nad všemi obrazovkami a na telefonu je to
@@ -95,21 +112,26 @@ tlačítku „Zpět" uvnitř obrazovky, takže hlídá jednu cestu ze čtyř.
 - **Změna chování tlačítka „Zpět" uvnitř obrazovek.** Podmínka z ticketu 003 (ptát se jen
   když log narostl) zůstává, jak je.
 
-**Akceptační kritéria:**
+**Akceptační kritéria** (přepsaná po ověření na Androidu — původní znění viz commit
+`e9f26cd`; měnila se kritéria 1, 3 a 5, protože otázka se nově řídí stavem, ne cestou):
 
-- [ ] Na každé z pěti obrazovek hlavička pořád ukazuje „OnlineSensei", ale není to odkaz —
+- [ ] Hlavička ukazuje „OnlineSensei", ale **není odkaz, dokud má obrazovka co ztratit** —
       v DOM není `<a>` a klik nikam nenaviguje.
-- [ ] Na rozcestníku, set-up obrazovkách a zrcadle je logo dál odkaz na `/`.
-- [ ] Prohlížečové zpět z běžící obrazovky neodejde, ale otevře modál appky s otázkou.
-- [ ] Potvrzení v modálu odejde tam, kam zpět mířilo; zrušení zůstane na obrazovce
-      a stav je nedotčený — čas běží dál, log, časy i pozice v sérii jsou stejné.
-- [ ] Zavření záložky nebo reload na běžící obrazovce vyvolá potvrzení prohlížeče;
-      na set-up obrazovce a rozcestníku ne.
-- [ ] Vlastní navigace appky se neptá: uložení turnajového zápasu, tlačítko „Zpět",
-      dojetí série ani redirect po `setNotActual*` modál neotevřou.
+- [ ] Na rozcestníku, set-up obrazovkách, zrcadle **a na přehledu turnaje** je logo dál
+      odkaz na `/`.
+- [ ] Prohlížečové zpět z obrazovky, která má co ztratit, neodejde, ale otevře modál.
+- [ ] Prohlížečové zpět z obrazovky, kde není o co přijít, **odejde bez ptaní** — přehled
+      turnaje i zápas, ve kterém se ještě nic nestalo.
+- [ ] Potvrzení odejde tam, kam zpět mířilo; zrušení zůstane a stav je nedotčený.
+- [ ] Zavření záložky vyvolá potvrzení prohlížeče jen tam, kde je co ztratit.
+- [ ] Vlastní navigace appky se neptá: uložení zápasu, tlačítko „Zpět", dojetí série ani
+      redirect po `setNotActual*`.
+- [ ] **Tlačítko „Zpět" a prohlížečové zpět dávají stejnou odpověď** — u kumite zápasu obojí
+      podle toho, jestli log narostl, a to i u zápasu mimo turnaj.
+- [ ] **Zápas dostane otázku o uložení**, ne generickou o ztrátě.
+- [ ] Prohlížečové zpět na set-up obrazovkách **normálně funguje** a vrátí o krok zpět.
 - [ ] Každý nový text je v `cs.ts` i v `en.ts`.
-- [ ] Guard nezmění chování na desktopu tak, že by šel obejít otevřením zrcadla
-      ve druhém okně — zrcadlo funguje dál bez ptaní.
+- [ ] Zrcadlo funguje dál bez ptaní.
 
 **Otevřená otázka pro gate:** Má se zpět ptát **vždycky, dokud obrazovka běží**, nebo jen
 **když je co ztratit** (podmínka z ticketu 003)? Jednotné pravidlo je levnější a hlídá
@@ -241,66 +263,77 @@ komentář s odkazem.
 
 ## D — Hotovo
 
-**Co se udělalo:** Logo v hlavičce přestalo být odkazem na pěti obrazovkách, které mají co
-ztratit (`7239a51`), a prohlížečové zpět i zavření záložky drží nový `LeaveGuard` vedle
-`ModalContainer` (`b89b6aa`). Kvůli `useBlocker` přešel `src/index.tsx` z `<BrowserRouter>`
-na `createBrowserRouter` — jednou splat routou, takže `App` routování dál vlastní.
-Sada je 540 testů (z 507).
+**Co se udělalo:** Ve dvou kolech. První (`7239a51`, `b89b6aa`) postavil guard na seznamu
+cest: logo mrtvé na pěti obrazovkách, prohlížečové zpět a `beforeunload` blokované tam.
+Kvůli `useBlocker` přešel `src/index.tsx` z `<BrowserRouter>` na `createBrowserRouter`
+jednou splat routou.
+
+Druhé kolo přišlo z **ověření na Androidu** a otočilo odpověď z gatu: otázku publikuje
+**obrazovka podle svého stavu** (`useLeaveQuestion`), ne cesta. Tím seznam cest zmizel
+úplně — `guardedPaths.ts` je smazaný —, hlavička i guard čtou jednu a tutéž odpověď,
+a tlačítko „Zpět" u kumite zápasu na ni přešlo taky. Sada je 529 testů (z 507).
 
 **Akceptační kritéria:**
 
 | # | Kritérium | Stav | Čím |
 | - | --------- | ---- | ---- |
-| 1 | Hlavička na pěti obrazovkách není odkaz | splněno | `PageHeader.tsx:26` · test „is not a link at %s" přes všech pět cest |
-| 2 | Na rozcestníku, set-up a zrcadle logo odkaz zůstává | splněno | test „is a link home at %s" (`/`, obě set-up, `/kumite-timer/mirror`) |
-| 3 | Prohlížečové zpět otevře modál a neodejde | splněno | `LeaveGuard.tsx:22` · test „asks before browser back leaves a guarded screen" |
-| 4 | Potvrzení odejde, zrušení zůstane a stav je nedotčený | splněno; stav **konstrukcí** | testy „answered yes" / „answered no" / „the cross … as answering no". Že je stav nedotčený, nedokazuje test, ale to, že zablokovaná navigace obrazovku neodmountuje — patří to na telefon, ne do mocku |
-| 5 | Zavření a reload vyvolá dialog jen na chráněné obrazovce | splněno | testy „asks the browser to confirm closing…", „lets a screen with nothing to lose close…", „stops asking once the guarded screen is left" |
-| 6 | Vlastní navigace appky se neptá | splněno | test „lets the app navigate away…"; mutace `NavigationType.Pop` → `true` ho shodí |
-| 7 | Každý nový text v `cs.ts` i `en.ts` | splněno | `leaveScreenModal` ve všech třech souborech; `Translation` to vynutí typecheckem |
-| 8 | Zrcadlo funguje dál bez ptaní | splněno | `guardedPaths.ts` ho neobsahuje · testy `isGuardedPath('/kumite-timer/mirror') === false` a „is a link home at /kumite-timer/mirror" |
+| 1 | Hlavička není odkaz, dokud má obrazovka co ztratit | splněno | `PageHeader.tsx:30` · testy „is not a link while there is a %s to lose" |
+| 2 | Jinde logo odkazem zůstává (i na přehledu turnaje) | splněno | test „is a link home when there is nothing to lose" |
+| 3 | Zpět z obrazovky, která má co ztratit, otevře modál | splněno | test „asks before browser back leaves a screen with something to lose" |
+| 4 | Zpět odkud není o co přijít odejde bez ptaní | splněno | test „does not ask when the screen has nothing to lose" |
+| 5 | Potvrzení odejde, zrušení zůstane a stav je nedotčený | splněno; stav **konstrukcí** | testy „answered yes" / „answered no" / „the cross … as answering no". Zablokovaná navigace obrazovku neodmountuje — ověřeno na telefonu, ne testem |
+| 6 | `beforeunload` jen tam, kde je co ztratit | splněno | tři testy `beforeunload`, včetně odvěšení |
+| 7 | Vlastní navigace appky se neptá | splněno | test „lets the app navigate away…"; mutace `NavigationType.Pop` ho shodí |
+| 8 | Tlačítko „Zpět" a prohlížečové zpět dávají stejnou odpověď | splněno | `hasBeenPlayed` je jediné čtení pro obojí · test „tells the guard a fight is worth a question only once something happens in it" |
+| 9 | Zápas dostane otázku o uložení, ne generickou | splněno | `LeaveGuard.tsx:47` · test „asks a fight about saving rather than about losing" |
+| 10 | Zpět na set-up obrazovkách funguje | splněno; **ověřeno na zařízení** | redirecty jsou `replace` ve čtyřech obrazovkách. jsdom s `MemoryRouter` tuhle historii nemodeluje, takže to test nechytá |
+| 11 | Nové texty v `cs.ts` i `en.ts` | splněno | `leaveScreenModal`; `Translation` to vynutí typecheckem |
+| 12 | Zrcadlo funguje dál bez ptaní | splněno | nepublikuje otázku, takže není co blokovat |
 
-**Odchylky od B/C:** dvě, obě drobné a obě vynucené linterem.
+**Odchylky od B/C:** tři, všechny z druhého kola.
 
-- `historyAction === 'POP'` neprojde `@typescript-eslint/no-unsafe-enum-comparison` —
-  react-router to vrací jako enum `Action`, reexportovaný jako `NavigationType`. Je z toho
-  `NavigationType.Pop`, což je stejně čitelnější.
-- Analýza počítala s komponentou `Root` v `index.tsx`. Ten soubor nic neexportuje, takže
-  komponenta v něm stojí warning `react-refresh/only-export-components` — a cílem je
-  nepřidat ani jeden. Element routy je proto napsaný rovnou na místě.
+- **Seznam chráněných cest zmizel.** `C` ho navrhovala jako sdílený modul pro hlavičku
+  i guard. Jakmile otázku publikuje obrazovka, není k čemu — hlavička čte tentýž stav.
+  Je to úbytek souboru, ne přírůstek.
+- **Přehled turnaje se nehlídá vůbec.** Strom i skupina se ukládají do `localStorage`
+  (`KUMITE_TIMER__TOURNAMENT_TREE`, `KUMITE_TIMER__GROUP`) a přežijí odchod, takže tam
+  není o co přijít. Naproti tomu `tournamentFight` se z LS vědomě neobnovuje
+  (`utils.ts:60`) — proto se hlídá rozehraný zápas a ne strom nad ním.
+- **Podmínka u kumite zápasu se rozšířila** ze zápasu v turnaji na jakýkoli zápas, ve
+  kterém log narostl. Ruší to rozhodnutí ticketu 003, že zápas mimo turnaj se neptá; test,
+  který ho zamykal, je přepsaný a v komentáři nese proč.
 
 **Gotchas:**
 
-- **`useBlocker` spadne pod `<BrowserRouter>`**, ne graciézně — `invariant` v
-  `useDataRouterContext`. Kdo by ho chtěl použít někde jinde, musí být pod
-  `RouterProvider`; testy si na to musí postavit `createMemoryRouter`, `MemoryRouter`
-  nestačí.
-- **`waitFor` uspěje hned na prvním pokusu**, takže „po kliknutí je cesta pořád stejná"
-  je tautologie: pravda je to i vteřinu předtím, než navigace dorazí. Mutace to odhalila
-  (viz Review). Čeká se místo toho na zmizení modálu, které nastane u obou odpovědí —
-  teprve pak má smysl se ptát, kde jsme.
+- **`useBlocker` spadne pod `<BrowserRouter>`**, ne graciézně — `invariant`
+  v `useDataRouterContext`. Testy si na něj musí postavit `createMemoryRouter`,
+  `MemoryRouter` nestačí.
+- **`waitFor` uspěje hned na prvním pokusu**, takže „po kliknutí je cesta pořád stejná" je
+  tautologie. Čeká se na zmizení modálu, které nastane u obou odpovědí.
 - **Křížek ve `ModalHeader` má default `onClose` do redux `modalWindow`.** Modál, který
-  redux nepoužívá, ho musí přebít, jinak je z křížku tlačítko, které nic nedělá a nechá
-  navigaci viset zablokovanou.
-- **Splat routa nechá descendant `<Routes>` na pokoji.** Všech 12 existujících souborů
-  s `MemoryRouter` prošlo beze změny — to byl v `C` test toho, že je migrace minimální,
-  a splnil se.
+  redux nepoužívá, ho musí přebít, jinak nedělá nic a nechá navigaci viset.
+- **Redirect `navigate(...)` bez `replace` rozbíjí zpět.** Rozcestník odkazuje na
+  `/kumite-timer`, obrazovka zjistí, že není `isActual`, a pushne set-up — zpět pak skočí
+  na `/kumite-timer`, které pushne set-up znovu. Vypadá to, že tlačítko zpět nefunguje.
+  Bylo to tak od začátku, jen si toho nikdo nevšiml, dokud zpět nezačalo být sledované.
+- **Nová položka ve `State` slice `page` si vyžádá i `VALIDATOR` a `LS_ACCESS`** v
+  `utils.ts`, jinak neprojde typecheck. Pro neukládané pole je vzor
+  `get: () => initialState.X, set: emptyFunc`, stejně jako u `modalWindow`.
 
-**Ověřeno na:** zatím **jen automatickými testy** — 540 unit a Testing Library testů,
-z toho 24 nových, a 10 mutací nového kódu, všech 10 zabitých.
+**Ověřeno na:** **Androidu (Motorola)** přes lokální dev server — sedm scénářů ze sekce D
+prvního kola. Prošlo: dialog na gesto zpět, obě odpovědi, mrtvé logo na rozehraném zápase,
+živé logo na set-up, zrcadlo bez ptaní. Zavření záložky se **na mobilu nezeptalo** (na
+desktopu ano) — uživatel to přijal jako známou mezeru, viz `beforeunload` výš.
 
-**Na telefonu neověřeno a ověřit se to musí**, protože se změna dotýká historie prohlížeče
-a `beforeunload`, tedy přesně té třídy věcí, které se tomuhle repu chovají na zařízení
-jinak než v jsdom. Pusť `yarn dev:https` a na Androidu zkus:
+Z toho ověření vzešlo pět připomínek, které tvoří druhé kolo (viz `A`). **Druhé kolo samo
+na telefonu ověřené není** — 529 automatických testů a 15 mutací ano. Zkusit se má znovu:
 
-1. Rozjetý kumite zápas → **gesto zpět od hrany**. Má se zeptat, ne odejít.
-2. V té otázce **Zpět** → zůstat v zápase, čas běží dál, log i skóre nedotčené.
-3. Znovu gesto zpět → **Odejít** → má skončit na set-up obrazovce.
-4. Na rozjetém zápase **ťuknout na logo** v hlavičce → nemá se stát nic.
-5. Na set-up obrazovce ťuknout na logo → má odejít na rozcestník.
-6. Rozjetý zápas → **zavřít záložku**. Chrome se má zeptat; jestli se nezeptá, je to ta
-   známá mezera, ne regrese.
-7. Otevřít `/kumite-timer/mirror` ve druhém okně → má jít zavřít a opustit bez ptaní.
+1. Zápas **mimo turnaj**, skórovat, „Zpět" → má se zeptat a odejít na set-up.
+2. Zápas, ve kterém se **nic nestalo**, „Zpět" i gesto zpět → nemá se ptát ani jednou.
+3. **Přehled turnaje** (skupina i pavouk), gesto zpět → nemá se ptát, logo má fungovat.
+4. **Set-up obrazovka**, gesto zpět → má se normálně vrátit, ne stát na místě.
+5. Rozehraný **turnajový zápas**, gesto zpět → hláška má být o **neuloženém zápase**, ne
+   generická o rozdělané práci.
 
 ## Review
 
@@ -337,3 +370,38 @@ ji měla shodit.
 **Mutační testování:** 10 mutací napříč `guardedPaths.ts`, `PageHeader.tsx`
 a `LeaveGuard.tsx`. Po dvou opravách výš **10 z 10 zabito**.
 
+
+### Druhé kolo — po ověření na Androidu
+
+Branch: `leave-guard` · zdroj nálezů: **uživatel na reálném zařízení**, ne reviewer. To je
+v tomhle repu ta cennější polovina; pět z pěti připomínek mířilo na chování, které žádný
+z 540 testů prvního kola nepovažoval za špatné, protože všechny testovaly to, co jsem
+navrhl, ne to, co dává smysl u tatami.
+
+**Opraveno**
+
+- [major] `guardedPaths.ts` · Otázka se řídila cestou, takže se ptala i tam, kde není o co
+  přijít (přehled turnaje), a naopak se ptala vždy tam, kde tlačítko „Zpět" mlčelo. →
+  Otázku publikuje obrazovka (`useLeaveQuestion`), seznam cest **smazán**. · **✅**
+- [major] `KumiteTimerScreen.tsx:271` · Tlačítko „Zpět" a prohlížečové zpět odpovídaly
+  různě. → Jediné čtení `hasBeenPlayed` pro obojí, a rozšířené i na zápas mimo turnaj. · **✅**
+- [major] `LeaveGuard.tsx` · Generická hláška „nic se tady neukládá" nedávala u zápasu
+  smysl — zápas uložit jde. → Zápas dostává znění z ticketu 003. · **✅**
+- [major] `ReactionsScreen.tsx:118` a tři další · Redirect na set-up pushoval místo
+  `replace`, takže zpět na set-up obrazovkách nedělalo nic. Pre-existující, odhalené až
+  tím, že zpět začalo být sledované. → `{ replace: true }`. · **✅**
+- [minor] `LeaveFightModal.tsx:34` · Po rozšíření podmínky ho může otevřít i zápas mimo
+  turnaj, ale navigoval natvrdo do turnajového stromu. → Cíl podle `tournamentFight`. · **✅**
+
+**Nálezy mutačního testování (druhé kolo)**
+
+- [major] Nic neověřovalo, že obrazovky otázku vůbec **publikují** — mutace
+  `useLeaveQuestion(null)` na kumite zápasu i na stopkách přežily obě. Celá funkce přitom
+  na tom stojí. → Dva testy přímo na publikovaný stav. · **✅ opraveno**
+
+**Mutační testování:** 15 mutací napříč `LeaveGuard.tsx`, `PageHeader.tsx`,
+`useLeaveQuestion.ts`, `KumiteTimerScreen.tsx` a `GroupStopwatchScreen.tsx`.
+Po opravě výš **15 z 15 zabito**.
+
+**Neřešeno na výslovný pokyn:** `beforeunload` se na mobilu neptá. „za mě je to takhle ok,
+neřeš."

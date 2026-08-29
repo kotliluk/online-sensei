@@ -415,13 +415,62 @@ describe('leaving a tournament fight', () => {
     expect(await table()).toBeInTheDocument()
   })
 
-  test('never asks about a fight played outside a tournament', async () => {
+  /**
+   * Ticket 003 left this fight unasked about, on the grounds that it is saved nowhere so
+   * there is nothing to lose. Verifying ticket 012 on a phone turned that around: being
+   * saved nowhere is a reason to warn about leaving, not a reason to stay quiet - and
+   * every other way off the screen had started asking, so the button was the odd one out.
+   */
+  test('asks about a fight played outside a tournament too', async () => {
     // arrange
     const user = userEvent.setup()
     startSession()
     renderApp()
-    // act - there is nothing to save it to, so there is nothing to lose
+    // act
     await user.click(scoreButton('red', '+'))
+    await user.click(backButton())
+    // assert
+    expect(await screen.findByRole('button', { name: 'Leave without saving' })).toBeInTheDocument()
+  })
+
+  test('leaves a fight outside a tournament to its set up, not to a tree it never had', async () => {
+    // arrange
+    const user = userEvent.setup()
+    startSession()
+    renderApp()
+    await user.click(scoreButton('red', '+'))
+    await user.click(backButton())
+    // act
+    await user.click(screen.getByRole('button', { name: 'Leave without saving' }))
+    // assert
+    expect(await screen.findByRole('heading', { name: 'Kumite Timer' })).toBeInTheDocument()
+  })
+
+  /**
+   * What the screen tells the leave guard, which is how the browser's back and the logo
+   * in the header find out. Without this the three ways out could drift apart again -
+   * the button asking while back walked out, which is what the device check found.
+   */
+  test('tells the guard a fight is worth a question only once something happens in it', async () => {
+    // arrange
+    const user = userEvent.setup()
+    startSession()
+    renderApp()
+    expect(store.getState().page.leaveQuestion).toBeNull()
+
+    // act
+    await user.click(scoreButton('red', '+'))
+
+    // assert
+    expect(store.getState().page.leaveQuestion).toBe('FIGHT')
+  })
+
+  test('still does not ask about a fight nothing has happened in', async () => {
+    // arrange
+    const user = userEvent.setup()
+    startSession()
+    renderApp()
+    // act
     await user.click(backButton())
     // assert
     expect(await screen.findByRole('heading', { name: 'Kumite Timer' })).toBeInTheDocument()

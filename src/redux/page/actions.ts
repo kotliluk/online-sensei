@@ -5,9 +5,10 @@ import { getTranslation, Language } from '../../logic/translation'
 import { Translation } from '../../logic/translation/translation'
 import { State } from './state'
 import { ModalWindowType } from '../../types/modalWindowType'
+import { LeaveQuestion } from '../../types/leaveQuestion'
 
 
-export type Actions = InitPage | SetTheme | SetTranslation | SetModalWindow
+export type Actions = InitPage | SetTheme | SetTranslation | SetModalWindow | SetLeaveQuestion
 
 /** ******************* Init page state *********************/
 
@@ -30,6 +31,7 @@ export const initPage = (): InitPage => {
       language,
       translation,
       modalWindow,
+      leaveQuestion: null,
     },
   }
 }
@@ -96,6 +98,30 @@ export const setModalWindow = (modalWindow: ModalWindowType): SetModalWindow => 
     type: SET_MODAL_WINDOW,
     payload: {
       modalWindow,
+    },
+  }
+}
+
+/** ******************* Set leave question *********************/
+
+export const SET_LEAVE_QUESTION = 'page/SET_LEAVE_QUESTION'
+
+interface SetLeaveQuestion extends Action<typeof SET_LEAVE_QUESTION> {
+  payload: {
+    leaveQuestion: LeaveQuestion | null,
+  }
+}
+
+/**
+ * Not written to `localStorage` - it says what the screen showing right now would lose,
+ * and after a reload there is no such screen. Restoring it would mean asking about a
+ * fight nobody is in.
+ */
+export const setLeaveQuestion = (leaveQuestion: LeaveQuestion | null): SetLeaveQuestion => {
+  return {
+    type: SET_LEAVE_QUESTION,
+    payload: {
+      leaveQuestion,
     },
   }
 }

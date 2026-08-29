@@ -13,6 +13,7 @@ export const VALIDATOR: Validator<State> = {
   language: isValidLanguage,
   translation: anythingIsValid,
   modalWindow: anythingIsValid,
+  leaveQuestion: anythingIsValid,
 }
 
 export const LS_KEYS: LSMapper<State> = {
@@ -35,6 +36,10 @@ export const LS_ACCESS: LSAccessWrapper<State> = {
   },
   modalWindow: {
     get: () => initialState.modalWindow,
+    set: emptyFunc,
+  },
+  leaveQuestion: {
+    get: () => initialState.leaveQuestion,
     set: emptyFunc,
   },
 }
