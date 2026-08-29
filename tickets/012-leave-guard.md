@@ -2,7 +2,7 @@
 id: 012
 slug: leave-guard
 title: Logo v hlavičce obchází potvrzení odchodu
-status: analysis
+status: approved
 branch: leave-guard
 ---
 
@@ -55,6 +55,16 @@ Rozhodnutí na tři otázky výš. Uživatel:
 „- blokovat na všech pěti
  - blokovat i zpět a zavření
  - klidně ho úplně zneaktivnit"
+
+### 2026-08-29 (gate)
+
+Odpovědi na tři otevřené otázky z `C`. Uživatel:
+
+„1 - jednotně
+ 2 - v rámci tohoto ticketu
+ 3 - ok
+
+ pokračuj"
 
 ## B — Zadání
 
@@ -218,18 +228,16 @@ komentář s odkazem.
 - **Zpět u skupinových stopek zůstane za běhu disabled.** Guard ho neodemyká.
 - **Zrcadlo chráněné není** a mezi „pět obrazovek" se nepočítá.
 
-**Otevřené otázky:**
+**Otevřené otázky:** žádné — všechny tři zodpovězeny na gate 2026-08-29:
 
-1. **Ptát se vždycky, nebo jen když je co ztratit?** (otázka z `B`) Jednotné pravidlo znamená,
-   že zpět ze **zápasu mimo turnaj** se nově zeptá, i když tlačítko „Zpět" tam vědomě mlčí —
-   ticket 003 to rozhodl tak, že se ten zápas stejně nikam neukládá. Jdu na jednotné pravidlo;
-   opačná volba je změna jedné podmínky v `LeaveGuard`.
-2. **Je migrace na data router v pořádku v tomhle ticketu?** Vejde se do `src/index.tsx`
-   a nic jiného nemění, ale mění způsob, jakým se zakládá router celé appky. Druhá varianta
-   je udělat ji samostatným ticketem před tímhle — čistší historie, o jeden merge víc.
-3. **Když zpět na Androidu appku opustí** (první položka historie), zůstane jen prohlížečový
-   dialog, který na mobilu nemusí přijít vůbec. Beru to jako přijatelnou mezeru a napíšu ji
-   do `D`, ne jako blocker — potvrď, nebo řekni, že to má ticket řešit jinak.
+1. **Ptá se jednotně**, dokud je chráněná obrazovka na obrazovce, bez ohledu na to, jestli
+   je zrovna co ztratit. Zpět ze zápasu mimo turnaj se tedy nově zeptá, i když tlačítko
+   „Zpět" tam podle ticketu 003 mlčí. Je to vědomá odchylka od 003 na jiné cestě ven, ne
+   jeho přepsání — tlačítko zůstává, jak je.
+2. **Migrace na data router je součástí tohohle ticketu**, ne samostatného.
+3. **Zpět na první položce historie na Androidu appku opustí** a blocker tam nedosáhne.
+   Přijato jako známá mezera; patří do `D`, ne mezi kritéria.
+
 
 ## Review
 
