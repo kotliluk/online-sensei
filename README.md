@@ -81,6 +81,14 @@ circles and the rule under the sortable result headings take their colour from t
 theme, rather than staying black in a dark theme where black is nearly the
 background.
 
+**The screen stays on while a clock is showing.** A phone left alone dims and locks
+within half a minute, and on a play screen that means nobody can read the time -
+and, on iOS, that the horn at the end comes out garbled, because a dark screen keeps
+the timers running but throttles the audio. The kumite timer, the interval timer,
+Reactions and the group stopwatch hold the screen awake for as long as they are
+open and let go the moment you leave them. Set-up screens do not, and neither does
+a browser without a wake lock - iOS before 16.4, or the app served over plain http.
+
 ## Kumite timer
 
 The basic feature of Kumite timer is the timer itself and the management of points and fouls
@@ -109,10 +117,12 @@ the table, and the horn comes again only once the clock has run out again.
 
 ### A phone that went to sleep
 
-A locked screen or a tab in the background stops getting timers from the browser, and
-the ones it missed are never offered again. The clock counts **what the wall clock says
-has passed**, not how many of those it was handed, so a fight comes back from a minute
-of locked screen a minute shorter rather than a second. A round that ran out while the
+The screen does not go dark on its own here any more, but it still can be locked by
+hand or left behind for another app. A locked screen or a tab in the background stops
+getting timers from the browser, and the ones it missed are never offered again. The
+clock counts **what the wall clock says has passed**, not how many of those it was
+handed, so a fight comes back from a minute of locked screen a minute shorter rather
+than a second. A round that ran out while the
 screen was off is over when it comes back on, horn and all. Atoshibaraku is the call for
 a fight with under fifteen seconds left, so catching up *past* fifteen still calls it,
 late, rather than skipping the round that stepped over the reading without landing on it.

@@ -20,6 +20,7 @@ import {
   shiftCompetitorTime,
 } from '../../../types/groupStopwatch'
 import { PausableStopwatch } from '../../../logic/timing/pausableStopwatch'
+import { useWakeLock } from '../../../logic/hooks/useWakeLock'
 import { Results } from '../results/Results'
 import { CompetitorCard } from './CompetitorCard'
 
@@ -38,6 +39,9 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
   const [actualLeadingTimeUnit, setActualLeadingTimeUnit] = useState<LeadingTimeUnit>('seconds')
   const [phase, setPhase] = useState<PlayPhase>('init')
   const [clock] = useState<PausableStopwatch>(() => new PausableStopwatch(emptyFunc, 0))
+
+  // the phone lies on the table while the times of a whole group are written down
+  useWakeLock(isActual)
   const [competitors, setCompetitors] = useState<Competitor[]>(
     competitorNames.slice(0, competitorCount).map((c, index) => newCompetitor(index + 1, c.name, c.color)),
   )
