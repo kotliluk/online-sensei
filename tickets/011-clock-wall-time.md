@@ -2,7 +2,7 @@
 id: 011
 slug: clock-wall-time
 title: Hodiny mají měřit uplynulý čas, ne počítat tiky
-status: review
+status: done
 branch: clock-wall-time
 ---
 
