@@ -16,6 +16,7 @@ import { useDispatch } from '../../../redux/useDispatch'
 import { setNotActualReactions } from '../../../redux/reactions/actions'
 import { getRandomInt } from '../../../utils/random'
 import { PausableTimeout } from '../../../logic/timing/pausableTimeout'
+import { useWakeLock } from '../../../logic/hooks/useWakeLock'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { playBeep } from '../../../logic/audio/beep'
@@ -44,6 +45,9 @@ export const ReactionsScreen = (): JSX.Element | null => {
   // bumped by reset, so a fresh run is a change even when the phase is the same one
   const [runId, setRunId] = useState(0)
   const [timeoutObj] = useState<PausableTimeout>(() => new PausableTimeout(emptyFunc, 0))
+
+  // the whole exercise is waiting for a signal without touching anything
+  useWakeLock(isActual)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
