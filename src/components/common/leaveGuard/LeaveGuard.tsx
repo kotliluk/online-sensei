@@ -23,17 +23,28 @@ export const LeaveGuard = (): JSX.Element | null => {
   const leaveQuestion = useSelector(selectLeaveQuestion)
   const translation = useSelector(selectTranslation)
   /**
-   * Only the browser's own back and forward, and only while the screen showing says it
-   * has something to lose.
+   * Two ways out, and only while the screen showing says it has something to lose.
    *
+   * **A pop** is the browser's own back or forward, including the phone's back gesture.
    * Saving a fight, the screens' Back buttons and the redirect that follows
    * `setNotActual*` all navigate through the same router, and none of them may be
-   * interrupted by a question. Telling them apart needs nothing the screens have to keep
-   * in sync, because the router already says which is which: the app pushes and
-   * replaces, the browser pops.
+   * interrupted by a question - but they push and replace, so nothing on the screens has
+   * to be kept in sync for the guard to tell them apart.
+   *
+   * **A push to `/`** is the logo in the header, and only the logo. Every other way the
+   * app reaches the main page is a `navigate('/')` on a set-up screen, where there is
+   * nothing to lose and this predicate is false anyway, and the catch-all route replaces
+   * rather than pushes. So the header can stay a working link and still ask first.
    */
   const shouldBlock = useCallback<BlockerFunction>(
-    ({ historyAction }) => historyAction === NavigationType.Pop && leaveQuestion !== null,
+    ({ historyAction, nextLocation }) => {
+      if (leaveQuestion === null) {
+        return false
+      }
+
+      return historyAction === NavigationType.Pop
+        || (historyAction === NavigationType.Push && nextLocation.pathname === '/')
+    },
     [leaveQuestion],
   )
 

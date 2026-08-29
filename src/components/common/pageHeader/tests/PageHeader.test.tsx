@@ -25,30 +25,14 @@ describe('PageHeader', () => {
   })
 
   /**
-   * The header sits above every route as a full-width strip, on a phone right over the
-   * score. While a fight is being kept it is the easiest thing on the screen to hit by
-   * accident, and hitting it used to throw the fight away without a word.
-   *
-   * It reads the same answer the leave guard blocks on, so the two cannot disagree about
-   * whether this screen has anything to lose.
+   * The way home works everywhere, including on a screen holding a fight. What stops it
+   * from throwing the fight away is `LeaveGuard` holding the navigation and asking, not
+   * the header refusing to be a link - so there is nothing here that has to know which
+   * screen it is on. See `LeaveGuard.test.tsx` for the click that raises the question.
    */
-  test.each<LeaveQuestion>(['FIGHT', 'SESSION'])('is not a link while there is a %s to lose', (question) => {
+  test.each<LeaveQuestion | null>([null, 'FIGHT', 'SESSION'])('links home with %s to lose', (question) => {
     // act
     renderHeader(question)
-
-    // assert
-    expect(screen.queryByRole('link', { name: 'OnlineSensei' })).not.toBeInTheDocument()
-    expect(screen.getByText('OnlineSensei')).toBeInTheDocument()
-  })
-
-  /**
-   * Set-up screens, the main page, the mirror and the tournament overview all publish no
-   * question - the tournament tree is in `localStorage` and survives being left, so there
-   * is nothing there to protect and the way home should work.
-   */
-  test('is a link home when there is nothing to lose', () => {
-    // act
-    renderHeader(null)
 
     // assert
     expect(screen.getByRole('link', { name: 'OnlineSensei' })).toHaveAttribute('href', '/')
