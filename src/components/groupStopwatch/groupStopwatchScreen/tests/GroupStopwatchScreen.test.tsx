@@ -101,6 +101,19 @@ describe('GroupStopwatchScreen', () => {
     vi.useRealTimers()
   })
 
+  /**
+   * The times here live only in component state and its own Back is disabled while a
+   * measurement runs - so the leave guard is the only thing standing between eight
+   * finished runners and one stray press of the browser's back.
+   */
+  test('tells the leave guard a running measurement is worth a question', () => {
+    // act
+    renderScreen()
+
+    // assert
+    expect(store.getState().page.leaveQuestion).toBe('SESSION')
+  })
+
   describe('counter of who has finished', () => {
     test('starts at nobody and counts every saved time', () => {
       // arrange

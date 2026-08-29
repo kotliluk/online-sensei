@@ -17,6 +17,7 @@ import { setNotActualReactions } from '../../../redux/reactions/actions'
 import { getRandomInt } from '../../../utils/random'
 import { PausableTimeout } from '../../../logic/timing/pausableTimeout'
 import { useWakeLock } from '../../../logic/hooks/useWakeLock'
+import { useLeaveQuestion } from '../../../logic/hooks/useLeaveQuestion'
 import { emptyFunc } from '../../../utils/function'
 import { Button } from '../../atoms/button/Button'
 import { playBeep } from '../../../logic/audio/beep'
@@ -48,6 +49,8 @@ export const ReactionsScreen = (): JSX.Element | null => {
 
   // the whole exercise is waiting for a signal without touching anything
   useWakeLock(isActual)
+  // nothing here is written down anywhere, so a run in progress is worth a question
+  useLeaveQuestion(isActual ? 'SESSION' : null)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -112,7 +115,7 @@ export const ReactionsScreen = (): JSX.Element | null => {
 
   useEffect(() => {
     if (!isActual) {
-      void navigate('/reactions/set-up')
+      void navigate('/reactions/set-up', { replace: true })
     }
   }, [isActual])
 

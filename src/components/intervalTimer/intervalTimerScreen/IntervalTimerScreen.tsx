@@ -15,6 +15,7 @@ import {
 import { setNotActualIntervalTimer } from '../../../redux/intervalTimer/actions'
 import { PausableInterval } from '../../../logic/timing/pausableInterval'
 import { useWakeLock } from '../../../logic/hooks/useWakeLock'
+import { useLeaveQuestion } from '../../../logic/hooks/useLeaveQuestion'
 import { parseMinTime } from '../../../utils/time'
 import { playBeep } from '../../../logic/audio/beep'
 
@@ -48,6 +49,8 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
 
   // the phone is put down and the training is watched from a few metres away
   useWakeLock(isActual)
+  // nothing here is written down anywhere, so a run in progress is worth a question
+  useLeaveQuestion(isActual ? 'SESSION' : null)
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -143,7 +146,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
 
   useEffect(() => {
     if (!isActual) {
-      void navigate('/interval-timer/set-up')
+      void navigate('/interval-timer/set-up', { replace: true })
     }
   }, [isActual])
 

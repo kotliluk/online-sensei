@@ -15,6 +15,7 @@ import { setNotActualKumiteTimer, setTournamentFight } from '../../../redux/kumi
 import { FighterStats } from '../fighterStats/FighterStats'
 import useControlledState from '../../../logic/hooks/useControledState'
 import { useWakeLock } from '../../../logic/hooks/useWakeLock'
+import { useLeaveQuestion } from '../../../logic/hooks/useLeaveQuestion'
 import { LS_KEYS } from '../utils'
 import { FightStats } from '../fightStats/FightStats'
 import { LIMITS } from '../../../redux/kumiteTimer/utils'
@@ -79,8 +80,26 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
   useWakeLock(isActual)
 
   const [log, setLog] = useState<FightLogEntry[]>([])
-  /** How long the log was when this fight was opened - see {@link handleGoBack}. */
+  /** How long the log was when this fight was opened - see {@link hasBeenPlayed}. */
   const [loadedLogLength, setLoadedLogLength] = useState(0)
+
+  /**
+   * A fight that has already been played is worth a question on the way out, and one
+   * nothing has happened in yet is not - asking about nothing is an annoyance, not a
+   * safeguard.
+   *
+   * "Something happened" is the log having grown since the fight was opened. Every change
+   * is logged, so a longer log is exactly that, and it is the only reading that does not
+   * cry wolf on a reopened fight, whose log is not empty to begin with.
+   *
+   * It is not limited to tournament fights any more. A fight outside a tournament is not
+   * saved anywhere, which is a reason to warn about leaving it, not a reason to stay
+   * quiet - and every other way off this screen asks, so the button had better agree.
+   */
+  const hasBeenPlayed = log.length > loadedLogLength
+
+  // one reading, so Back and the browser's back cannot give different answers
+  useLeaveQuestion(hasBeenPlayed ? 'FIGHT' : null)
   // the label says what the button does, and that depends on the device, not on the fight
   const [shares] = useState(() => willShareFile(CSV_MIME_TYPE))
 
@@ -252,25 +271,15 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     exportFile(new File([content], fightCsvFileName(new Date()), { type: CSV_MIME_TYPE }))
   }, [tournamentFight, tournamentName, scoreRed, foulsRed, scoreBlue, foulsBlue, senchu, log, translation])
 
-  /**
-   * A tournament fight that has already been played is worth a question, because
-   * Back sits next to Save and throws the whole thing away. A fight nothing has
-   * happened in is not - asking about nothing is an annoyance, not a safeguard.
-   *
-   * "Something happened" is the log having grown since the fight was loaded.
-   * Every change is logged, so a longer log is exactly that, and it is the only
-   * reading that does not cry wolf on a reopened fight, whose log is not empty to
-   * begin with.
-   */
   const handleGoBack = useCallback(() => {
-    if (tournamentFight && log.length > loadedLogLength) {
+    if (hasBeenPlayed) {
       dispatch(setModalWindow('LEAVE_FIGHT'))
       return
     }
 
     dispatch(setNotActualKumiteTimer())
     void navigate(tournamentFight ? '/kumite-timer/tournament' : '/kumite-timer/set-up')
-  }, [dispatch, navigate, tournamentFight, log, loadedLogLength])
+  }, [dispatch, navigate, tournamentFight, hasBeenPlayed])
 
   const handleSaveTournamentFight = useCallback(() => {
     if (tournamentFight) {
@@ -345,7 +354,7 @@ export const KumiteTimerScreen = (): JSX.Element | null => {
     }
 
     if (!hadSession.current) {
-      void navigate('/kumite-timer/set-up')
+      void navigate('/kumite-timer/set-up', { replace: true })
     }
   }, [isActual, navigate])
 

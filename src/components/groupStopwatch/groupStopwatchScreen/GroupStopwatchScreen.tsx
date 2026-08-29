@@ -21,6 +21,7 @@ import {
 } from '../../../types/groupStopwatch'
 import { PausableStopwatch } from '../../../logic/timing/pausableStopwatch'
 import { useWakeLock } from '../../../logic/hooks/useWakeLock'
+import { useLeaveQuestion } from '../../../logic/hooks/useLeaveQuestion'
 import { Results } from '../results/Results'
 import { CompetitorCard } from './CompetitorCard'
 
@@ -42,6 +43,8 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
 
   // the phone lies on the table while the times of a whole group are written down
   useWakeLock(isActual)
+  // nothing here is written down anywhere, so a run in progress is worth a question
+  useLeaveQuestion(isActual ? 'SESSION' : null)
   const [competitors, setCompetitors] = useState<Competitor[]>(
     competitorNames.slice(0, competitorCount).map((c, index) => newCompetitor(index + 1, c.name, c.color)),
   )
@@ -149,7 +152,7 @@ export const GroupStopwatchScreen = (): JSX.Element | null => {
 
   useEffect(() => {
     if (!isActual) {
-      void navigate('/group-stopwatch/set-up')
+      void navigate('/group-stopwatch/set-up', { replace: true })
     }
   }, [isActual])
 
