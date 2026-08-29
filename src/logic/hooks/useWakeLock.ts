@@ -6,13 +6,14 @@ import { useEffect } from 'react'
  *
  * These clocks are meant to be watched from across a hall with nobody's finger near the
  * phone, so a screen that dims mid-round is not merely inconvenient. It is also what makes
- * the end of a fight sound wrong: iOS goes on running the timers on a dark screen but
- * throttles the audio decoding, so the horn comes out garbled and short - measured on a
- * real phone while verifying ticket 011.
+ * the end of a fight sound wrong: a phone with the screen off goes on running the timers
+ * but throttles the audio decoding hard enough that the horn comes out garbled and a
+ * shorter signal is lost altogether - measured on an Android phone while verifying ticket
+ * 011, and gone as soon as the screen is kept lit.
  *
- * Everything here is best effort. No wake lock API at all (iOS before 16.4, or anything
- * over plain http) and a refusal from the browser both leave the screen behaving exactly
- * as it did before, with nothing said to the user about either.
+ * Everything here is best effort. No wake lock API at all (Safari before iOS 16.4, or
+ * anything over plain http) and a refusal from the browser both leave the screen behaving
+ * exactly as it did before, with nothing said to the user about either.
  */
 export const useWakeLock = (enabled = true): void => {
   useEffect(() => {

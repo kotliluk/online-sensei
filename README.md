@@ -83,11 +83,12 @@ background.
 
 **The screen stays on while a clock is showing.** A phone left alone dims and locks
 within half a minute, and on a play screen that means nobody can read the time -
-and, on iOS, that the horn at the end comes out garbled, because a dark screen keeps
-the timers running but throttles the audio. The kumite timer, the interval timer,
-Reactions and the group stopwatch hold the screen awake for as long as they are
-open and let go the moment you leave them. Set-up screens do not, and neither does
-a browser without a wake lock - iOS before 16.4, or the app served over plain http.
+and that the signals come out wrong, because a dark screen keeps the timers running
+but throttles the audio: the horn at the end is garbled and atoshibaraku is lost
+altogether. The kumite timer, the interval timer, Reactions and the group stopwatch
+hold the screen awake for as long as they are open and let go the moment you leave
+them. Set-up screens do not, and neither does a browser without a wake lock - Safari
+before iOS 16.4, or the app served over plain http.
 
 ## Kumite timer
 
