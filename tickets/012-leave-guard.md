@@ -286,7 +286,7 @@ a tlačítko „Zpět" u kumite zápasu na ni přešlo taky. Sada je 529 testů 
 | 7 | Vlastní navigace appky se neptá | splněno | test „lets the app navigate away…"; mutace `NavigationType.Pop` ho shodí |
 | 8 | Tlačítko „Zpět" a prohlížečové zpět dávají stejnou odpověď | splněno | `hasBeenPlayed` je jediné čtení pro obojí · test „tells the guard a fight is worth a question only once something happens in it" |
 | 9 | Zápas dostane otázku o uložení, ne generickou | splněno | `LeaveGuard.tsx:47` · test „asks a fight about saving rather than about losing" |
-| 10 | Zpět na set-up obrazovkách funguje | splněno; **ověřeno na zařízení** | redirecty jsou `replace` ve čtyřech obrazovkách. jsdom s `MemoryRouter` tuhle historii nemodeluje, takže to test nechytá |
+| 10 | Zpět na set-up obrazovkách funguje | splněno; **ověřeno na Androidu** | redirecty jsou `replace` ve čtyřech obrazovkách. jsdom s `MemoryRouter` tuhle historii nemodeluje, takže to test nechytá |
 | 11 | Nové texty v `cs.ts` i `en.ts` | splněno | `leaveScreenModal`; `Translation` to vynutí typecheckem |
 | 12 | Zrcadlo funguje dál bez ptaní | splněno | nepublikuje otázku, takže není co blokovat |
 
@@ -325,15 +325,19 @@ prvního kola. Prošlo: dialog na gesto zpět, obě odpovědi, mrtvé logo na ro
 živé logo na set-up, zrcadlo bez ptaní. Zavření záložky se **na mobilu nezeptalo** (na
 desktopu ano) — uživatel to přijal jako známou mezeru, viz `beforeunload` výš.
 
-Z toho ověření vzešlo pět připomínek, které tvoří druhé kolo (viz `A`). **Druhé kolo samo
-na telefonu ověřené není** — 529 automatických testů a 15 mutací ano. Zkusit se má znovu:
+Z toho ověření vzešlo pět připomínek, které tvoří druhé kolo (viz `A`). **Druhé kolo bylo
+na tomtéž Androidu ověřeno taky** — uživatel 2026-08-29: „manuální testy, ok". Šlo o pět
+scénářů, které se druhým kolem změnily:
 
-1. Zápas **mimo turnaj**, skórovat, „Zpět" → má se zeptat a odejít na set-up.
-2. Zápas, ve kterém se **nic nestalo**, „Zpět" i gesto zpět → nemá se ptát ani jednou.
-3. **Přehled turnaje** (skupina i pavouk), gesto zpět → nemá se ptát, logo má fungovat.
-4. **Set-up obrazovka**, gesto zpět → má se normálně vrátit, ne stát na místě.
-5. Rozehraný **turnajový zápas**, gesto zpět → hláška má být o **neuloženém zápase**, ne
-   generická o rozdělané práci.
+1. Zápas **mimo turnaj**, skórovat, „Zpět" → zeptá se a odejde na set-up.
+2. Zápas, ve kterém se **nic nestalo**, „Zpět" i gesto zpět → neptá se ani jednou.
+3. **Přehled turnaje** (skupina i pavouk), gesto zpět → neptá se, logo funguje.
+4. **Set-up obrazovka**, gesto zpět → normálně se vrátí. Tohle je jediné potvrzení, které
+   pro `replace` na redirectech existuje — jsdom s `MemoryRouter` tu historii nemodeluje.
+5. Rozehraný **turnajový zápas**, gesto zpět → hláška je o neuloženém zápase.
+
+Neověřené zůstává jen to, co ověřit nejde: `beforeunload` se na mobilu neptá (viz výš,
+vědomá mezera na pokyn uživatele) a zpět na první položce historie appku opustí.
 
 ## Review
 
