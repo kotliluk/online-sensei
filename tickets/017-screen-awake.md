@@ -2,7 +2,7 @@
 id: 017
 slug: screen-awake
 title: Obrazovka nemá zhasínat, když se na ní běží čas
-status: approved
+status: review
 branch: screen-awake
 ---
 
@@ -100,6 +100,71 @@ metrů od telefonu. Kdyby to mělo platit všude, je to jednořádková změna.
 
 <!-- doplní /ticket-review -->
 
+### 2026-08-29
+
+Paralelní revieweři neběželi (tahle session je má zakázané spouštět), takže review bylo
+mutační testování hooku: **8 mutací, po doplnění testu 8 zabitých**. Jedna přežila
+a stálo to za opravu:
+
+- `useWakeLock.ts` · **druhá žádost, dokud je první na cestě.** Pojistka `requesting`
+  neshodila žádný test. Rychlé prolistování app switcherem vrátí stránku do zobrazení
+  dřív, než prohlížeč odpoví na první žádost; bez pojistky se požádá znovu a odpověď na
+  tu první drží nikdo — wake lock, který stránka už nemá jak uvolnit, platný do zavření
+  záložky. Zamčeno testem, kde prohlížeč otázku přijme a neodpoví.
+
 ## D — Hotovo
 
-<!-- doplní uzávěrka -->
+Nový hook `src/logic/hooks/useWakeLock.ts` a jeden řádek ve čtyřech hracích obrazovkách.
+Žádný nový text, žádné nové tlačítko, žádná změna layoutu.
+
+| Soubor | Co se stalo |
+| --- | --- |
+| `src/logic/hooks/useWakeLock.ts` | nový — drží `screen` wake lock, dokud je komponenta namountovaná |
+| `KumiteTimerScreen.tsx`, `IntervalTimerScreen.tsx`, `ReactionsScreen.tsx`, `GroupStopwatchScreen.tsx` | `useWakeLock(isActual)` — `isActual` proto, že obrazovka na cestě k redirectu si zámek brát nemá (stejný důvod, jaký má `useLSSyncProvider`) |
+| `README.md` | odstavec v „On a phone" a věta v „A phone that went to sleep" |
+
+Testy **498 → 507**.
+
+### Akceptační kritéria
+
+| # | Stav | Čím |
+| --- | --- | --- |
+| 1 | splněno | `asks for a screen lock while the screen is mounted` |
+| 2 | splněno | `does nothing at all when the browser has no wake lock` |
+| 3 | splněno | `carries on when the browser refuses` |
+| 4 | splněno | `asks again after the browser took the lock back` |
+| 5 | splněno | `gives the lock back when the screen goes away` |
+| 6 | splněno | `does not ask for a lock the hidden page could not be given` |
+| 7 | splněno | diff se `cs.ts` ani `en.ts` nedotýká |
+| 8 | splněno | typecheck 0, lint 0 errors / 59 warnings (baseline 59), 507 testů zelených, build prochází |
+| 9 | **nesplněno** | viz „Ověřeno na" |
+
+Nad rámec kritérií přibyla pojistka proti druhé žádosti, dokud je první na cestě — viz
+Review.
+
+### Ověřeno na
+
+**Zatím na žádném zařízení.** Wake lock je přesně ta kategorie, kterou jsdom neumí:
+`navigator.wakeLock` v něm neexistuje vůbec, takže testy pracují s podstrčeným API a
+dokazují chování hooku, ne chování telefonu.
+
+Co zkusit přes `yarn dev:https`:
+
+1. **Kumite, nechat ležet.** Otevřít zápas a telefonu se nedotknout dvě minuty. Obrazovka
+   nemá zhasnout. (Na iOS to chce **16.4 a novější** — na starším se nestane nic, což je
+   v pořádku.)
+2. **Odchod z obrazovky.** Z běžícího zápasu jít zpátky na set-up a nechat ležet.
+   Obrazovka **má** zhasnout — zámek se drží jen nad hracími obrazovkami.
+3. **Přepnutí a návrat.** Přepnout na jinou appku a vrátit se. Obrazovka nemá začít
+   zhasínat — to je ta cesta, kde prohlížeč zámek sebral a hook o něj musí požádat znovu.
+4. **Interval timer a stopky.** Totéž jako 1, ať je vidět, že to nedrží jen kumite.
+5. **A hlavně: pustit s tímhle zapnutým znovu scénář 2 z ticketu 011** — zápas na 30 s
+   nechat doběhnout s rozsvícenou obrazovkou a poslechnout si, jestli je konec pořád
+   zkomolený. Jestli ne, je potvrzené, že za to mohlo zhasnutí.
+
+### Co zůstalo
+
+- **`ATOSHIBARAKU.mp3` je kopie `BEEP_A_500ms.mp3`** (nález z ověřování 011). Tenhle ticket
+  se toho nedotýká, protože je to audio asset, ne kód — ale dokud to platí, atoshibaraku
+  nezní jako atoshibaraku ani při rozsvícené obrazovce.
+- **Zámek se drží i během pauzy**, ne jen za běhu hodin. Vědomé, důvod je v Předpokladech.
