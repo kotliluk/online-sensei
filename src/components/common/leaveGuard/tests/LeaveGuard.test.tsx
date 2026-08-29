@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { Provider as ReduxProvider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { LeaveGuard } from '../LeaveGuard'
@@ -40,16 +40,23 @@ const click = (name: string): void => {
 }
 
 /**
- * Answering the question calls `proceed()` or `reset()`, and what they set in motion
- * lands a tick later - reading the location straight after the click gives the old one
- * back.
+ * The cross in the modal header, which carries an icon and so has no name to ask for.
+ * The header is the only banner on the page here - the guard is rendered on its own,
+ * without the app's own header around it.
  */
-const expectPathname = async (
-  router: ReturnType<typeof createMemoryRouter>,
-  pathname: string,
-): Promise<void> => {
+const clickCross = (): void => {
+  fireEvent.click(within(screen.getByRole('banner')).getByRole('button'))
+}
+
+/**
+ * Both answers take the modal away - yes by proceeding, no by resetting - so waiting for
+ * it to go is what gives a navigation that should not happen the time to happen anyway.
+ * Asserting the location straight after the click would pass either way: it is still the
+ * old one for a tick whatever the answer was.
+ */
+const answerSettles = async (): Promise<void> => {
   await waitFor(() => {
-    expect(router.state.location.pathname).toBe(pathname)
+    expect(screen.queryByRole('heading', { name: t.title })).not.toBeInTheDocument()
   })
 }
 
@@ -87,10 +94,10 @@ describe('LeaveGuard', () => {
 
     // act
     click(t.confirm)
+    await answerSettles()
 
     // assert
-    await expectPathname(router, '/kumite-timer/set-up')
-    expect(screen.queryByRole('heading', { name: t.title })).not.toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/kumite-timer/set-up')
   })
 
   test('stays put once the question is answered no', async () => {
@@ -100,10 +107,29 @@ describe('LeaveGuard', () => {
 
     // act
     click(EN.common.back)
+    await answerSettles()
 
     // assert
-    await expectPathname(router, '/kumite-timer')
-    expect(screen.queryByRole('heading', { name: t.title })).not.toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/kumite-timer')
+  })
+
+  /**
+   * The cross is an answer, not an escape. It hangs on the shared `ModalHeader`, whose
+   * default close dispatches into the redux modal state - which this modal does not use,
+   * so left alone it would look like a button that does nothing while the navigation
+   * stayed blocked behind it.
+   */
+  test('treats the cross in the header as answering no', async () => {
+    // arrange
+    const router = renderGuard(['/kumite-timer/set-up', '/kumite-timer'])
+    await goBack(router)
+
+    // act
+    clickCross()
+    await answerSettles()
+
+    // assert
+    expect(router.state.location.pathname).toBe('/kumite-timer')
   })
 
   /**
