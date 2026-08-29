@@ -90,11 +90,10 @@ hold the screen awake for as long as they are open and let go the moment you lea
 them. Set-up screens do not, and neither does a browser without a wake lock - Safari
 before iOS 16.4, or the app served over plain http.
 
-**The header stops being a way out.** The bar with the logo runs the full width just
-above the score, which on a phone makes it the easiest thing to hit by accident. Whenever
-the screen showing has something to lose - a fight that has been played, a run, a series,
-a set of measured times - the name stays where it is but is no longer a link. The way home
-is the screen's own Back button, which knows what it is leaving behind.
+**The header asks before it takes you home.** The bar with the logo runs the full width
+just above the score, which on a phone makes it the easiest thing to hit by accident, and
+it used to leave without a word. It is still a working way home from everywhere - it just
+stops and asks first whenever the screen showing has something to lose.
 
 ## Kumite timer
 
@@ -181,19 +180,20 @@ since the fight was opened, which is exactly what the log is for.
 A fight played outside a tournament is asked about on the same terms. It is saved
 nowhere, which is a reason to warn about leaving it rather than a reason to stay quiet.
 
-**Every way off the screen asks the same question.** The logo in the header stops being a
-link, browser back - and the phone's back gesture, which is the same thing - asks before
-it goes, and closing the tab or reloading gets the browser's own confirmation. All four
-read one answer from the screen: has anything happened here yet. So they cannot drift
-apart and start telling the referee different things.
+**Every way off the screen asks the same question.** The logo in the header, browser back
+- and the phone's back gesture, which is the same thing - and closing the tab or reloading,
+which gets the browser's own confirmation. All four read one answer from the screen: has
+anything happened here yet. So they cannot drift apart and start telling the referee
+different things.
 
 Screens with nothing to lose are left alone. The tournament overview is one of them: the
 tree and the group table are written to `localStorage` and survive being left, so the way
 home works there normally. So does a fight nobody has scored in yet.
 
 Nothing the app does itself is ever interrupted - saving a fight, the Back button, the
-redirect after a session ends - because the app pushes where the browser pops, and only a
-pop is held.
+redirect after a session ends. What is held is a pop, which is the browser going back, and
+a push to the main page, which is the logo and nothing else: every other way the app
+reaches the main page starts from a set-up screen, where there is nothing to lose anyway.
 
 One gap is worth knowing about. If a running screen is the first page in the browser's
 history - opened straight into, rather than walked to - back leaves the app altogether,

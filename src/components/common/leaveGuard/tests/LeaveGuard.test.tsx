@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import { Provider as ReduxProvider } from 'react-redux'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { LeaveGuard } from '../LeaveGuard'
+import { PageHeader } from '../../pageHeader/PageHeader'
 import { store } from '../../../../redux/store'
 import { setLeaveQuestion, setTranslation } from '../../../../redux/page/actions'
 import { EN } from '../../../../logic/translation/en'
@@ -34,6 +35,34 @@ const renderGuard = (
   )
 
   return router
+}
+
+/**
+ * The header and the guard side by side, the way `index.tsx` mounts them. The logo is an
+ * ordinary link on every screen now, so the only thing standing between a stray tap and a
+ * thrown-away fight is the guard holding the push.
+ */
+const renderWithHeader = (
+  leaveQuestion: LeaveQuestion | null,
+): ReturnType<typeof createMemoryRouter> => {
+  store.dispatch(setLeaveQuestion(leaveQuestion))
+
+  const router = createMemoryRouter(
+    [{ path: '*', element: <><PageHeader /><LeaveGuard /></> }],
+    { initialEntries: ['/kumite-timer'] },
+  )
+
+  render(
+    <ReduxProvider store={store}>
+      <RouterProvider router={router} />
+    </ReduxProvider>,
+  )
+
+  return router
+}
+
+const clickLogo = (): void => {
+  fireEvent.click(screen.getByRole('link', { name: 'OnlineSensei' }))
 }
 
 const goBack = async (router: ReturnType<typeof createMemoryRouter>): Promise<void> => {
@@ -131,6 +160,37 @@ describe('LeaveGuard', () => {
     // assert
     expect(screen.queryByRole('heading', { name: session.title })).not.toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/kumite-timer/set-up')
+  })
+
+  /**
+   * The header bar runs the full width just above the score, so on a phone it is the
+   * easiest thing to hit by accident. It stays a working way home - it just does not go
+   * quietly while there is a fight on the screen.
+   */
+  test('asks when the logo takes you home from a screen with something to lose', async () => {
+    // arrange
+    const router = renderWithHeader('FIGHT')
+
+    // act
+    clickLogo()
+
+    // assert
+    expect(await screen.findByRole('heading', { name: fight.title })).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/kumite-timer')
+  })
+
+  test('lets the logo go home when there is nothing to lose', async () => {
+    // arrange
+    const router = renderWithHeader(null)
+
+    // act
+    clickLogo()
+
+    // assert
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe('/')
+    })
+    expect(screen.queryByRole('heading', { name: fight.title })).not.toBeInTheDocument()
   })
 
   test('leaves once the question is answered yes', async () => {

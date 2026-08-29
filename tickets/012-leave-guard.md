@@ -83,6 +83,13 @@ Testy ze sekce `D` proběhly na telefonu: 1–5 a 7 ok, u 6 se mobil neptá a PC
  - UI tlačítko „Zpět" v kumite zápase v turnaji odlišuje, kdy se něco změnilo a podle toho
  ne/zobrazí modal, ale mobilní/prohlížečové tlačítko se ptá vždy"
 
+### 2026-08-29 (po ověření druhého kola)
+
+Uživatel:
+
+„byla by jednoduchá změna nakonec logo nechat funkční na všech obrazovkách, jen na těch
+ řešených přidat i po jeho kliknutí confirm modal?"
+
 ## B — Zadání
 
 **Problém:** Logo v hlavičce je obyčejný odkaz nad všemi obrazovkami a na telefonu je to
@@ -115,10 +122,9 @@ tlačítku „Zpět" uvnitř obrazovky, takže hlídá jednu cestu ze čtyř.
 **Akceptační kritéria** (přepsaná po ověření na Androidu — původní znění viz commit
 `e9f26cd`; měnila se kritéria 1, 3 a 5, protože otázka se nově řídí stavem, ne cestou):
 
-- [ ] Hlavička ukazuje „OnlineSensei", ale **není odkaz, dokud má obrazovka co ztratit** —
-      v DOM není `<a>` a klik nikam nenaviguje.
-- [ ] Na rozcestníku, set-up obrazovkách, zrcadle **a na přehledu turnaje** je logo dál
-      odkaz na `/`.
+- [ ] Logo je **funkční odkaz na `/` na všech obrazovkách**, včetně těch hlídaných.
+- [ ] Klik na logo z obrazovky, která má co ztratit, **otevře tentýž modál** jako
+      prohlížečové zpět a nikam neodejde, dokud se nepotvrdí.
 - [ ] Prohlížečové zpět z obrazovky, která má co ztratit, neodejde, ale otevře modál.
 - [ ] Prohlížečové zpět z obrazovky, kde není o co přijít, **odejde bez ptaní** — přehled
       turnaje i zápas, ve kterém se ještě nic nestalo.
@@ -263,7 +269,7 @@ komentář s odkazem.
 
 ## D — Hotovo
 
-**Co se udělalo:** Ve dvou kolech. První (`7239a51`, `b89b6aa`) postavil guard na seznamu
+**Co se udělalo:** Ve třech kolech. První (`7239a51`, `b89b6aa`) postavil guard na seznamu
 cest: logo mrtvé na pěti obrazovkách, prohlížečové zpět a `beforeunload` blokované tam.
 Kvůli `useBlocker` přešel `src/index.tsx` z `<BrowserRouter>` na `createBrowserRouter`
 jednou splat routou.
@@ -271,14 +277,20 @@ jednou splat routou.
 Druhé kolo přišlo z **ověření na Androidu** a otočilo odpověď z gatu: otázku publikuje
 **obrazovka podle svého stavu** (`useLeaveQuestion`), ne cesta. Tím seznam cest zmizel
 úplně — `guardedPaths.ts` je smazaný —, hlavička i guard čtou jednu a tutéž odpověď,
-a tlačítko „Zpět" u kumite zápasu na ni přešlo taky. Sada je 529 testů (z 507).
+a tlačítko „Zpět" u kumite zápasu na ni přešlo taky.
+
+Třetí kolo (`ce4d1c9`) vrátilo logu funkci. Místo mrtvého nápisu je z něj zase obyčejný
+odkaz na všech obrazovkách a otázku nad ním drží guard — klik na logo je `PUSH` na `/`,
+takže stačila jedna podmínka navíc v predikátu. `PageHeader.tsx` se tím vrátila do
+původní podoby: bez selektoru, bez větvení, o osm řádků kratší než na začátku ticketu.
+Sada je 531 testů (z 507).
 
 **Akceptační kritéria:**
 
 | # | Kritérium | Stav | Čím |
 | - | --------- | ---- | ---- |
-| 1 | Hlavička není odkaz, dokud má obrazovka co ztratit | splněno | `PageHeader.tsx:30` · testy „is not a link while there is a %s to lose" |
-| 2 | Jinde logo odkazem zůstává (i na přehledu turnaje) | splněno | test „is a link home when there is nothing to lose" |
+| 1 | Logo je funkční odkaz na všech obrazovkách | splněno | `PageHeader.tsx` — vrátila se do původní podoby · testy „links home with %s to lose" |
+| 2 | Klik na logo z hlídané obrazovky otevře modál a neodejde | splněno | `LeaveGuard.tsx:33` · testy „asks when the logo takes you home…" a „lets the logo go home when there is nothing to lose" |
 | 3 | Zpět z obrazovky, která má co ztratit, otevře modál | splněno | test „asks before browser back leaves a screen with something to lose" |
 | 4 | Zpět odkud není o co přijít odejde bez ptaní | splněno | test „does not ask when the screen has nothing to lose" |
 | 5 | Potvrzení odejde, zrušení zůstane a stav je nedotčený | splněno; stav **konstrukcí** | testy „answered yes" / „answered no" / „the cross … as answering no". Zablokovaná navigace obrazovku neodmountuje — ověřeno na telefonu, ne testem |
@@ -290,7 +302,7 @@ a tlačítko „Zpět" u kumite zápasu na ni přešlo taky. Sada je 529 testů 
 | 11 | Nové texty v `cs.ts` i `en.ts` | splněno | `leaveScreenModal`; `Translation` to vynutí typecheckem |
 | 12 | Zrcadlo funguje dál bez ptaní | splněno | nepublikuje otázku, takže není co blokovat |
 
-**Odchylky od B/C:** tři, všechny z druhého kola.
+**Odchylky od B/C:** čtyři.
 
 - **Seznam chráněných cest zmizel.** `C` ho navrhovala jako sdílený modul pro hlavičku
   i guard. Jakmile otázku publikuje obrazovka, není k čemu — hlavička čte tentýž stav.
@@ -302,6 +314,10 @@ a tlačítko „Zpět" u kumite zápasu na ni přešlo taky. Sada je 529 testů 
 - **Podmínka u kumite zápasu se rozšířila** ze zápasu v turnaji na jakýkoli zápas, ve
   kterém log narostl. Ruší to rozhodnutí ticketu 003, že zápas mimo turnaj se neptá; test,
   který ho zamykal, je přepsaný a v komentáři nese proč.
+- **Logo se nakonec nezneaktivňuje.** Gate rozhodl „klidně ho úplně zneaktivnit", třetí
+  kolo to vrátilo: zůstává odkazem a jen se ptá. Guard drží `PUSH` na `/`, což je právě
+  a jenom logo — všech pět `navigate('/')` v appce sedí na set-up obrazovkách, kde není
+  o co přijít, a catch-all routa v `App.tsx:30` dělá `replace`, ne `push`.
 
 **Gotchas:**
 
@@ -322,7 +338,8 @@ a tlačítko „Zpět" u kumite zápasu na ni přešlo taky. Sada je 529 testů 
 
 **Ověřeno na:** **Androidu (Motorola)** přes lokální dev server — sedm scénářů ze sekce D
 prvního kola. Prošlo: dialog na gesto zpět, obě odpovědi, mrtvé logo na rozehraném zápase,
-živé logo na set-up, zrcadlo bez ptaní. Zavření záložky se **na mobilu nezeptalo** (na
+živé logo na set-up, zrcadlo bez ptaní. **Ty dvě o logu už neplatí** — třetí kolo mu
+funkci vrátilo, viz níž. Zavření záložky se **na mobilu nezeptalo** (na
 desktopu ano) — uživatel to přijal jako známou mezeru, viz `beforeunload` výš.
 
 Z toho ověření vzešlo pět připomínek, které tvoří druhé kolo (viz `A`). **Druhé kolo bylo
@@ -336,8 +353,15 @@ scénářů, které se druhým kolem změnily:
    pro `replace` na redirectech existuje — jsdom s `MemoryRouter` tu historii nemodeluje.
 5. Rozehraný **turnajový zápas**, gesto zpět → hláška je o neuloženém zápase.
 
-Neověřené zůstává jen to, co ověřit nejde: `beforeunload` se na mobilu neptá (viz výš,
-vědomá mezera na pokyn uživatele) a zpět na první položce historie appku opustí.
+**Třetí kolo na telefonu ověřené není.** Změnilo jedinou věc, ale takovou, kterou předchozí
+ověření nepokrývá: klik na logo. Zkusit se má
+
+6. rozehraný zápas → **ťuknout na logo** → má se zeptat týmž modálem a zůstat v zápase;
+7. tentýž zápas, potvrdit → má odejít na rozcestník;
+8. zápas, ve kterém se nic nestalo, a set-up obrazovka → logo má odejít rovnou, bez ptaní.
+
+Neověřené jinak zůstává jen to, co ověřit nejde: `beforeunload` se na mobilu neptá (viz
+výš, vědomá mezera na pokyn uživatele) a zpět na první položce historie appku opustí.
 
 ## Review
 
@@ -409,3 +433,27 @@ Po opravě výš **15 z 15 zabito**.
 
 **Neřešeno na výslovný pokyn:** `beforeunload` se na mobilu neptá. „za mě je to takhle ok,
 neřeš."
+
+### Třetí kolo — logo zůstane odkazem
+
+Podnět uživatele po projití druhého kola: *„byla by jednoduchá změna nakonec logo nechat
+funkční na všech obrazovkách, jen na těch řešených přidat i po jeho kliknutí confirm
+modal?"*
+
+Byla, a vyšla jako **úbytek kódu**. Klik na logo je `PUSH` na `/`, takže se nemusel
+přidávat druhý mechanismus — stačila jedna podmínka v predikátu, který už existoval,
+a modál i obě odpovědi zůstaly tytéž. `PageHeader.tsx` ztratila selektor i větvení
+a je zpátky v původní podobě.
+
+**Proč je `PUSH` na `/` bezpečné zúžení:** ověřeno grepem, že jediné navigace na `/`
+v appce jsou `navigate('/')` na pěti set-up obrazovkách — tam guard neběží, protože tam
+není co ztratit — a catch-all routa `App.tsx:30`, která dělá `replace`. Logo je tedy
+jediný `PUSH` na `/`, jaký může nastat.
+
+**Co to mění na uvážení:** dřív omylem ťuknuté logo neudělalo nic. Teď vyvolá modál, který
+je potřeba odklepnout — o kousek víc práce u tatami výměnou za funkční cestu domů odkudkoli.
+Rozhodnutí uživatele.
+
+**Mutační testování:** 15 mutací, **15 z 15 zabito**. Přibyla mezi nimi „drží se každý
+push, ne jen ten domů", která hlídá, že se rozšířením predikátu nezačaly blokovat vlastní
+navigace appky.
