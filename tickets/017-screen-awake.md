@@ -2,7 +2,7 @@
 id: 017
 slug: screen-awake
 title: Obrazovka nemá zhasínat, když se na ní běží čas
-status: review
+status: done
 branch: screen-awake
 ---
 
