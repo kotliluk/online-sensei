@@ -2,7 +2,7 @@
 id: 010
 slug: cleanup
 title: Úklid mrtvého kódu, duplicit a konzistenčních odchylek
-status: review
+status: done
 branch: cleanup
 ---
 
