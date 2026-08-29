@@ -19,7 +19,7 @@ Vypadlo z ověřování ticketu 011 na reálném iPhonu:
 „kdyby to šlo, udělal bych aspoň, aby obrazovka automaticky nezhsínala, když je
 aplikace otevřená"
 
-Kontext, proč to není kosmetika. Ověření 011 ukázalo, že iOS na zhasnuté obrazovce sice
+Kontext, proč to není kosmetika. Ověření 011 na Androidu ukázalo, že telefon se zhasnutou obrazovkou sice
 timery i audio pouští, ale **dekódování zvuku škrtí** — konec zápasu zazněl ve správnou
 chvíli, ale zkomoleně a kratší. Zároveň platí, že celý ořez na hranici intervalu
 v interval timeru (vědomý kompromis z 011) je problém jen tehdy, když obrazovka zhasne.
@@ -54,7 +54,7 @@ metrů od telefonu. Kdyby to mělo platit všude, je to jednořádková změna.
   tvaru (efekt, `enabled` parametr, žádný vlastní stav).
 - Zavolat ho ve čtyřech hracích obrazovkách. Jeden řádek na obrazovku.
 - Ošetřit čtyři věci, které se u tohohle API dělají špatně:
-  - **API chybí** (iOS pod 16.4, nezabezpečený kontext) → hook nedělá nic a nespadne.
+  - **API chybí** (Safari pod iOS 16.4, nezabezpečený kontext) → hook nedělá nic a nespadne.
   - **`request()` odmítne** (slabá baterie, úsporný režim) → chycené, appka běží dál.
   - **Systém zámek sám pustí**, jakmile se dokument schová (přepnutá záložka, zamčení
     ručně). Po návratu se **musí požádat znovu**, jinak zámek platí jen do prvního
@@ -91,7 +91,7 @@ metrů od telefonu. Kdyby to mělo platit všude, je to jednořádková změna.
 - **Zámek se drží po celou dobu na hrací obrazovce, ne jen když hodiny běží.** Pauza na
   tatami je přesně ta chvíle, kdy rozhodčí řeší situaci a na telefon nesahá; zhasnutá
   obrazovka v půlce pauzy je horší než ta baterka.
-- **Chybějící API se nehlásí uživateli.** Na iOS pod 16.4 se prostě nic nestane. Hlášku
+- **Chybějící API se nehlásí uživateli.** Kde není, tam se prostě nic nestane. Hlášku
   „váš prohlížeč neumí…" by nikdo nevyužil a stála by dva překlady a jeden layout.
 - **Baterie je vědomá cena.** Appka se používá po dobu tréninku nebo turnajového bloku,
   ne na pozadí celý den, a zhasínající časomíra je horší problém.
@@ -137,34 +137,41 @@ Testy **498 → 507**.
 | 6 | splněno | `does not ask for a lock the hidden page could not be given` |
 | 7 | splněno | diff se `cs.ts` ani `en.ts` nedotýká |
 | 8 | splněno | typecheck 0, lint 0 errors / 59 warnings (baseline 59), 507 testů zelených, build prochází |
-| 9 | **nesplněno** | viz „Ověřeno na" |
+| 9 | splněno | ověřeno na Androidu 2026-08-29 — nad zápasem svítí, nad nastavením zhasne; viz „Ověřeno na" |
 
 Nad rámec kritérií přibyla pojistka proti druhé žádosti, dokud je první na cestě — viz
 Review.
 
 ### Ověřeno na
 
-**Zatím na žádném zařízení.** Wake lock je přesně ta kategorie, kterou jsdom neumí:
-`navigator.wakeLock` v něm neexistuje vůbec, takže testy pracují s podstrčeným API a
-dokazují chování hooku, ne chování telefonu.
+**Android (Motorola), přes `yarn dev:https` na lokální síti — 2026-08-29.**
 
-Co zkusit přes `yarn dev:https`:
+| Scénář | Výsledek |
+| --- | --- |
+| set-up obrazovka, nechat ležet | **OK** — obrazovka zhasla po minutě, tedy zámek se tam nedrží |
+| kumite se spuštěným zápasem, nechat ležet | **OK** — po minutě pořád svítí |
+| zápas s rozsvícenou obrazovkou dohrát | **atoshibaraku i konec zazněly čistě** |
 
-1. **Kumite, nechat ležet.** Otevřít zápas a telefonu se nedotknout dvě minuty. Obrazovka
-   nemá zhasnout. (Na iOS to chce **16.4 a novější** — na starším se nestane nic, což je
-   v pořádku.)
-2. **Odchod z obrazovky.** Z běžícího zápasu jít zpátky na set-up a nechat ležet.
-   Obrazovka **má** zhasnout — zámek se drží jen nad hracími obrazovkami.
-3. **Přepnutí a návrat.** Přepnout na jinou appku a vrátit se. Obrazovka nemá začít
-   zhasínat — to je ta cesta, kde prohlížeč zámek sebral a hook o něj musí požádat znovu.
-4. **Interval timer a stopky.** Totéž jako 1, ať je vidět, že to nedrží jen kumite.
-5. **A hlavně: pustit s tímhle zapnutým znovu scénář 2 z ticketu 011** — zápas na 30 s
-   nechat doběhnout s rozsvícenou obrazovkou a poslechnout si, jestli je konec pořád
-   zkomolený. Jestli ne, je potvrzené, že za to mohlo zhasnutí.
+Ta třetí řádka je ta cenná: **potvrzuje, že za zkomolený konec a chybějící atoshibaraku
+z ticketu 011 mohla zhasnutá obrazovka**, ne hodiny a ne zvukový soubor. Zhasnutý displej
+nechává timery běžet, ale škrtí dekódování audia tak, že delší signál je zkomolený a kratší
+zmizí celý. Rozsvícená obrazovka to odstraňuje — což byl vedle pohodlí druhý důvod, proč
+tenhle ticket vznikl.
+
+První dvě řádky dohromady ukazují, že rozsah sedí: zámek platí nad hrací obrazovkou a
+nad nastavením ne.
+
+**Nezkoušené zůstává:**
+
+1. **Přepnutí do jiné appky a zpátky** — cesta, kde prohlížeč zámek sebral a hook o něj
+   musí požádat znovu. Zamčené testem, na zařízení neověřené; projeví se to tak, že by
+   obrazovka po návratu začala zhasínat.
+2. **Interval timer a skupinové stopky** — stejný jeden řádek jako v kumite, takže riziko
+   je malé, ale je to jiná obrazovka.
+3. **Prohlížeč bez wake locku** (Safari pod iOS 16.4). Tam se nemá stát nic — ani chyba.
 
 ### Co zůstalo
 
-- **`ATOSHIBARAKU.mp3` je kopie `BEEP_A_500ms.mp3`** (nález z ověřování 011). Tenhle ticket
-  se toho nedotýká, protože je to audio asset, ne kód — ale dokud to platí, atoshibaraku
-  nezní jako atoshibaraku ani při rozsvícené obrazovce.
+- **Přepnutí do jiné appky a zpátky** není na zařízení vyzkoušené — viz „Ověřeno na".
+  Je to jediná cesta hookem, kterou drží pouze test.
 - **Zámek se drží i během pauzy**, ne jen za běhu hodin. Vědomé, důvod je v Předpokladech.
