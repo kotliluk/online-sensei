@@ -29,6 +29,11 @@ export const CS: Translation = {
     downloadCsv: 'Stáhnout CSV',
     shareCsv: 'Sdílet CSV',
   },
+  leaveScreenModal: {
+    title: 'Odejít z obrazovky?',
+    text: 'Nic z toho, co je tady rozdělané, se neukládá — odchodem o to přijdeš.',
+    confirm: 'Odejít',
+  },
   mainPage: {
     appIntroduction: 'Trénuj sám a nebo s přáteli s OnlineSensei!',
     availableFeatures: 'Dostupné funkce',

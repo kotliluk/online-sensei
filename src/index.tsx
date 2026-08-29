@@ -1,11 +1,12 @@
 import { createRoot } from 'react-dom/client'
 import { store } from './redux/store'
 import { Provider as ReduxProvider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './App'
 import './styles/global.scss'
 import { config } from './config'
 import { ModalContainer } from './components/common/modal/modalContainer/ModalContainer'
+import { LeaveGuard } from './components/common/leaveGuard/LeaveGuard'
 
 
 const container = document.getElementById('root')
@@ -30,11 +31,30 @@ if (container === null) {
 //
 // Re-enabling StrictMode requires moving the session reset off the unmount
 // cleanup in all five feature screens first.
+
+// A data router, and one route, because `LeaveGuard` needs `useBlocker` and `useBlocker`
+// needs a data router - under `<BrowserRouter>` it throws on the spot. The single splat
+// route keeps that from spreading: `App` still owns the routing, and the `<Routes>` in it
+// and in the four page components go on working as descendant routes, untouched.
+//
+// The element is written out here rather than pulled into a `Root` component because this
+// file exports nothing, and a component declared in it costs a react-refresh warning.
+const router = createBrowserRouter(
+  [{
+    path: '*',
+    element: (
+      <>
+        <App />
+        <ModalContainer />
+        <LeaveGuard />
+      </>
+    ),
+  }],
+  { basename: config.basename },
+)
+
 createRoot(container).render(
   <ReduxProvider store={store}>
-    <BrowserRouter basename={config.basename}>
-      <App />
-      <ModalContainer />
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </ReduxProvider>
 )

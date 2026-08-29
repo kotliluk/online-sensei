@@ -29,6 +29,11 @@ export const EN: Translation = {
     downloadCsv: 'Download CSV',
     shareCsv: 'Share CSV',
   },
+  leaveScreenModal: {
+    title: 'Leave this screen?',
+    text: 'Nothing here is saved - leaving throws it away.',
+    confirm: 'Leave',
+  },
   mainPage: {
     appIntroduction: 'Train alone or with friends with OnlineSensei!',
     availableFeatures: 'Available features',

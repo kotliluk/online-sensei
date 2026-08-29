@@ -33,6 +33,11 @@ export interface Translation {
     downloadCsv: string,
     shareCsv: string,
   }
+  leaveScreenModal: {
+    title: string,
+    text: string,
+    confirm: string,
+  }
   mainPage: {
     appIntroduction: string,
     availableFeatures: string,
