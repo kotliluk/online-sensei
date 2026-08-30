@@ -2,7 +2,7 @@
 id: 013
 slug: interval-reorder-touch
 title: Přeuspořádání intervalů na dotyk
-status: review
+status: done
 branch: interval-reorder-touch
 ---
 
