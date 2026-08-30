@@ -85,8 +85,14 @@ background.
 dragging a row, and a finger produces no drag - so on a phone the order could not be
 changed at all, and the grab cursor that hinted at it is something touch never shows
 either. Every row now carries an up and a down arrow, disabled at the ends of the
-list, and they answer to a keyboard as well. Dragging is gone rather than kept beside
-them, so there is one way of doing it instead of two.
+list. Dragging is gone rather than kept beside them, so there is one way of doing it
+instead of two.
+
+A row swaps its contents where it stands rather than sliding, so the interval that
+just moved is coloured for a moment to say where it went - and the focus goes with
+it, which is what lets the same arrow be pressed twice to move one interval twice.
+Without that the second press would land on whatever took the old row and undo the
+first.
 
 **The screen stays on while a clock is showing.** A phone left alone dims and locks
 within half a minute, and on a play screen that means nobody can read the time -
@@ -373,7 +379,9 @@ interval in a single round and its type (work / pause) and name. For example, yo
 
 The order is yours to change: every interval carries an up and a down arrow, and the one
 that would run off the end of the list is disabled. A cross removes an interval, and with
-a single interval left it is disabled too - a series of nothing is not a series.
+a single interval left it is disabled too - a series of nothing is not a series. Work is
+red and pause is green in the type field, the same two colours the saved series are
+listed in.
 
 Also, you can set the number of repetitions of this whole round.
 
