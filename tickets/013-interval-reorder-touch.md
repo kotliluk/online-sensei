@@ -210,9 +210,16 @@ doleva** místo na střed.
 
 **Ověřeno na:**
 
-**Android (Motorola), ručně** — pět bodů z prvního kola prošlo: řádek se na displej vejde,
-pole „Název“ zůstalo použitelné, vypnuté šipky jsou na tmavém tématu vidět, rozestup mezi
-řádky sedí, přesun palcem funguje. Z toho testu vzešly tři úpravy výš.
+**Android (Motorola), ručně, dvě kola.**
+
+První kolo — pět bodů prošlo: řádek se na displej vejde, pole „Název“ zůstalo použitelné,
+vypnuté šipky jsou na tmavém tématu vidět, rozestup mezi řádky sedí, přesun palcem funguje.
+Z toho testu vzešly tři úpravy výš.
+
+Druhé kolo — po zapracování review a těch tří úprav **taky prošlo**. Tím je ověřené i to,
+co se dalo ověřit jen pod prstem: barvení pole typu, zarovnání tří polí doleva, podbarvení
+přesunutého řádku, ztlumená barva vypnuté šipky a zúžený `<select>`. **Délka podbarvení
+1,2 s tedy stačí** — ta otázka byla po prvním kole otevřená.
 
 Automaticky: **549 testů** (z 531), z toho **18 nových**; `yarn typecheck` čistý, `yarn build`
 prochází, `yarn lint` 0 chyb / 54 warningů (bylo 59; ubylo jich s DnD callbacky, žádný
@@ -227,7 +234,10 @@ Změřeno reviewerem v headless Chrome na šířkách 320/360/375/390/412/768/10
 2. **`css-min(12rem, 100%)` v shrink-to-fit rodiči.** WebKit počítá neurčité procento uvnitř
    `min()` jinak než Blink. Hledá se pole „Název“ splasklé na šířku popisku, nebo naopak
    trčící přes tlačítka (kreslilo by se **nad** nimi a sebralo by jim tapy).
-3. Stačí 1,2 s podbarvení, než se ťukne podruhé?
+
+Obojí je vada, která by se projevila jen na WebKitu, a **testem v tomhle repu ji chytit
+nejde** — jsdom nedělá layout a headless Safari není na čem spustit. Zůstává to napsané,
+ne odškrtnuté.
 
 ## Review
 
