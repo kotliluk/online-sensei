@@ -11,7 +11,3 @@
 @function css-max( $values... ) {
   @return css-function( max, $values );
 }
-
-@function css-calc( $values... ) {
-  @return css-function( calc, $values );
-}

@@ -161,8 +161,9 @@ z review a tenhle zápis.
 Do rozsahu přibyly tři opravy komentářů a dokumentu z review, mezi nimi
 `.claude/skills/ticket-review/agents/device-ux-reviewer.md`, který zadání nejmenovalo:
 tvrdil, že laťka je Safari 14, což ho tenhle diff udělal nepravdivým. Po review přibylo ještě
-smazání nevolané `css-clamp()` — vedlejší nález `device-ux`, který uživatel rozhodl vzít sem
-místo do vlastního ticketu.
+smazání nevolaných `css-clamp()` a `css-calc()` včetně komentáře, který na druhou z nich
+odkazoval — vedlejší nález `device-ux`, který uživatel rozhodl vzít sem místo do vlastního
+ticketu.
 
 **Gotchas:**
 
@@ -228,15 +229,18 @@ stará laťka reálně kupovala — pod `safari14` se `inset`, `:is()`, `clamp()
 rozepisovaly, pod `ios15.6` už ne — a doložil, že **projekt ani jeden z těch zápisů nepoužívá**;
 rezerva, o kterou appka přišla, kryla iOS ≤ 14 a Chrome 87, tedy prohlížeče mimo `browserslist`.
 
-**Vedlejší nález, který uživatel rozhodl vzít do tohohle PR:** `css-clamp()`
-v `src/styles/css-function.scss:15` byla definovaná a nikde nevolaná → **smazána**. Build po
-smazání vydal CSS se **stejným content hashem** (`index-jXap7-kz.css`, 90 722 B), což je důkaz,
-že šlo o mrtvý kód.
+**Vedlejší nález, který uživatel rozhodl vzít do tohohle PR:** `css-function.scss` obsahoval
+dva helpery, které nikdo nevolal → **oba smazané**.
 
-Vedle ní zůstává `css-calc()`, taky nevolaná — ale ta má svůj důvod zapsaný v repu:
-`LoadAdvancedSeries.scss:28` říká, že helper skládá řetězce a dart-sass kolem `-` zahodí
-mezery, takže by emitoval nevalidní CSS, a proto se tam volá nativní `calc()`. Smazat ji tedy
-znamená rozhodnout i o tom komentáři; nechávám to na tobě, mimo rozsah.
+- `css-clamp()` — bez callera a bez důvodu, proč tam je.
+- `css-calc()` — bez callera taky, ale s důvodem zapsaným v repu: `LoadAdvancedSeries.scss:28`
+  varoval, že helper skládá řetězce a dart-sass kolem `-` zahodí mezery, takže by u odčítání
+  emitoval nevalidní CSS. Uživatel rozhodl smazat funkci i to varování — bez funkce nemá před
+  čím varovat a `max-height: calc(…)` na dalším řádku mluví samo za sebe.
+
+Build po každém z těch dvou smazání vydal CSS se **stejným content hashem**
+(`index-jXap7-kz.css`, 90 722 B), což je nejpřímější důkaz mrtvého kódu, jaký tenhle repo umí
+dát. `css-function()` zůstává — stojí na něm `css-min()` i `css-max()`.
 
 **Bez nálezů v kódu:** ani jeden reviewer nenašel vadu v `src/` — všech pět nálezů je
 v komentářích a dokumentaci.
