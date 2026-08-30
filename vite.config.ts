@@ -19,11 +19,15 @@ export default defineConfig({
   plugins: [react(), svgr(), ...httpsPlugins],
   build: {
     outDir: 'build',
-    // Vite's default CSS target rewrites media queries to range syntax
-    // (`@media (width<=560px)`), which Safari only understands from 16.4.
-    // The app is used on whatever phone is at hand at a tournament, so keep
-    // the CSS output conservative.
-    cssTarget: ['chrome87', 'firefox78', 'safari14', 'edge88'],
+    // The oldest browsers `npx browserslist` resolves to, checked 2026-08-30.
+    // Naming them is what keeps Vite's default off: left alone it writes media
+    // queries in range syntax (`@media (width<=560px)`), which WebKit only
+    // understands from 16.4 - far above the iOS floor below, and a phone at a
+    // tournament is exactly the device that would drop the rule in silence.
+    // The list only caps the syntax esbuild may emit, so it is worth no more
+    // than its truthfulness: it used to claim safari14, which the app has not
+    // supported for years.
+    cssTarget: ['chrome109', 'edge149', 'firefox121', 'ios15.6', 'safari18.5'],
   },
   css: {
     preprocessorOptions: {
