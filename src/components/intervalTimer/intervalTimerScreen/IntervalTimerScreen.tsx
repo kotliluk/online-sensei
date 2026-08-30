@@ -159,7 +159,7 @@ export const IntervalTimerScreen = (): JSX.Element | null => {
   const inProgress = phase === 'intervals' || phase === 'start'
 
   return (
-    <main className='play-reactions'>
+    <main className='play-interval-timer'>
       <h1>{t.heading}</h1>
       <p>
         {currInterval < totalIntervals && `${t.work}: ${currRound}/${totalRounds}`}
