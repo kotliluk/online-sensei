@@ -2,7 +2,7 @@
 id: 013
 slug: interval-reorder-touch
 title: Přeuspořádání intervalů na dotyk
-status: approved
+status: review
 branch: interval-reorder-touch
 ---
 
@@ -152,6 +152,113 @@ ale jednotky intervalů, takže mi to za tu jednu cestu ovládání stojí.
   ukládalo v poli i dosud, tvar dat se nemění, takže **staré uložené série i staré odkazy
   fungují beze změny**.
 
+
+## D — Hotovo
+
+**Co se udělalo:** Každý interval má šipky ↑/↓ ve svislém sloupci a napravo od nich křížek,
+všechny tři o velikosti `$touch-target`. HTML5 drag-and-drop je pryč celý, včetně obou
+obezliček, které kvůli němu existovaly (`draggable` + `preventDefault` na polích) a
+`cursor: grab`. Kontrakt `onMove` se zmenšil z „vlož před tuhle mezeru“ na obyčejný přesun.
+Commity: `2f0a051` (zadání a rozhodnutí o DnD), `cc286df` (implementace a testy),
+`4b2d332` (oprava rozestupu + README).
+
+**Naplnění akceptačních kritérií:**
+
+| Kritérium | Čím | Stav |
+| --------- | ---- | ---- |
+| ↑ prohodí `i` a `i-1`, ↓ prohodí `i` a `i+1` | `SetUpAdvancedInterval.tsx:116,125` + `SetUpScreenAdvanced.tsx:94` · testy *moves an interval up / down* | ✅ |
+| ↑ v prvním řádku a ↓ v posledním jsou `disabled` | `:117`, `:126`, `SetUpScreenAdvanced.tsx:181` · test *offers no way up out of the first row…* | ✅ |
+| U jediného intervalu `disabled` obě šipky i křížek | test *has nothing to press on a single interval* | ✅ |
+| Přesun nepřepíše hodnoty | testy čtou **název i délku** každého řádku, takže přesun, který by prohodil řádky a nechal hodnoty na místě, neprojde | ✅ |
+| Přečíslování `1)`…`n)` sedí | test *renumbers the rows after a move* | ✅ |
+| Přístupné jméno rozlišuje řádek, z `cs.ts` i `en.ts` | `:63,115,124,134`, klíče `moveUp`/`moveDown`/`delete` · testy hledají tlačítka jménem | ✅ |
+| Na řádku nezůstane nic z DnD | test *nothing on the row is draggable any more* | ✅ |
+| Řádek se vejde na 360px displej | `min-width: 0` + `css-min(12rem, 100%)` + `flex-shrink: 0` | ⚠️ **neověřeno** — jsdom nedělá layout, viz níž |
+| Sdílený odkaz i `localStorage` fungují dál | tvar dat se nemění, mění se jen pořadí prvků v poli; `urlState.test.ts` (38 testů) prochází beze změny | ✅ |
+
+**Odchylky od B:**
+
+- **Tři překladové klíče, ne dva.** Přibyl `delete` pro křížek. Kritérium mluví o tom, že
+  je křížek u jediného intervalu vypnutý, a to se nedá otestovat přes roli a jméno
+  tlačítka, které žádné jméno nemá. Ikonové tlačítko bez přístupného jména byl tak jako
+  tak nedostatek — jen se do zadání nedostal.
+- **Layout bez breakpointu.** Původní návrh přepínal sloupec/řádek na `L-device`;
+  rozhodnutí na gate (šipky pod sebou, křížek napravo) to zjednodušilo na jedno uspořádání.
+- **Ikony berou `fill='currentColor'`** a `Cross` kvůli tomu dostal `IconPropsWithFill`
+  místo `IconProps`. Nebylo to v plánu, důvod je v Gotchas.
+
+**Gotchas:**
+
+- **`button-color` nechává vypnutému tlačítku černý popisek.** Na tmavém tématu je to
+  černá ikona na `$grey-dark`. U křížku to byl okrajový stav (jediný interval), u šipek je
+  to **stav normální** — první řádek nikdy nejde nahoru, poslední nikdy dolů, takže
+  vypnuté šipky jsou na obrazovce vždycky. Proto `fill='currentColor'` a barva vypnutého
+  stavu z tématu. Kdo příště přidá ikonové tlačítko, narazí na totéž.
+- **Rozestup mezi řádky dělaly drop zóny.** `.advanced-interval-li` měl schválně vynulovaný
+  svislý padding, protože ty dva 1rem divy nad a pod řádkem mezeru dodávaly samy. Smazat je
+  a padding nevrátit znamená řádky nalepené na sebe — a **žádný test v tomhle repu to
+  neuvidí**, protože jsdom nepočítá layout. Našel to až vlastní review diffu.
+- **`handleIntervalMove` nemá kontrolu mezí, a je to záměr.** Konce seznamu zavírá `disabled`
+  na tlačítkách, ne podmínka v handleru; prohlížeč na vypnutém `<button>` klik nepustí.
+  Test *does nothing when a disabled arrow is pressed anyway* tu hranici drží. Původní
+  podmínka `from !== to && from !== to - 1` existovala jen proto, že drop padá **mezi**
+  řádky — se šipkami nemá co odmítat.
+- Pořadí operací v přesunu: `intervals[from]` se čte z **původního** pole, ne z toho, ze
+  kterého se právě vyřízlo. Mutace, která to zamění za `newIntervals[from]`, umře.
+
+**Ověřeno na:** **jen automatické testy — na zařízení zatím neověřeno.**
+
+Automaticky: 540 testů (z 531), z toho 9 nových; `yarn typecheck` čistý, `yarn build`
+prochází, `yarn lint` 0 chyb / 54 warningů (bylo 59 — ubyly s DnD callbacky, žádný
+nepřibyl). **Mutační test: 15 mutací napříč `SetUpAdvancedInterval.tsx` a
+`SetUpScreenAdvanced.tsx`, 15 z 15 zabito.**
+
+Co chce vidět telefon (`yarn dev:https`, pokročilé nastavení intervalového časovače):
+
+1. **Vejde se řádek na 360px displej?** Tohle je celý důvod, proč tu tahle sekce je —
+   jsdom nedělá layout a repo nemá headless prohlížeč, takže na to žádný test neodpoví.
+2. **Vypnuté šipky na tmavém tématu** — je vidět, že tam jsou, a zároveň že jsou vypnuté?
+3. **Nezúžilo se pole „Název“ tak, že se do něj nedá psát?** Dostalo `css-min(12rem, 100%)`,
+   takže se na úzkém displeji smrští.
+4. **Rozestup mezi řádky** po zrušení drop zón.
+5. Přesun palcem jednou rukou — sedí šipky tam, kam palec dosáhne?
+
 ## Review
 
-<!-- doplní /ticket-review -->
+Branch: `interval-reorder-touch` · revieweři: **žádní**
+
+**Proč žádní:** tahle session má stálou instrukci nepouštět subagenty, pokud si o ně
+neřekneš. Fáze 5 je normálně staví paralelně (`correctness`, `tests`, `device-ux`), a to
+se nestalo — neschovávám to za „bez nálezů“. Místo nich proběhlo vlastní čtení diffu
+a **mutační test**, což je v tomhle repu nejtvrdší náhrada za `tests-reviewer`: 15 mutací,
+15 zabito. Co tím ale nahradit nejde, je nezávislost — nálezy níž našel tentýž člověk,
+který ten kód napsal. Jestli chceš plnou pátou fázi, řekni a pustím ji.
+
+**Opravit (90–100)**
+
+- [major] `SetUpScreenAdvanced.scss:9` · `.advanced-interval-li` měl vynulovaný svislý
+  padding, protože rozestup mezi řádky dodávaly ty dvě 1rem drop zóny. S jejich smazáním
+  by řádky slehly na sebe, oddělené jen linkou. → padding se vrátil na hodnotu z
+  `.set-up-item`, což dá stejné 2 rem mezi sousedy jako dřív · **✅ opraveno** (`4b2d332`)
+- [major] `SetUpAdvancedInterval.tsx:115,124,134` · ikonová tlačítka bez přístupného jména;
+  u šipek by navíc šest tlačítek „Move up“ nešlo od sebe odlišit → `aria-label` s číslem
+  řádku, vzor z `Fouls.tsx:56` · **✅ opraveno** (součást implementace)
+- [minor] `SetUpAdvancedInterval.scss` · vypnutá šipka měla černou ikonu na `$grey-dark`
+  (tmavé téma), a vypnutá šipka je v každém seznamu vždycky aspoň jedna → `currentColor`
+  + barva z tématu · **✅ opraveno**
+
+**Zvážit (80–89)**
+
+- `SetUpAdvancedInterval.scss` · vypnutý stav teď kreslí ikonu v **plném** kontrastu
+  (bílá na tmavém tématu). Čitelné to je, ale může to číst spíš jako zapnuté než jako
+  vypnuté; jediný signál „vypnuto“ zůstává šedé pozadí z `button-color`. Nechal jsem to
+  být — snížit kontrast zpátky by vrátilo přesně tu vadu, kvůli které se to měnilo.
+  **Chce to oko na telefonu, ne další podmínku.**
+- `SetUpAdvancedInterval.scss` · `css-min(12rem, 100%)` na poli „Název“ znamená, že se na
+  úzkém displeji smrští na nezjištěnou šířku. Je to lepší než přetékat mimo obrazovku, ale
+  kolik z něj zbyde, ví jen zařízení.
+- `SetUpScreenAdvanced.tsx:94` · `handleIntervalMove` nekontroluje meze. Je to vědomé
+  (konce zavírá `disabled` a drží to test), ale kdo někdy `disabled` odebere, dostane tiché
+  přeházení místo výjimky.
+
+**Bez nálezů:** — (viz výš, žádný reviewer neběžel)
