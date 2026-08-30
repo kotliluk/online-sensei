@@ -3,10 +3,12 @@ import './Button.scss'
 
 
 interface ButtonProps {
-  className?: string
-  onClick?: () => void
-  disabled?: boolean
-  children?: ReactNode
+  'className'?: string
+  'onClick'?: () => void
+  'disabled'?: boolean
+  'children'?: ReactNode
+  // a button whose whole label is an icon has no accessible name without one
+  'aria-label'?: string
 }
 
 export const Button = (props: ButtonProps): JSX.Element => {
