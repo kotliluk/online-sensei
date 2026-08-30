@@ -2,7 +2,7 @@
 id: 012
 slug: leave-guard
 title: Logo v hlavičce obchází potvrzení odchodu
-status: review
+status: done
 branch: leave-guard
 ---
 
@@ -353,15 +353,20 @@ scénářů, které se druhým kolem změnily:
    pro `replace` na redirectech existuje — jsdom s `MemoryRouter` tu historii nemodeluje.
 5. Rozehraný **turnajový zápas**, gesto zpět → hláška je o neuloženém zápase.
 
-**Třetí kolo na telefonu ověřené není.** Změnilo jedinou věc, ale takovou, kterou předchozí
-ověření nepokrývá: klik na logo. Zkusit se má
+**Třetí kolo bylo na tomtéž Androidu ověřeno taky** — uživatel 2026-08-29: „vše tedy ok".
+Pět scénářů, z toho tři na to, co třetí kolo změnilo, a dva na doověření druhého:
 
-6. rozehraný zápas → **ťuknout na logo** → má se zeptat týmž modálem a zůstat v zápase;
-7. tentýž zápas, potvrdit → má odejít na rozcestník;
-8. zápas, ve kterém se nic nestalo, a set-up obrazovka → logo má odejít rovnou, bez ptaní.
+6. Rozehraný zápas → **ťuknutí na logo** → zeptá se a zůstane v zápase. ✅
+7. Tentýž zápas, potvrdit → odejde na rozcestník. ✅
+8. Zápas bez událostí a set-up obrazovka → logo odejde rovnou, bez ptaní. ✅
+9. Zápas **mimo turnaj** po skórování, „Zpět" → ptá se. ✅
+10. **Gesto zpět na set-up obrazovce** → normálně se vrátí. ✅ Tohle je jediné potvrzení,
+    které `replace` na redirectech může mít — jsdom s `MemoryRouter` tu historii nemodeluje,
+    takže žádný test v repu na to nedosáhne.
 
-Neověřené jinak zůstává jen to, co ověřit nejde: `beforeunload` se na mobilu neptá (viz
-výš, vědomá mezera na pokyn uživatele) a zpět na první položce historie appku opustí.
+Všechny tři kola jsou tím na zařízení ověřená. Neověřené zůstává jen to, co ověřit nejde:
+`beforeunload` se na mobilu neptá (viz výš, vědomá mezera na pokyn uživatele) a zpět na
+první položce historie appku opustí.
 
 ## Review
 
