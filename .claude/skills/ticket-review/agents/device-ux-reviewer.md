@@ -46,8 +46,9 @@ Dostaneš `git diff` a zadání z ticketu.
   a výběr textu při rychlém ťukání.
 - **Obě jazykové mutace.** Nový text musí být v `cs.ts` **i** `en.ts`. Delší český překlad
   se do stejného tlačítka nemusí vejít.
-- **Layout.** CSS, které Safari od 14 nezná (`cssTarget` je v `vite.config.ts` schválně
-  konzervativní), layout na úzké obrazovce a na šířku, dlouhá jména závodníků v tabulce.
+- **Layout.** CSS, které nezná iOS Safari 15.6 — nejstarší WebKit z `browserslist` a laťka,
+  na které stojí `cssTarget` ve `vite.config.ts` (komentář u něj říká proč). Dál layout na
+  úzké obrazovce a na šířku, dlouhá jména závodníků v tabulce.
 - **Přístupnost, přiměřeně.** Ovládací prvek musí být fokusovatelný a ovladatelný
   klávesnicí, ikonové tlačítko potřebuje jmenovku. Nedělej z toho audit WCAG.
 
