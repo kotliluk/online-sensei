@@ -20,6 +20,7 @@ interface SetUpAdvancedIntervalProps {
   onDelete: () => void
   onMove: (to: number) => void
   isLast: boolean
+  justMoved: boolean
   disabledDelete: boolean
   translation: Translation['intervalTimer']['setUpScreenAdvanced']['intervalInSeries']
 }
@@ -29,7 +30,7 @@ export const SetUpAdvancedInterval = (props: SetUpAdvancedIntervalProps): JSX.El
     index,
     interval,
     onChange, onDelete, onMove,
-    isLast,
+    isLast, justMoved,
     disabledDelete,
     translation,
   } = props
@@ -63,7 +64,7 @@ export const SetUpAdvancedInterval = (props: SetUpAdvancedIntervalProps): JSX.El
   const position = index + 1
 
   return (
-    <div className='set-up-advanced-interval'>
+    <div className={`set-up-advanced-interval ${justMoved ? 'just-moved' : ''}`}>
       <span className='advanced-interval-index'>{position})</span>
 
       <ul className='advanced-interval-items'>
@@ -71,7 +72,7 @@ export const SetUpAdvancedInterval = (props: SetUpAdvancedIntervalProps): JSX.El
           <label>{translation.type.label}:</label>
           <div className='set-up-div set-up-type'>
             <Select
-              className='set-up-type-select'
+              className={`set-up-type-select ${interval.type}`}
               selected={interval.type}
               values={[
                 { value: 'work', text: translation.type.work },
@@ -112,20 +113,22 @@ export const SetUpAdvancedInterval = (props: SetUpAdvancedIntervalProps): JSX.El
         <div className='advanced-interval-move-btns'>
           <Button
             className='advanced-interval-move-btn'
+            data-move='UP'
             aria-label={insertWords(translation.moveUp, position)}
             onClick={() => onMove(index - 1)}
             disabled={index === 0}
           >
-            <ArrowUp fill='currentColor' width={20} height={20} />
+            <ArrowUp className='advanced-interval-arrow-up' fill='currentColor' width={20} height={20} />
           </Button>
 
           <Button
             className='advanced-interval-move-btn'
+            data-move='DOWN'
             aria-label={insertWords(translation.moveDown, position)}
             onClick={() => onMove(index + 1)}
             disabled={isLast}
           >
-            <ArrowDown fill='currentColor' width={20} height={20} />
+            <ArrowDown className='advanced-interval-arrow-down' fill='currentColor' width={20} height={20} />
           </Button>
         </div>
 

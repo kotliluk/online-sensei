@@ -73,6 +73,12 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const listRef = useRef<HTMLUListElement>(null)
+  const focusAfterMove = useRef<{ index: number, direction: 'UP' | 'DOWN' } | null>(null)
+
+  // which row was just moved, so that it can say so; null once it has finished saying it
+  const [justMoved, setJustMoved] = useState<number | null>(null)
+
   const handleIntervalChange = useCallback((newValue: Interval, index: number) => {
     const newIntervals = [...intervals]
     newIntervals[index] = newValue
@@ -84,19 +90,70 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
       const newIntervals = [...intervals]
       newIntervals.splice(index, 1)
       setIntervals(newIntervals)
+      // everything below the gap shifts up, so a highlight left over from a move would end
+      // up pointing at whichever interval took the row
+      setJustMoved(null)
     }
   }, [intervals, setIntervals])
 
   // `to` is where the interval ends up. Dropping used to mean "insert before this gap",
   // which is why this had to shift the target and refuse the two gaps touching the
-  // interval itself; an arrow names a row instead, and the ends are closed off by the
-  // buttons being disabled there.
+  // interval itself; an arrow names a row instead.
   const handleIntervalMove = useCallback((from: number, to: number) => {
+    // The arrows at the ends of the list are disabled, so this is the second lock rather
+    // than the first. It is here because the failure is not a no-op: `splice(-1, 0, x)`
+    // counts from the end and would quietly drop the interval in before the last one.
+    if (to < 0 || to >= intervals.length) {
+      return
+    }
+
     const newIntervals = [...intervals]
     newIntervals.splice(from, 1)
     newIntervals.splice(to, 0, intervals[from])
     setIntervals(newIntervals)
+
+    focusAfterMove.current = { index: to, direction: (to > from) ? 'DOWN' : 'UP' }
+    setJustMoved(to)
   }, [intervals, setIntervals])
+
+  // The row swaps its contents in place, so without this the list simply looks different
+  // afterwards and it is on the eye to work out which interval went where - and the next
+  // tap on the same spot then moves a different one. The colour says which row is the one
+  // that just moved, and fades out on its own.
+  useEffect(() => {
+    if (justMoved === null) {
+      return
+    }
+
+    const timeout = setTimeout(() => setJustMoved(null), 1200)
+
+    return () => clearTimeout(timeout)
+  }, [justMoved])
+
+  // A row is keyed by its position, so reordering swaps what the buttons are given rather
+  // than moving them: the arrow that was just pressed stays where it is and now belongs to
+  // the interval that took the old place, and pressing it again would undo the move. So an
+  // interval could not be walked through the list at all without letting go of the button
+  // in between. Focus goes to the same arrow on the row the interval landed on - or to the
+  // other one, when the end of the list has just switched that arrow off.
+  useEffect(() => {
+    const move = focusAfterMove.current
+
+    if (move === null) {
+      return
+    }
+
+    focusAfterMove.current = null
+
+    const row = listRef.current?.children[move.index]
+    const moved = row?.querySelector(`[data-move='${move.direction}']`)
+    const other = row?.querySelector(`[data-move='${(move.direction === 'UP') ? 'DOWN' : 'UP'}']`)
+    const target = (moved instanceof HTMLButtonElement && !moved.disabled) ? moved : other
+
+    if (target instanceof HTMLButtonElement) {
+      target.focus()
+    }
+  }, [intervals])
 
   const handleIntervalAdd = useCallback(() => {
     const newIntervals = [
@@ -166,7 +223,7 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
 
       <h3>{t.intervalInSeriesSubheading}:</h3>
 
-      <ul className='set-up-items'>
+      <ul className='set-up-items' ref={listRef}>
         {intervals.map((interval, index) => (
           <li
             key={index}
@@ -179,6 +236,7 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
               onDelete={() => handleIntervalDelete(index)}
               onMove={(to) => handleIntervalMove(index, to)}
               isLast={index === (intervals.length - 1)}
+              justMoved={index === justMoved}
               disabledDelete={intervals.length === 1}
               translation={t.intervalInSeries}
             />

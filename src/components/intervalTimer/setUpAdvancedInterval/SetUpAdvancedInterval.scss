@@ -9,6 +9,17 @@
 
   width: 100%;
 
+  border-radius: $border-radius;
+  transition: background-color 0.4s ease;
+
+  // A row swaps its contents in place rather than moving, so without a mark the list just
+  // looks different afterwards and it is left to the eye to work out which interval went
+  // where - and the next tap on the same spot then moves a different one. The colour is
+  // the one the drop zones used to use, and it fades out on its own.
+  &.just-moved {
+    background-color: rgba($orange, 0.3);
+  }
+
   .advanced-interval-index {
     font-size: $text-large;
     margin-right: 0.5rem;
@@ -17,7 +28,9 @@
   .advanced-interval-items {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    // Each field is a different width, so centring them left the three of them ragged with
+    // nothing to read down. They line up on their left edge until the row turns sideways.
+    align-items: flex-start;
     justify-content: space-between;
 
     width: 100%;
@@ -33,12 +46,41 @@
 
     @include L-device() {
       flex-direction: row;
+      align-items: center;
     }
   }
 
   .advanced-interval-item {
+    // the shared set-up styles centre every label; here they sit above their own field in
+    // a left-aligned stack, so a centred one would float away from what it names
+    label {
+      text-align: left;
+    }
+
     .set-up-div {
       margin: 0.25rem 0;
+    }
+
+    // Work is red and pause is green wherever this app shows both - the saved-series list
+    // already reads `20+40` in those two colours - so the field that decides which one it
+    // is says so too. Black on both, because the row is drawn on either theme.
+    .set-up-type-select {
+      // Without this the select is the one field that cannot give way: its min-content is
+      // 84px, so on a 320px display it ends up 6.7px underneath the arrows, which are
+      // drawn over it and clip its own dropdown marker.
+      width: css-min(6rem, 100%);
+
+      color: $black;
+
+      &.work {
+        background-color: $red-light;
+        border-color: $red;
+      }
+
+      &.pause {
+        background-color: $green-light;
+        border-color: $green-dark;
+      }
     }
 
     .set-up-name-input {
@@ -94,10 +136,14 @@
   // which on the dark theme is a black arrow on $grey-dark. For the arrows that is the
   // normal state rather than a corner case - the first row can never go up, the last can
   // never go down - so the icon has to follow the theme instead of the palette.
+  //
+  // The secondary text and not the primary one: primary measured 11.6:1 on the dark theme
+  // against 7.8:1 for an arrow that works, so the switched-off one read as the emphasised
+  // one. This lands at 4.75:1 in both themes - legible, and visibly quieter.
   .advanced-interval-move-btn, .advanced-interval-del-btn {
     &:disabled {
       @include themed {
-        color: t($primary-text);
+        color: t($secondary-text);
       }
     }
   }
