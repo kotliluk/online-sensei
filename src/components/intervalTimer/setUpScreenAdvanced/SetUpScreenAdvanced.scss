@@ -7,9 +7,10 @@
   @include set-up-audio-div();
 
   .advanced-interval-li {
-    padding-top: 0;
-    padding-bottom: 0;
-
+    // The vertical padding used to be zeroed here because the two 1rem drop zones the row
+    // carried supplied the gap themselves. They went with the drag, so the padding the
+    // item would have had all along is what keeps the rows apart now - and it comes to the
+    // same 2rem between neighbours as before.
     flex-direction: column;
   }
 
