@@ -2,7 +2,7 @@
 id: 016
 slug: loose-ends
 title: Drobky ze zbývajících ticketů
-status: review
+status: done
 branch: loose-ends
 ---
 
@@ -160,7 +160,9 @@ z review a tenhle zápis.
 **Odchylky od B:** Kritérium 2 přeformulováno (viz výš) — původní znění bylo nepravdivé.
 Do rozsahu přibyly tři opravy komentářů a dokumentu z review, mezi nimi
 `.claude/skills/ticket-review/agents/device-ux-reviewer.md`, který zadání nejmenovalo:
-tvrdil, že laťka je Safari 14, což ho tenhle diff udělal nepravdivým.
+tvrdil, že laťka je Safari 14, což ho tenhle diff udělal nepravdivým. Po review přibylo ještě
+smazání nevolané `css-clamp()` — vedlejší nález `device-ux`, který uživatel rozhodl vzít sem
+místo do vlastního ticketu.
 
 **Gotchas:**
 
@@ -226,8 +228,15 @@ stará laťka reálně kupovala — pod `safari14` se `inset`, `:is()`, `clamp()
 rozepisovaly, pod `ios15.6` už ne — a doložil, že **projekt ani jeden z těch zápisů nepoužívá**;
 rezerva, o kterou appka přišla, kryla iOS ≤ 14 a Chrome 87, tedy prohlížeče mimo `browserslist`.
 
-**Vedlejší nález mimo rozsah:** `css-clamp()` v `src/styles/css-function.scss:15` je
-definovaná, ale nikde nevolaná.
+**Vedlejší nález, který uživatel rozhodl vzít do tohohle PR:** `css-clamp()`
+v `src/styles/css-function.scss:15` byla definovaná a nikde nevolaná → **smazána**. Build po
+smazání vydal CSS se **stejným content hashem** (`index-jXap7-kz.css`, 90 722 B), což je důkaz,
+že šlo o mrtvý kód.
+
+Vedle ní zůstává `css-calc()`, taky nevolaná — ale ta má svůj důvod zapsaný v repu:
+`LoadAdvancedSeries.scss:28` říká, že helper skládá řetězce a dart-sass kolem `-` zahodí
+mezery, takže by emitoval nevalidní CSS, a proto se tam volá nativní `calc()`. Smazat ji tedy
+znamená rozhodnout i o tom komentáři; nechávám to na tobě, mimo rozsah.
 
 **Bez nálezů v kódu:** ani jeden reviewer nenašel vadu v `src/` — všech pět nálezů je
 v komentářích a dokumentaci.
