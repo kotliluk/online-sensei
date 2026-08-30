@@ -81,6 +81,13 @@ circles and the rule under the sortable result headings take their colour from t
 theme, rather than staying black in a dark theme where black is nearly the
 background.
 
+**Intervals are reordered by buttons.** The order of a series used to be changed by
+dragging a row, and a finger produces no drag - so on a phone the order could not be
+changed at all, and the grab cursor that hinted at it is something touch never shows
+either. Every row now carries an up and a down arrow, disabled at the ends of the
+list, and they answer to a keyboard as well. Dragging is gone rather than kept beside
+them, so there is one way of doing it instead of two.
+
 **The screen stays on while a clock is showing.** A phone left alone dims and locks
 within half a minute, and on a play screen that means nobody can read the time -
 and that the signals come out wrong, because a dark screen keeps the timers running
@@ -363,6 +370,10 @@ interval in a single round and its type (work / pause) and name. For example, yo
 - 30 seconds rest: Running
 - 15 seconds work: Sprints
 - 25 seconds rest: Stretching
+
+The order is yours to change: every interval carries an up and a down arrow, and the one
+that would run off the end of the list is disabled. A cross removes an interval, and with
+a single interval left it is disabled too - a series of nothing is not a series.
 
 Also, you can set the number of repetitions of this whole round.
 
