@@ -261,6 +261,12 @@ export const EN: Translation = {
           // 2 params
           error: 'Duration must be set between __{1}__ and __{2}__.',
         },
+        // 1 param
+        moveUp: 'Move interval __{1}__ up',
+        // 1 param
+        moveDown: 'Move interval __{1}__ down',
+        // 1 param
+        delete: 'Delete interval __{1}__',
       },
       addIntervalInSeriesBtn: 'Add interval',
       loadSeries: 'Load series',

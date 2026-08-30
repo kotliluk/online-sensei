@@ -263,6 +263,12 @@ export interface Translation {
           // 2 params
           error: string,
         },
+        // 1 param
+        moveUp: string,
+        // 1 param
+        moveDown: string,
+        // 1 param
+        delete: string,
       },
       addIntervalInSeriesBtn: string,
       loadSeries: string,

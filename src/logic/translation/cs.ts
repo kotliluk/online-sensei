@@ -261,6 +261,12 @@ export const CS: Translation = {
           // 2 params
           error: 'Délka musí být mezi __{1}__ a __{2}__.',
         },
+        // 1 param
+        moveUp: 'Posunout __{1}__. interval nahoru',
+        // 1 param
+        moveDown: 'Posunout __{1}__. interval dolů',
+        // 1 param
+        delete: 'Smazat __{1}__. interval',
       },
       addIntervalInSeriesBtn: 'Přidat interval',
       loadSeries: 'Nahrát sérii',

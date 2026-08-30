@@ -70,8 +70,6 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
   const [audioVolume, setAudioVolume] = useState(init.audioVolume)
   const [skipLastPause, setSkipLastPause] = useState(init.skipLastPause)
 
-  const [isDragging, setIsDragging] = useState(-1)
-
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -89,13 +87,15 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
     }
   }, [intervals, setIntervals])
 
+  // `to` is where the interval ends up. Dropping used to mean "insert before this gap",
+  // which is why this had to shift the target and refuse the two gaps touching the
+  // interval itself; an arrow names a row instead, and the ends are closed off by the
+  // buttons being disabled there.
   const handleIntervalMove = useCallback((from: number, to: number) => {
-    if (from !== to && from !== (to - 1)) {
-      const newIntervals = [...intervals]
-      newIntervals.splice(from, 1)
-      newIntervals.splice((from > to) ? to : (to - 1), 0, intervals[from])
-      setIntervals(newIntervals)
-    }
+    const newIntervals = [...intervals]
+    newIntervals.splice(from, 1)
+    newIntervals.splice(to, 0, intervals[from])
+    setIntervals(newIntervals)
   }, [intervals, setIntervals])
 
   const handleIntervalAdd = useCallback(() => {
@@ -177,10 +177,8 @@ export const SetUpScreenAdvanced = (): JSX.Element => {
               interval={interval}
               onChange={(interval) => handleIntervalChange(interval, index)}
               onDelete={() => handleIntervalDelete(index)}
-              onMove={handleIntervalMove}
-              onDragStart={() => setIsDragging(index)}
-              onDragEnd={() => setIsDragging(-1)}
-              isDragging={isDragging}
+              onMove={(to) => handleIntervalMove(index, to)}
+              isLast={index === (intervals.length - 1)}
               disabledDelete={intervals.length === 1}
               translation={t.intervalInSeries}
             />
